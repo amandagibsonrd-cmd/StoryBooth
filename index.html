@@ -370,8 +370,10 @@ textarea, input {
   <h1>Thank you</h1>
   <p>You are now part of their story</p>
 </div>
-  
+
 <script>
+const STORAGE_KEY = 'storybooth_local_event_data_v1';
+
 let prompts = [
   "What do you admire most about them?",
   "Share a favorite memory.",
@@ -383,6 +385,10 @@ let prompts = [
 let currentPrompt = 0;
 let mediaRecorder;
 let recordedBlob;
+let guestbookEntries = loadEventData().guestbookEntries || [];
+let emailEntries = loadEventData().emailEntries || [];
+let lastVideoURL = null;
+let lastVideoBlob = null;
 let maxRecordingSeconds = 60;
 let recordingInterval;
 let recordingStartedAt;
@@ -467,7 +473,8 @@ function startRecording() {
   const startButton = document.getElementById('startButton');
   const stopButton = document.getElementById('stopButton');
 
-  mediaRecorder = new MediaRecorder(window.stream);
+  const mimeType = getBestMimeType();
+  mediaRecorder = mimeType ? new MediaRecorder(window.stream, { mimeType }) : new MediaRecorder(window.stream);
   isRecording = true;
 
   mediaRecorder.ondataavailable = e => {
@@ -480,9 +487,13 @@ function startRecording() {
     startButton.disabled = false;
     stopButton.disabled = true;
     timerEl.innerText = `Max ${maxRecordingSeconds} seconds`;
-    recordedBlob = new Blob(chunks, { type: 'video/webm' });
+    recordedBlob = new Blob(chunks, { type: mediaRecorder.mimeType || getBestMimeType() || 'video/mp4' });
+    lastVideoBlob = recordedBlob;
     const url = URL.createObjectURL(recordedBlob);
-    document.getElementById('playback').src = url;
+    lastVideoURL = url;
+    const playback = document.getElementById('playback');
+    playback.src = url;
+    playback.load();
     show('review');
   };
 
@@ -517,85 +528,8 @@ function retake() {
 }
 
 function goEmail() {
-  show('email');
-}
-
-function finish() {
-  show('thankyou');
-  setTimeout(() => {
-    location.reload();
-  }, 4000);
-}
-
-  // ===== OPERATOR PANEL ACCESS =====
-let tapCount = 0;
-let tapTimer;
-
-document.addEventListener("click", function(e) {
-  if (e.clientY < 80 && e.clientX < 80) {
-    tapCount++;
-    clearTimeout(tapTimer);
-    tapTimer = setTimeout(() => tapCount = 0, 1500);
-
-    if (tapCount >= 5) {
-      openOperatorPanel();
-      tapCount = 0;
-    }
-  }
-});
-
-function openOperatorPanel() {
-  let panel = `
-    <div id="operatorPanel" style="
-      position:fixed;
-      inset:0;
-      background:#ffffff;
-      z-index:9999;
-      padding:20px;
-      overflow:auto;
-      font-family:sans-serif;
-    ">
-      <h2>Operator Panel</h2>
-
-      <label>Event Name</label>
-      <input id="eventNameInput" placeholder="Smith Wedding" />
-
-      <label>Device Name</label>
-      <input id="deviceNameInput" placeholder="Booth 1" />
-
-      <label>Recording Limit (seconds)</label>
-      <input id="recordLimitInput" value="60" />
-
-      <hr>
-
-      <button onclick="exportGuestbook()">Download Guestbook CSV</button>
-      <button onclick="exportEmails()">Download Email List CSV</button>
-      <button onclick="downloadLastVideo()">Download Last Video</button>
-      <button onclick="resetEvent()">Reset Event</button>
-
-      <br><br>
-      <button onclick="closeOperatorPanel()">Close</button>
-    </div>
-  `;
-  document.body.insertAdjacentHTML("beforeend", panel);
-}
-
-function closeOperatorPanel() {
-  document.getElementById("operatorPanel").remove();
-}
-
-  let guestbookEntries = [];
-let emailEntries = [];
-let lastVideoURL = null;
-
-function acceptVideo() {
-  lastVideoURL = document.getElementById('playback').src;
-  show('guestbook');
-}
-
-function goEmail() {
-  const message = document.getElementById("message").value;
-  const name = document.getElementById("name").value;
+  const message = document.getElementById('message').value.trim();
+  const name = document.getElementById('name').value.trim();
 
   guestbookEntries.push({
     name,
@@ -603,13 +537,13 @@ function goEmail() {
     prompt: prompts[currentPrompt],
     time: new Date().toLocaleString()
   });
-
+  saveEventData();
   show('email');
 }
 
 function finish() {
-  const email = document.getElementById("emailInput").value;
-  const name = document.getElementById("name").value;
+  const email = document.getElementById('emailInput').value.trim();
+  const name = document.getElementById('name').value.trim();
 
   if (email) {
     emailEntries.push({
@@ -619,58 +553,129 @@ function finish() {
     });
   }
 
+  saveEventData();
   show('thankyou');
 
   setTimeout(() => {
-    location.reload();
+    resetFormFields();
+    show('attract');
   }, 4000);
 }
+function resetFormFields() {
+  document.getElementById('message').value = '';
+  document.getElementById('name').value = '';
+  document.getElementById('emailInput').value = '';
+  document.getElementById('playback').removeAttribute('src');
+  document.getElementById('playback').load();
+}
 
-  function exportGuestbook() {
-  let csv = "Name,Message,Prompt,Time\n";
+function saveEventData() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ guestbookEntries, emailEntries }));
+}
+
+function loadEventData() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+  } catch {
+    return {};
+  }
+}
+
+function exportGuestbook() {
+  let csv = 'Name,Message,Prompt,Time
+';
   guestbookEntries.forEach(e => {
-    csv += `"${e.name}","${e.message}","${e.prompt}","${e.time}"\n`;
+    csv += `"${escapeCsv(e.name)}","${escapeCsv(e.message)}","${escapeCsv(e.prompt)}","${escapeCsv(e.time)}"
+`;
   });
-
-  downloadFile(csv, "guestbook.csv", "text/csv");
+  downloadFile(csv, 'guestbook.csv', 'text/csv');
 }
 
 function exportEmails() {
-  let csv = "Name,Email,Time\n";
+  let csv = 'Name,Email,Time
+';
   emailEntries.forEach(e => {
-    csv += `"${e.name}","${e.email}","${e.time}"\n`;
+    csv += `"${escapeCsv(e.name)}","${escapeCsv(e.email)}","${escapeCsv(e.time)}"
+`;
   });
-
-  downloadFile(csv, "emails.csv", "text/csv");
+  downloadFile(csv, 'emails.csv', 'text/csv');
 }
 
 function downloadLastVideo() {
-  if (!lastVideoURL) {
-    alert("No video recorded yet.");
+  if (!lastVideoBlob) {
+    alert('No video recorded yet in this session.');
     return;
   }
-
-  const a = document.createElement("a");
-  a.href = lastVideoURL;
-  a.download = "storybooth-video.webm";
+  const ext = (lastVideoBlob.type || '').includes('mp4') ? 'mp4' : 'webm';
+  const url = URL.createObjectURL(lastVideoBlob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `storybooth-video.${ext}`;
   a.click();
 }
 
 function downloadFile(content, fileName, type) {
   const blob = new Blob([content], { type });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
+  const a = document.createElement('a');
   a.href = url;
   a.download = fileName;
   a.click();
 }
 
-function resetEvent() {
-  guestbookEntries = [];
-  emailEntries = [];
-  alert("Event data cleared.");
+function escapeCsv(value) {
+  return String(value || '').replaceAll('"', '""');
 }
 
+function getBestMimeType() {
+  const options = ['video/mp4', 'video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm'];
+  return options.find(type => window.MediaRecorder && MediaRecorder.isTypeSupported(type)) || '';
+}
+
+let tapCount = 0;
+let tapTimer;
+document.addEventListener('click', function(e) {
+  if (e.clientY < 80 && e.clientX < 80) {
+    tapCount++;
+    clearTimeout(tapTimer);
+    tapTimer = setTimeout(() => tapCount = 0, 1500);
+    if (tapCount >= 5) {
+      openOperatorPanel();
+      tapCount = 0;
+    }
+  }
+});
+
+function openOperatorPanel() {
+  if (document.getElementById('operatorPanel')) return;
+  const panel = document.createElement('div');
+  panel.id = 'operatorPanel';
+  panel.style.cssText = 'position:fixed;inset:0;background:#ffffff;z-index:9999;padding:20px;overflow:auto;font-family:-apple-system,BlinkMacSystemFont,sans-serif;';
+  panel.innerHTML = `
+    <h2>Operator Panel</h2>
+    <p style="color:#6b6b6b;">Export your current event data from this device.</p>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;">
+      <button onclick="exportGuestbook()">Download Guestbook CSV</button>
+      <button onclick="exportEmails()">Download Email List CSV</button>
+      <button onclick="downloadLastVideo()">Download Last Video</button>
+      <button onclick="resetEventData()" class="secondary" style="color:#222;">Reset Event Data</button>
+    </div>
+    <br><button onclick="closeOperatorPanel()">Close</button>
+  `;
+  document.body.appendChild(panel);
+}
+
+function closeOperatorPanel() {
+  const panel = document.getElementById('operatorPanel');
+  if (panel) panel.remove();
+}
+
+function resetEventData() {
+  guestbookEntries = [];
+  emailEntries = [];
+  saveEventData();
+  alert('Event data cleared on this device.');
+}
 </script>
 
 </body>
