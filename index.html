@@ -8,14 +8,12 @@
     :root {
       --bg: #0f1418;
       --panel: rgba(20, 28, 34, 0.92);
-      --panel-soft: rgba(255,255,255,0.08);
       --line: rgba(255,255,255,0.12);
       --text: #f7f5f1;
       --muted: rgba(247,245,241,0.74);
       --accent: #e8d4c0;
       --accent-2: #b58d6a;
       --danger: #d86a6a;
-      --success: #80c29a;
       --radius: 24px;
       --shadow: 0 20px 60px rgba(0,0,0,0.35);
     }
@@ -196,10 +194,7 @@
       margin-bottom: 8px;
     }
 
-    .small-note {
-      color: var(--muted);
-      font-size: 0.95rem;
-    }
+    .small-note { color: var(--muted); font-size: 0.95rem; }
 
     .prompt-header {
       display: flex;
@@ -238,25 +233,18 @@
     }
 
     .prompt-controls,
-    .action-row,
     .mode-row,
     .preview-actions,
     .admin-actions,
     .delivery-row,
-    .guestbook-actions {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
+    .guestbook-actions { display: flex; gap: 12px; flex-wrap: wrap; }
 
     .control-btn,
     .primary-btn,
     .secondary-btn,
     .danger-btn,
-    .mode-btn,
-    .icon-btn {
+    .mode-btn {
       appearance: none;
-      border: none;
       cursor: pointer;
       transition: transform .18s ease, opacity .18s ease, background .18s ease, border-color .18s ease;
     }
@@ -265,11 +253,9 @@
     .primary-btn:hover,
     .secondary-btn:hover,
     .danger-btn:hover,
-    .mode-btn:hover,
-    .icon-btn:hover { transform: translateY(-2px); }
+    .mode-btn:hover { transform: translateY(-2px); }
 
-    .control-btn,
-    .icon-btn {
+    .control-btn {
       width: 56px;
       height: 56px;
       border-radius: 18px;
@@ -288,6 +274,7 @@
       border-radius: 18px;
       font-weight: 700;
       letter-spacing: -0.01em;
+      border: 1px solid transparent;
     }
 
     .primary-btn {
@@ -299,13 +286,13 @@
     .secondary-btn {
       background: rgba(255,255,255,0.06);
       color: var(--text);
-      border: 1px solid var(--line);
+      border-color: var(--line);
     }
 
     .danger-btn {
       background: rgba(216,106,106,0.14);
       color: #ffdede;
-      border: 1px solid rgba(216,106,106,0.35);
+      border-color: rgba(216,106,106,0.35);
     }
 
     .mode-row {
@@ -317,7 +304,7 @@
     .mode-btn {
       background: rgba(255,255,255,0.04);
       color: var(--text);
-      border: 1px solid var(--line);
+      border-color: var(--line);
       width: 100%;
     }
 
@@ -327,32 +314,20 @@
       color: var(--accent);
     }
 
-    .feature-list {
-      display: grid;
-      gap: 12px;
-      margin-top: auto;
-    }
-
+    .feature-list { display: grid; gap: 12px; margin-top: auto; }
     .feature-item {
       border: 1px solid var(--line);
       border-radius: 18px;
       padding: 16px 18px;
       background: rgba(255,255,255,0.04);
     }
-
-    .feature-item strong {
-      display: block;
-      margin-bottom: 4px;
-    }
+    .feature-item strong { display: block; margin-bottom: 4px; }
 
     .camera-screen,
     .preview-screen,
     .email-screen,
     .guestbook-screen,
-    .thankyou-screen {
-      align-items: stretch;
-      justify-content: stretch;
-    }
+    .thankyou-screen { align-items: stretch; justify-content: stretch; }
 
     .camera-wrap,
     .preview-wrap,
@@ -379,33 +354,16 @@
       box-shadow: var(--shadow);
     }
 
-    video,
-    canvas,
-    .captured-photo,
-    .captured-video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-      background: #000;
+    video, canvas, .captured-photo, .captured-video {
+      width: 100%; height: 100%; object-fit: cover; display: block; background: #000;
     }
 
     .camera-ui {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      padding: 22px;
-      pointer-events: none;
+      position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: space-between; padding: 22px; pointer-events: none;
     }
 
-    .camera-top,
-    .camera-bottom {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: center;
+    .camera-top, .camera-bottom {
+      display: flex; justify-content: space-between; gap: 12px; align-items: center;
     }
 
     .camera-chip {
@@ -423,88 +381,37 @@
     }
 
     .live-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: #ff5959;
-      box-shadow: 0 0 18px rgba(255,89,89,0.5);
-      display: none;
+      width: 10px; height: 10px; border-radius: 50%; background: #ff5959; box-shadow: 0 0 18px rgba(255,89,89,0.5); display: none;
     }
 
     .recording .live-dot { display: inline-block; }
 
     .camera-center-overlay {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      pointer-events: none;
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none;
     }
 
     .countdown {
-      width: 180px;
-      height: 180px;
-      border-radius: 50%;
-      background: rgba(0,0,0,0.46);
-      border: 2px solid rgba(255,255,255,0.18);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      font-size: 5rem;
-      font-weight: 800;
-      color: #fff;
-      box-shadow: 0 0 50px rgba(0,0,0,0.3);
+      width: 180px; height: 180px; border-radius: 50%; background: rgba(0,0,0,0.46); border: 2px solid rgba(255,255,255,0.18); display: none; align-items: center; justify-content: center; font-size: 5rem; font-weight: 800; color: #fff; box-shadow: 0 0 50px rgba(0,0,0,0.3);
     }
 
     .record-ring-wrap {
-      pointer-events: auto;
-      width: 110px;
-      height: 110px;
-      border-radius: 50%;
-      display: grid;
-      place-items: center;
-      background: radial-gradient(circle, rgba(255,255,255,0.08), rgba(255,255,255,0.01));
-      border: 1px solid rgba(255,255,255,0.18);
-      position: relative;
-      cursor: pointer;
+      pointer-events: auto; width: 110px; height: 110px; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle, rgba(255,255,255,0.08), rgba(255,255,255,0.01)); border: 1px solid rgba(255,255,255,0.18); position: relative; cursor: pointer;
     }
 
     .record-ring {
-      width: 82px;
-      height: 82px;
-      border-radius: 50%;
-      border: 4px solid rgba(255,255,255,0.8);
-      display: grid;
-      place-items: center;
-      background: rgba(0,0,0,0.18);
-      position: relative;
-      overflow: hidden;
+      width: 82px; height: 82px; border-radius: 50%; border: 4px solid rgba(255,255,255,0.8); display: grid; place-items: center; background: rgba(0,0,0,0.18); position: relative; overflow: hidden;
     }
 
     .record-ring::after {
-      content: "";
-      width: 26px;
-      height: 26px;
-      border-radius: 50%;
-      background: white;
-      transition: border-radius .2s ease, width .2s ease, height .2s ease;
+      content: ""; width: 26px; height: 26px; border-radius: 50%; background: white; transition: border-radius .2s ease, width .2s ease, height .2s ease;
     }
 
     .recording .record-ring::after {
-      width: 22px;
-      height: 22px;
-      border-radius: 6px;
-      background: #ff6a6a;
+      width: 22px; height: 22px; border-radius: 6px; background: #ff6a6a;
     }
 
     .ring-progress {
-      position: absolute;
-      inset: -4px;
-      border-radius: 50%;
-      background: conic-gradient(var(--accent) 0deg, rgba(255,255,255,0.14) 0deg);
-      -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 6px), #000 0);
-              mask: radial-gradient(farthest-side, transparent calc(100% - 6px), #000 0);
+      position: absolute; inset: -4px; border-radius: 50%; background: conic-gradient(var(--accent) 0deg, rgba(255,255,255,0.14) 0deg); -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 6px), #000 0); mask: radial-gradient(farthest-side, transparent calc(100% - 6px), #000 0);
     }
 
     .camera-overlay-card,
@@ -512,63 +419,25 @@
     .email-card,
     .guestbook-card,
     .thankyou-card {
-      padding: 22px;
-      background: var(--panel);
-      border: 1px solid var(--line);
-      box-shadow: var(--shadow);
+      padding: 22px; background: var(--panel); border: 1px solid var(--line); box-shadow: var(--shadow);
     }
 
-    .camera-overlay-card {
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-    }
+    .camera-overlay-card { display: flex; flex-direction: column; gap: 18px; }
+    .panel-title { font-size: 1.45rem; letter-spacing: -0.03em; margin-bottom: 8px; }
+    .panel-copy { color: var(--muted); line-height: 1.5; }
 
-    .panel-title {
-      font-size: 1.45rem;
-      letter-spacing: -0.03em;
-      margin-bottom: 8px;
-    }
-
-    .panel-copy {
-      color: var(--muted);
-      line-height: 1.5;
-    }
-
-    .status-list {
-      display: grid;
-      gap: 12px;
-      margin-top: 4px;
-    }
-
+    .status-list { display: grid; gap: 12px; margin-top: 4px; }
     .status-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 14px 16px;
-      border-radius: 16px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid var(--line);
+      display: flex; justify-content: space-between; gap: 12px; padding: 14px 16px; border-radius: 16px; background: rgba(255,255,255,0.05); border: 1px solid var(--line);
     }
-
     .status-label { color: var(--muted); }
     .status-value { font-weight: 700; text-align: right; }
 
     .muted { color: var(--muted); }
     .hidden { display: none !important; }
 
-    .form-grid {
-      display: grid;
-      gap: 14px;
-      margin-top: 18px;
-    }
-
-    label {
-      display: grid;
-      gap: 8px;
-      font-size: 0.95rem;
-      color: var(--muted);
-    }
+    .form-grid { display: grid; gap: 14px; margin-top: 18px; }
+    label { display: grid; gap: 8px; font-size: 0.95rem; color: var(--muted); }
 
     input[type="text"],
     input[type="email"],
@@ -576,191 +445,70 @@
     input[type="number"],
     textarea,
     select {
-      width: 100%;
-      min-height: 54px;
-      border-radius: 16px;
-      border: 1px solid rgba(255,255,255,0.12);
-      background: rgba(255,255,255,0.05);
-      color: var(--text);
-      padding: 14px 16px;
-      outline: none;
+      width: 100%; min-height: 54px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.05); color: var(--text); padding: 14px 16px; outline: none;
     }
 
-    textarea {
-      min-height: 120px;
-      resize: vertical;
-    }
-
+    textarea { min-height: 120px; resize: vertical; }
     .checkbox-list { display: grid; gap: 10px; }
-    .check {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      color: var(--text);
-      min-height: 22px;
-    }
+    .check { display: flex; align-items: center; gap: 10px; color: var(--text); min-height: 22px; }
     .check input { width: 18px; height: 18px; }
 
     .admin-launch {
-      position: absolute;
-      right: 20px;
-      bottom: 20px;
-      z-index: 20;
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      border: 1px solid rgba(255,255,255,0.14);
-      background: rgba(255,255,255,0.06);
-      color: var(--text);
-      font-size: 1.2rem;
-      box-shadow: var(--shadow);
-      cursor: pointer;
+      position: absolute; right: 20px; bottom: 20px; z-index: 20; width: 60px; height: 60px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.14); background: rgba(255,255,255,0.06); color: var(--text); font-size: 1.2rem; box-shadow: var(--shadow); cursor: pointer;
     }
 
     .admin-backdrop {
-      position: absolute;
-      inset: 0;
-      background: rgba(0,0,0,0.58);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      z-index: 30;
+      position: absolute; inset: 0; background: rgba(0,0,0,0.58); display: none; align-items: center; justify-content: center; padding: 20px; z-index: 30;
     }
-
     .admin-backdrop.open { display: flex; }
 
     .admin-panel {
-      width: min(980px, 100%);
-      max-height: 92vh;
-      overflow: auto;
-      padding: 24px;
-      background: #111820;
-      border: 1px solid rgba(255,255,255,0.12);
-      box-shadow: var(--shadow);
+      width: min(980px, 100%); max-height: 92vh; overflow: auto; padding: 24px; background: #111820; border: 1px solid rgba(255,255,255,0.12); box-shadow: var(--shadow);
     }
 
     .admin-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 18px;
-      margin-top: 18px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 18px;
     }
 
     .admin-section {
-      border-radius: 20px;
-      border: 1px solid rgba(255,255,255,0.1);
-      background: rgba(255,255,255,0.04);
-      padding: 18px;
-      display: grid;
-      gap: 14px;
+      border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); padding: 18px; display: grid; gap: 14px;
     }
 
-    .theme-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-    }
+    .theme-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 
     .theme-chip {
-      min-height: 48px;
-      border-radius: 14px;
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,0.05);
-      color: var(--text);
-      font-weight: 600;
-      cursor: pointer;
+      min-height: 48px; border-radius: 14px; border: 1px solid var(--line); background: rgba(255,255,255,0.05); color: var(--text); font-weight: 600; cursor: pointer;
     }
 
     .theme-chip.active {
-      background: rgba(232,212,192,0.14);
-      border-color: rgba(232,212,192,0.35);
-      color: var(--accent);
+      background: rgba(232,212,192,0.14); border-color: rgba(232,212,192,0.35); color: var(--accent);
     }
 
     .burst-strip {
-      position: absolute;
-      left: 22px;
-      right: 22px;
-      bottom: 22px;
-      display: flex;
-      gap: 10px;
-      z-index: 4;
-      pointer-events: none;
+      position: absolute; left: 22px; right: 22px; bottom: 22px; display: flex; gap: 10px; z-index: 4; pointer-events: none;
     }
 
     .burst-thumb {
-      width: 96px;
-      height: 72px;
-      border-radius: 14px;
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.18);
-      background: rgba(255,255,255,0.04);
+      width: 96px; height: 72px; border-radius: 14px; overflow: hidden; border: 1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.04);
     }
-
-    .burst-thumb img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
+    .burst-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
     .thankyou-stage {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 28px;
-      background:
-        radial-gradient(circle at top right, rgba(232,212,192,0.14), transparent 24%),
-        linear-gradient(180deg, #10161c 0%, #0a1015 100%);
+      display: flex; align-items: center; justify-content: center; padding: 28px; background: radial-gradient(circle at top right, rgba(232,212,192,0.14), transparent 24%), linear-gradient(180deg, #10161c 0%, #0a1015 100%);
     }
 
-    .thankyou-card {
-      max-width: 760px;
-      text-align: center;
-      background: rgba(255,255,255,0.06);
-    }
-
-    .thankyou-card h2 {
-      font-size: clamp(2rem, 4vw, 4rem);
-      letter-spacing: -0.04em;
-      margin-bottom: 14px;
-    }
+    .thankyou-card { max-width: 760px; text-align: center; background: rgba(255,255,255,0.06); }
+    .thankyou-card h2 { font-size: clamp(2rem, 4vw, 4rem); letter-spacing: -0.04em; margin-bottom: 14px; }
 
     .tag {
-      display: inline-flex;
-      align-items: center;
-      min-height: 34px;
-      padding: 0 12px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid var(--line);
-      color: var(--muted);
-      font-size: 0.88rem;
+      display: inline-flex; align-items: center; min-height: 34px; padding: 0 12px; border-radius: 999px; background: rgba(255,255,255,0.06); border: 1px solid var(--line); color: var(--muted); font-size: 0.88rem;
     }
 
     .stack { display: grid; gap: 14px; }
 
-    .pill-row {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 10px;
-    }
-
     @media (max-width: 1100px) {
-      .begin-layout,
-      .camera-wrap,
-      .preview-wrap,
-      .email-wrap,
-      .guestbook-wrap,
-      .thankyou-wrap,
-      .admin-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .begin-main,
-      .begin-side { min-height: auto; }
+      .begin-layout, .camera-wrap, .preview-wrap, .email-wrap, .guestbook-wrap, .thankyou-wrap, .admin-grid { grid-template-columns: 1fr; }
+      .begin-main, .begin-side { min-height: auto; }
       .screen { overflow: auto; }
       html, body { overflow: auto; }
       .app { min-height: 100vh; height: auto; }
@@ -849,11 +597,9 @@
               <div class="camera-chip" id="cameraModeChip">Video Mode</div>
               <div class="camera-chip" id="recordingChip"><span class="live-dot"></span><span id="timerText">00:00</span></div>
             </div>
-
             <div class="camera-center-overlay">
               <div class="countdown" id="countdownCircle">3</div>
             </div>
-
             <div class="camera-bottom">
               <button class="camera-chip secondary-btn" id="backToBeginBtn" type="button">Back</button>
               <div class="record-ring-wrap" id="recordControl" role="button" aria-label="Start recording or capture">
@@ -881,7 +627,7 @@
           <div class="stack">
             <button class="primary-btn" id="startStopBtn" type="button">Start</button>
             <button class="secondary-btn" id="nextPromptCameraBtn" type="button">Next prompt</button>
-            <button class="secondary-btn" id="bwToggleBtn" type="button">Black & white: Off</button>
+            <button class="secondary-btn" id="bwToggleBtn" type="button">Black &amp; white: Off</button>
           </div>
 
           <p class="muted" id="cameraHelpText">When you are ready, press Start or tap the center button below the camera.</p>
@@ -910,7 +656,7 @@
             <button class="danger-btn" id="discardBtn" type="button">Discard</button>
           </div>
 
-          <p class="muted" id="deliveryOptionsText">After this, guests can optionally enter an email address or leave a guestbook note if those features are enabled.</p>
+          <p class="muted" id="deliveryOptionsText">This setup is operator-led. Email capture is off by default, and guestbook can be enabled in the operator panel.</p>
         </aside>
       </div>
     </section>
@@ -922,7 +668,7 @@
           <div>
             <div class="eyebrow"><span class="logo-mark"></span> Optional delivery</div>
             <div class="panel-title">Want this sent to your email?</div>
-            <p class="panel-copy">This demo stores email entries locally in the browser. You can later connect this to your email or upload system.</p>
+            <p class="panel-copy">Emails are only being collected and saved to Google Drive in this version. No outgoing emails are sent yet.</p>
           </div>
           <form class="form-grid" id="emailForm">
             <label>
@@ -981,8 +727,8 @@
         </div>
         <aside class="thankyou-card">
           <div>
-            <div class="panel-title">Session saved locally</div>
-            <p class="panel-copy">This demo stores captured sessions in browser memory only for preview and export testing. To make this production-ready, connect it to cloud storage or your upload endpoint.</p>
+            <div class="panel-title">Session saved</div>
+            <p class="panel-copy">This version saves session metadata locally and uploads media, guestbook notes, and emails to Google Drive when an Apps Script URL has been added.</p>
           </div>
           <div class="status-list" id="sessionSummaryList"></div>
           <div class="admin-actions">
@@ -1046,8 +792,15 @@
             </div>
 
             <div class="admin-section">
+              <h3>Google Drive upload</h3>
+              <label>Apps Script Web App URL<input type="text" id="adminScriptUrl" placeholder="Paste deployed web app URL" /></label>
+              <label>Device name<input type="text" id="adminDeviceName" placeholder="iPad 1, iPad 2, Front Booth, etc." /></label>
+              <div class="muted">Use the same web app URL across all iPads at an event and give each device a unique device name.</div>
+            </div>
+
+            <div class="admin-section">
               <h3>Data</h3>
-              <div class="muted">Use these controls for demo testing. Captures are not uploaded anywhere in this version.</div>
+              <div class="muted">Once the Apps Script URL is added, captures upload into Google Drive event folders.</div>
               <div class="admin-actions">
                 <button class="secondary-btn" id="exportSessionsBtn" type="button">Export session data</button>
                 <button class="danger-btn" id="clearSessionsBtn" type="button">Clear local sessions</button>
@@ -1069,8 +822,8 @@
   </div>
 
   <script>
-    const STORAGE_KEY = 'storybooth_kiosk_settings_v1';
-    const SESSION_KEY = 'storybooth_kiosk_sessions_v1';
+    const STORAGE_KEY = 'storybooth_kiosk_settings_v2';
+    const SESSION_KEY = 'storybooth_kiosk_sessions_v2';
 
     const defaultThemes = {
       Wedding: [
@@ -1122,11 +875,13 @@
       returnDelay: 8,
       enableVideo: true,
       enablePhoto: true,
-      enableEmail: true,
+      enableEmail: false,
       enableGuestbook: true,
       enableBW: true,
       burstMode: true,
-      lastMode: 'video'
+      lastMode: 'video',
+      scriptUrl: '',
+      deviceName: 'iPad 1'
     };
 
     const state = {
@@ -1177,7 +932,7 @@
         'returnNowBtn','adminLaunchBtn','adminBackdrop','closeAdminBtn','adminPinArea','adminPinInput',
         'unlockAdminBtn','adminContent','adminEventName','adminHeadline','adminSubheadline','adminMaxDuration',
         'adminReturnDelay','adminEnableVideo','adminEnablePhoto','adminEnableEmail','adminEnableGuestbook',
-        'adminEnableBW','adminBurstMode','themeGrid','adminPrompts','exportSessionsBtn','clearSessionsBtn',
+        'adminEnableBW','adminBurstMode','adminScriptUrl','adminDeviceName','themeGrid','adminPrompts','exportSessionsBtn','clearSessionsBtn',
         'savedSessionCount','adminThemeValue','saveAdminBtn','lockAdminBtn','burstStrip'
       ].forEach(id => els[id] = document.getElementById(id));
     }
@@ -1252,4 +1007,646 @@
       els.adminSubheadline.value = state.settings.subheadline;
       els.adminMaxDuration.value = state.settings.maxDuration;
       els.adminReturnDelay.value = state.settings.returnDelay;
-      els.ad
+      els.adminEnableVideo.checked = state.settings.enableVideo;
+      els.adminEnablePhoto.checked = state.settings.enablePhoto;
+      els.adminEnableEmail.checked = state.settings.enableEmail;
+      els.adminEnableGuestbook.checked = state.settings.enableGuestbook;
+      els.adminEnableBW.checked = state.settings.enableBW;
+      els.adminBurstMode.checked = state.settings.burstMode;
+      els.adminScriptUrl.value = state.settings.scriptUrl || '';
+      els.adminDeviceName.value = state.settings.deviceName || 'iPad 1';
+      els.adminPrompts.value = state.settings.prompts.join('\n');
+      els.adminThemeValue.textContent = state.settings.theme;
+      updatePrompt();
+      updateCameraModeUI();
+    }
+
+    function renderThemeButtons() {
+      els.themeGrid.innerHTML = '';
+      Object.keys(defaultThemes).forEach(theme => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `theme-chip ${state.settings.theme === theme ? 'active' : ''}`;
+        btn.textContent = theme;
+        btn.addEventListener('click', () => {
+          state.settings.theme = theme;
+          state.settings.prompts = [...defaultThemes[theme]];
+          els.adminPrompts.value = state.settings.prompts.join('\n');
+          renderThemeButtons();
+          els.adminThemeValue.textContent = state.settings.theme;
+        });
+        els.themeGrid.appendChild(btn);
+      });
+    }
+
+    function renderModeButtons() {
+      els.modeButtons.innerHTML = '';
+      const modes = [
+        { key: 'video', label: 'Video', enabled: state.settings.enableVideo },
+        { key: 'photo', label: 'Photo', enabled: state.settings.enablePhoto },
+        { key: 'email', label: 'Email', enabled: state.settings.enableEmail },
+        { key: 'guestbook', label: 'Guestbook', enabled: state.settings.enableGuestbook }
+      ];
+      modes.forEach(mode => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `mode-btn ${state.currentMode === mode.key ? 'active' : ''}`;
+        btn.textContent = mode.label;
+        btn.disabled = !mode.enabled;
+        btn.style.opacity = mode.enabled ? '1' : '.35';
+        btn.addEventListener('click', () => {
+          if (!mode.enabled) return;
+          if (mode.key === 'email' || mode.key === 'guestbook') return;
+          state.currentMode = mode.key;
+          state.settings.lastMode = mode.key;
+          persistSettings();
+          renderModeButtons();
+          updateCameraModeUI();
+        });
+        els.modeButtons.appendChild(btn);
+      });
+    }
+
+    function getFirstEnabledMode(preferred) {
+      const enabled = [];
+      if (state?.settings?.enableVideo) enabled.push('video');
+      if (state?.settings?.enablePhoto) enabled.push('photo');
+      return enabled.includes(preferred) ? preferred : (enabled[0] || 'video');
+    }
+
+    function switchToNextEnabledMode() {
+      const enabled = [];
+      if (state.settings.enableVideo) enabled.push('video');
+      if (state.settings.enablePhoto) enabled.push('photo');
+      if (!enabled.length) return;
+      const idx = enabled.indexOf(state.currentMode);
+      state.currentMode = enabled[(idx + 1) % enabled.length];
+      state.settings.lastMode = state.currentMode;
+      persistSettings();
+      renderModeButtons();
+      updateCameraModeUI();
+    }
+
+    function cyclePrompt(direction) {
+      const prompts = state.settings.prompts.length ? state.settings.prompts : ['Share a message from the heart.'];
+      state.currentPromptIndex = (state.currentPromptIndex + direction + prompts.length) % prompts.length;
+      updatePrompt();
+    }
+
+    function updatePrompt() {
+      const prompts = state.settings.prompts.length ? state.settings.prompts : ['Share a message from the heart.'];
+      const prompt = prompts[state.currentPromptIndex] || prompts[0];
+      els.promptText.textContent = prompt;
+      els.cameraPromptText.textContent = prompt;
+      els.previewPromptLabel.textContent = prompt;
+    }
+
+    function updateCameraModeUI() {
+      const label = state.currentMode === 'video' ? 'Video' : 'Photo';
+      els.cameraModeChip.textContent = `${label} Mode`;
+      els.statusMode.textContent = label;
+      els.startStopBtn.textContent = state.currentMode === 'video' ? 'Start' : 'Take photo';
+      els.switchModeInCameraBtn.classList.toggle('hidden', !(state.settings.enableVideo && state.settings.enablePhoto));
+      els.bwToggleBtn.classList.toggle('hidden', !state.settings.enableBW);
+      els.bwToggleBtn.textContent = `Black & white: ${state.bwEnabled ? 'On' : 'Off'}`;
+      els.cameraFeed.style.filter = state.bwEnabled ? 'grayscale(1)' : 'none';
+      els.cameraHelpText.textContent = state.currentMode === 'video'
+        ? 'When you are ready, press Start or tap the center button below the camera.'
+        : (state.settings.burstMode ? 'Press capture to take a 3-photo burst.' : 'Press capture when you are ready.');
+    }
+
+    function showScreen(id) {
+      ['beginScreen','cameraScreen','previewScreen','emailScreen','guestbookScreen','thankyouScreen'].forEach(screenId => {
+        els[screenId].classList.toggle('active', screenId === id);
+      });
+      state.currentScreen = id;
+    }
+
+    async function startExperience() {
+      if (!state.settings.enableVideo && !state.settings.enablePhoto) return;
+      await openCamera();
+      showScreen('cameraScreen');
+      resetPreviewStage();
+      updateCameraModeUI();
+    }
+
+    async function openCamera() {
+      if (state.stream) return;
+      try {
+        state.stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
+          audio: true
+        });
+        els.cameraFeed.srcObject = state.stream;
+        await els.cameraFeed.play().catch(() => {});
+      } catch (err) {
+        alert('Camera access is required for this kiosk demo. Please allow camera and microphone access.');
+        console.error(err);
+      }
+    }
+
+    function cleanupStream() {
+      if (state.stream) {
+        state.stream.getTracks().forEach(track => track.stop());
+        state.stream = null;
+      }
+    }
+
+    async function handleRecordAction() {
+      if (state.currentMode === 'video') {
+        if (state.isRecording) {
+          stopRecording();
+        } else {
+          await runCountdown(startVideoRecording);
+        }
+      } else {
+        await runCountdown(capturePhotoFlow);
+      }
+    }
+
+    async function runCountdown(callback) {
+      clearInterval(state.countdownTimer);
+      let count = 3;
+      els.countdownCircle.style.display = 'flex';
+      els.countdownCircle.textContent = count;
+      await wait(250);
+      return new Promise(resolve => {
+        state.countdownTimer = setInterval(async () => {
+          count -= 1;
+          if (count <= 0) {
+            clearInterval(state.countdownTimer);
+            els.countdownCircle.style.display = 'none';
+            await callback();
+            resolve();
+            return;
+          }
+          els.countdownCircle.textContent = count;
+        }, 800);
+      });
+    }
+
+    function startVideoRecording() {
+      if (!state.stream || state.isRecording) return;
+      state.recordedChunks = [];
+      try {
+        state.mediaRecorder = new MediaRecorder(state.stream, { mimeType: getSupportedMimeType() });
+      } catch {
+        state.mediaRecorder = new MediaRecorder(state.stream);
+      }
+      state.mediaRecorder.ondataavailable = event => {
+        if (event.data && event.data.size) state.recordedChunks.push(event.data);
+      };
+      state.mediaRecorder.onstop = handleVideoStopped;
+      state.mediaRecorder.start(250);
+      state.isRecording = true;
+      state.recordingStartedAt = Date.now();
+      els.startStopBtn.textContent = 'Stop';
+      els.recordingChip.classList.add('recording');
+      updateRingProgress(0);
+      state.recordingTimer = setInterval(() => {
+        const elapsed = Math.floor((Date.now() - state.recordingStartedAt) / 1000);
+        els.timerText.textContent = formatTime(elapsed);
+        const progress = Math.min(elapsed / Number(state.settings.maxDuration), 1);
+        updateRingProgress(progress);
+        if (elapsed >= Number(state.settings.maxDuration)) stopRecording();
+      }, 200);
+    }
+
+    function stopRecording() {
+      if (!state.mediaRecorder || !state.isRecording) return;
+      state.mediaRecorder.stop();
+      state.isRecording = false;
+      clearInterval(state.recordingTimer);
+      els.startStopBtn.textContent = 'Start';
+      els.recordingChip.classList.remove('recording');
+      updateRingProgress(0);
+    }
+
+    function handleVideoStopped() {
+      const blob = new Blob(state.recordedChunks, { type: state.recordedChunks[0]?.type || 'video/webm' });
+      const url = URL.createObjectURL(blob);
+      state.currentCapture = {
+        type: 'video',
+        prompt: state.settings.prompts[state.currentPromptIndex],
+        blob,
+        previewUrl: url,
+        guestName: '',
+        guestEmail: '',
+        guestbookMessage: '',
+        createdAt: new Date().toISOString()
+      };
+      showPreview();
+    }
+
+    async function capturePhotoFlow() {
+      if (!state.stream) return;
+      if (state.settings.burstMode) {
+        state.burstPhotos = [];
+        els.burstStrip.innerHTML = '';
+        for (let i = 0; i < 3; i += 1) {
+          const dataUrl = takeStillPhoto();
+          state.burstPhotos.push(dataUrl);
+          addBurstThumb(dataUrl);
+          await wait(350);
+        }
+        state.currentCapture = {
+          type: 'photo-burst',
+          prompt: state.settings.prompts[state.currentPromptIndex],
+          photos: [...state.burstPhotos],
+          previewUrl: state.burstPhotos[0],
+          guestName: '',
+          guestEmail: '',
+          guestbookMessage: '',
+          createdAt: new Date().toISOString()
+        };
+      } else {
+        const dataUrl = takeStillPhoto();
+        state.currentCapture = {
+          type: 'photo',
+          prompt: state.settings.prompts[state.currentPromptIndex],
+          previewUrl: dataUrl,
+          photos: [dataUrl],
+          guestName: '',
+          guestEmail: '',
+          guestbookMessage: '',
+          createdAt: new Date().toISOString()
+        };
+      }
+      showPreview();
+    }
+
+    function takeStillPhoto() {
+      const video = els.cameraFeed;
+      const canvas = els.photoCanvas;
+      const width = video.videoWidth || 1280;
+      const height = video.videoHeight || 720;
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.filter = state.bwEnabled ? 'grayscale(1)' : 'none';
+      ctx.drawImage(video, 0, 0, width, height);
+      return canvas.toDataURL('image/jpeg', 0.92);
+    }
+
+    function addBurstThumb(dataUrl) {
+      const wrap = document.createElement('div');
+      wrap.className = 'burst-thumb';
+      const img = document.createElement('img');
+      img.src = dataUrl;
+      img.alt = 'Captured photo';
+      wrap.appendChild(img);
+      els.burstStrip.appendChild(wrap);
+    }
+
+    function showPreview() {
+      showScreen('previewScreen');
+      els.capturedTypeLabel.textContent = state.currentCapture.type === 'video'
+        ? 'Video message'
+        : (state.currentCapture.type === 'photo-burst' ? 'Photo burst' : 'Photo');
+      resetPreviewStage();
+      if (state.currentCapture.type === 'video') {
+        const video = document.createElement('video');
+        video.className = 'captured-video';
+        video.src = state.currentCapture.previewUrl;
+        video.controls = true;
+        video.playsInline = true;
+        video.autoplay = true;
+        video.loop = true;
+        els.previewStage.appendChild(video);
+      } else if (state.currentCapture.type === 'photo-burst') {
+        const grid = document.createElement('div');
+        grid.style.display = 'grid';
+        grid.style.gridTemplateColumns = 'repeat(3, 1fr)';
+        grid.style.height = '100%';
+        grid.style.gap = '8px';
+        grid.style.padding = '8px';
+        state.currentCapture.photos.forEach(src => {
+          const img = document.createElement('img');
+          img.src = src;
+          img.className = 'captured-photo';
+          img.style.borderRadius = '20px';
+          grid.appendChild(img);
+        });
+        els.previewStage.appendChild(grid);
+      } else {
+        const img = document.createElement('img');
+        img.className = 'captured-photo';
+        img.src = state.currentCapture.previewUrl;
+        els.previewStage.appendChild(img);
+      }
+    }
+
+    function resetPreviewStage() {
+      els.previewStage.innerHTML = '';
+      els.burstStrip.innerHTML = '';
+    }
+
+    function retakeCapture() {
+      if (state.currentCapture?.previewUrl?.startsWith?.('blob:')) URL.revokeObjectURL(state.currentCapture.previewUrl);
+      state.currentCapture = null;
+      showScreen('cameraScreen');
+    }
+
+    function discardCapture() {
+      retakeCapture();
+      returnToBegin(true);
+    }
+
+    function handleUseCapture() {
+      if (state.settings.enableEmail) {
+        showScreen('emailScreen');
+        return;
+      }
+      if (state.settings.enableGuestbook) {
+        showScreen('guestbookScreen');
+        return;
+      }
+      finishFlow();
+    }
+
+    function handleEmailSubmit(event) {
+      event.preventDefault();
+      if (state.currentCapture) {
+        state.currentCapture.guestName = els.guestNameInput.value.trim();
+        state.currentCapture.guestEmail = els.guestEmailInput.value.trim();
+      }
+      goAfterEmail();
+    }
+
+    function goAfterEmail() {
+      if (state.settings.enableGuestbook) {
+        showScreen('guestbookScreen');
+      } else {
+        finishFlow();
+      }
+    }
+
+    function handleGuestbookSubmit(event) {
+      event.preventDefault();
+      if (!els.guestbookName.value.trim()) return;
+      if (state.currentCapture) {
+        state.currentCapture.guestName = state.currentCapture.guestName || els.guestbookName.value.trim();
+        state.currentCapture.guestbookName = els.guestbookName.value.trim();
+        state.currentCapture.guestbookMessage = els.guestbookMessage.value.trim();
+      }
+      finishFlow();
+    }
+
+    async function finishFlow() {
+      if (!state.currentCapture) {
+        returnToBegin(true);
+        return;
+      }
+
+      state.sessions.unshift({
+        id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
+        type: state.currentCapture.type,
+        prompt: state.currentCapture.prompt,
+        createdAt: state.currentCapture.createdAt,
+        guestName: state.currentCapture.guestName || state.currentCapture.guestbookName || '',
+        guestEmail: state.currentCapture.guestEmail || '',
+        guestbookMessage: state.currentCapture.guestbookMessage || '',
+        previewUrl: state.currentCapture.type === 'video' ? '(blob video not exported)' : state.currentCapture.previewUrl,
+        photoCount: state.currentCapture.photos ? state.currentCapture.photos.length : 0
+      });
+
+      persistSessions();
+      await uploadCurrentCapture();
+      updateSessionCount();
+      renderThankYouSummary();
+      showScreen('thankyouScreen');
+      startReturnCountdown();
+      clearTransientFormData();
+    }
+
+    function renderThankYouSummary() {
+      const rows = [
+        ['Type', state.currentCapture.type === 'video' ? 'Video' : (state.currentCapture.type === 'photo-burst' ? 'Photo burst' : 'Photo')],
+        ['Prompt', state.currentCapture.prompt],
+        ['Guest', state.currentCapture.guestName || state.currentCapture.guestbookName || 'Not provided'],
+        ['Email', state.currentCapture.guestEmail || 'Skipped'],
+        ['Upload URL', state.settings.scriptUrl ? 'Configured' : 'Not configured']
+      ];
+      els.sessionSummaryList.innerHTML = '';
+      rows.forEach(([label, value]) => {
+        const row = document.createElement('div');
+        row.className = 'status-row';
+        row.innerHTML = `<span class="status-label">${escapeHtml(label)}</span><span class="status-value">${escapeHtml(value)}</span>`;
+        els.sessionSummaryList.appendChild(row);
+      });
+    }
+
+    function startReturnCountdown() {
+      clearInterval(state.returnTimer);
+      let remaining = Number(state.settings.returnDelay || 8);
+      els.returnCountdownTag.textContent = `Returning in ${remaining} seconds`;
+      state.returnTimer = setInterval(() => {
+        remaining -= 1;
+        els.returnCountdownTag.textContent = `Returning in ${remaining} seconds`;
+        if (remaining <= 0) {
+          clearInterval(state.returnTimer);
+          returnToBegin(true);
+        }
+      }, 1000);
+    }
+
+    function returnToBegin(fullReset = false) {
+      clearInterval(state.returnTimer);
+      clearInterval(state.recordingTimer);
+      clearInterval(state.countdownTimer);
+      if (state.isRecording) stopRecording();
+      if (fullReset && state.currentCapture?.previewUrl?.startsWith?.('blob:')) URL.revokeObjectURL(state.currentCapture.previewUrl);
+      state.currentCapture = null;
+      state.burstPhotos = [];
+      clearTransientFormData();
+      showScreen('beginScreen');
+      updatePrompt();
+    }
+
+    function clearTransientFormData() {
+      els.guestNameInput.value = '';
+      els.guestEmailInput.value = '';
+      els.guestbookName.value = '';
+      els.guestbookMessage.value = '';
+    }
+
+    function openAdmin() {
+      els.adminBackdrop.classList.add('open');
+      els.adminPinInput.focus();
+    }
+
+    function closeAdmin() {
+      els.adminBackdrop.classList.remove('open');
+    }
+
+    function unlockAdmin() {
+      const value = els.adminPinInput.value.trim();
+      if (value !== state.settings.pin) {
+        alert('Incorrect pin.');
+        return;
+      }
+      state.adminUnlocked = true;
+      els.adminPinArea.classList.add('hidden');
+      els.adminContent.classList.remove('hidden');
+    }
+
+    function lockAdmin() {
+      state.adminUnlocked = false;
+      els.adminPinArea.classList.remove('hidden');
+      els.adminContent.classList.add('hidden');
+      els.adminPinInput.value = '';
+      closeAdmin();
+    }
+
+    function saveAdminSettings() {
+      state.settings.eventName = els.adminEventName.value.trim() || defaultSettings.eventName;
+      state.settings.headline = els.adminHeadline.value.trim() || defaultSettings.headline;
+      state.settings.subheadline = els.adminSubheadline.value.trim() || defaultSettings.subheadline;
+      state.settings.maxDuration = clamp(Number(els.adminMaxDuration.value) || defaultSettings.maxDuration, 10, 300);
+      state.settings.returnDelay = clamp(Number(els.adminReturnDelay.value) || defaultSettings.returnDelay, 3, 60);
+      state.settings.enableVideo = els.adminEnableVideo.checked;
+      state.settings.enablePhoto = els.adminEnablePhoto.checked;
+      state.settings.enableEmail = els.adminEnableEmail.checked;
+      state.settings.enableGuestbook = els.adminEnableGuestbook.checked;
+      state.settings.enableBW = els.adminEnableBW.checked;
+      state.settings.burstMode = els.adminBurstMode.checked;
+      state.settings.scriptUrl = els.adminScriptUrl.value.trim();
+      state.settings.deviceName = els.adminDeviceName.value.trim() || 'iPad 1';
+      state.settings.prompts = els.adminPrompts.value.split('\n').map(v => v.trim()).filter(Boolean);
+      if (!state.settings.prompts.length) state.settings.prompts = [...(defaultThemes[state.settings.theme] || defaultThemes.General)];
+      if (!state.settings.enableVideo && !state.settings.enablePhoto) state.settings.enableVideo = true;
+      state.currentMode = getFirstEnabledMode(state.currentMode);
+      state.settings.lastMode = state.currentMode;
+      state.currentPromptIndex = 0;
+      persistSettings();
+      hydrateFromSettings();
+      renderModeButtons();
+      renderThemeButtons();
+      lockAdmin();
+    }
+
+    function updateSessionCount() {
+      els.savedSessionCount.textContent = String(state.sessions.length);
+    }
+
+    function exportSessions() {
+      const data = JSON.stringify(state.sessions, null, 2);
+      const blob = new Blob([data], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'storybooth-sessions.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function clearSessions() {
+      if (!confirm('Clear all locally saved session data?')) return;
+      state.sessions = [];
+      persistSessions();
+      updateSessionCount();
+    }
+
+    async function uploadCurrentCapture() {
+      if (!state.settings.scriptUrl || !state.currentCapture) return;
+      try {
+        const payload = {
+          eventName: state.settings.eventName,
+          theme: state.settings.theme,
+          prompt: state.currentCapture.prompt,
+          type: state.currentCapture.type,
+          guestName: state.currentCapture.guestName || state.currentCapture.guestbookName || '',
+          guestEmail: state.currentCapture.guestEmail || '',
+          guestbookMessage: state.currentCapture.guestbookMessage || '',
+          deviceName: state.settings.deviceName || 'iPad 1',
+          createdAt: state.currentCapture.createdAt,
+          files: []
+        };
+
+        if (state.currentCapture.type === 'video' && state.currentCapture.blob) {
+          payload.files.push({
+            folder: 'Videos',
+            filename: makeFilename('video', 'webm'),
+            mimeType: state.currentCapture.blob.type || 'video/webm',
+            data: await blobToBase64(state.currentCapture.blob)
+          });
+        }
+
+        if ((state.currentCapture.type === 'photo' || state.currentCapture.type === 'photo-burst') && state.currentCapture.photos) {
+          state.currentCapture.photos.forEach((src, index) => {
+            payload.files.push({
+              folder: 'Photos',
+              filename: makeFilename(`photo-${index + 1}`, 'jpg'),
+              mimeType: 'image/jpeg',
+              data: src.split(',')[1]
+            });
+          });
+        }
+
+        const response = await fetch(state.settings.scriptUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await response.text();
+        console.log('Upload result:', result);
+      } catch (error) {
+        console.error('Upload failed', error);
+      }
+    }
+
+    function makeFilename(label, ext) {
+      const safeEvent = (state.settings.eventName || 'event').replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '').toLowerCase();
+      const safeDevice = (state.settings.deviceName || 'device').replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '').toLowerCase();
+      const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+      return `${safeEvent}-${safeDevice}-${label}-${stamp}.${ext}`;
+    }
+
+    function blobToBase64(blob) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const result = String(reader.result || '');
+          resolve(result.split(',')[1] || '');
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    }
+
+    function toggleBW() {
+      if (!state.settings.enableBW) return;
+      state.bwEnabled = !state.bwEnabled;
+      updateCameraModeUI();
+    }
+
+    function updateRingProgress(progress) {
+      const deg = Math.round(progress * 360);
+      els.ringProgress.style.background = `conic-gradient(var(--accent) ${deg}deg, rgba(255,255,255,0.14) ${deg}deg)`;
+    }
+
+    function getSupportedMimeType() {
+      const types = ['video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'];
+      return types.find(type => window.MediaRecorder && MediaRecorder.isTypeSupported(type)) || '';
+    }
+
+    function wait(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+    function clamp(num, min, max) { return Math.min(Math.max(num, min), max); }
+    function formatTime(seconds) {
+      const mins = String(Math.floor(seconds / 60)).padStart(2, '0');
+      const secs = String(seconds % 60).padStart(2, '0');
+      return `${mins}:${secs}`;
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+    }
+  </script>
+</body>
+</html>
