@@ -2,9 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>StoryBooth</title>
-
 <style>
 :root {
   --bg: #f3f2ef;
@@ -13,146 +12,123 @@
   --muted: #6b6b6b;
   --line: #e5e5e5;
   --accent: #3a3a3a;
+  --accent-soft: #7a8a96;
   --danger: #b84c4c;
 }
-
-body {
+* { box-sizing: border-box; }
+html, body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  width: 100%;
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   background: var(--bg);
   color: var(--text);
-  display: flex;
+}
+body {
+  overflow: hidden;
+}
+button, input, textarea {
+  font: inherit;
+}
+.screen {
+  position: fixed;
+  inset: 0;
+  display: none;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  padding: 24px;
 }
-
-.screen {
-  display: none;
-  width: 100%;
-  max-width: 600px;
-  text-align: center;
-  padding: 40px 20px;
+.screen.active {
+  display: flex;
 }
-
-.active {
-  display: block;
+.stage {
+  width: min(920px, 100%);
 }
-
-h1 {
-  font-size: 32px;
-  margin-bottom: 10px;
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  padding: 28px;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.05);
 }
-
 .eyebrow-kiosk {
   display: inline-block;
   font-size: 12px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--muted);
-  margin-bottom: 18px;
+  margin-bottom: 16px;
 }
-
-.attract-inner {
-  position: relative;
-  z-index: 2;
-}
-
-.attract-title {
-  font-size: clamp(36px, 6vw, 62px);
+h1 {
+  font-size: clamp(32px, 5vw, 56px);
   letter-spacing: -0.04em;
-  margin-bottom: 14px;
+  margin: 0 0 12px;
 }
-
-.attract-subtitle {
-  font-size: 20px;
-  max-width: 460px;
-  margin: 0 auto;
+.section-title {
+  font-size: clamp(28px, 4vw, 42px);
+  letter-spacing: -0.03em;
+  margin: 0 0 10px;
 }
-
+p, .section-sub {
+  color: var(--muted);
+  font-size: 18px;
+  margin: 0;
+}
+.attract-wrap {
+  position: relative;
+  text-align: center;
+  padding: 48px 24px;
+}
 .attract-glow {
   position: absolute;
   inset: 50% auto auto 50%;
-  width: 320px;
-  height: 320px;
+  width: 340px;
+  height: 340px;
   background: radial-gradient(circle, rgba(122,138,150,0.14) 0%, rgba(122,138,150,0.06) 45%, transparent 72%);
   transform: translate(-50%, -50%);
   animation: driftGlow 7s ease-in-out infinite;
   pointer-events: none;
 }
-
+.attract-inner {
+  position: relative;
+  z-index: 1;
+}
 @keyframes driftGlow {
   0% { transform: translate(-50%, -50%) scale(1); opacity: 0.7; }
   50% { transform: translate(-50%, -52%) scale(1.08); opacity: 1; }
   100% { transform: translate(-50%, -50%) scale(1); opacity: 0.7; }
 }
-
-.countdown-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(243, 242, 239, 0.84);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 12px;
-  z-index: 4;
-  backdrop-filter: blur(4px);
-}
-
-.countdown-number {
-  font-size: clamp(84px, 14vw, 150px);
-  font-weight: 700;
-  letter-spacing: -0.06em;
-  color: var(--accent);
-  animation: pulseCount 0.9s ease;
-}
-
-@keyframes pulseCount {
-  0% { transform: scale(0.85); opacity: 0.35; }
-  100% { transform: scale(1); opacity: 1; }
-}
-
-p {
-  color: var(--muted);
-  font-size: 18px;
-}
-
 button {
-  margin-top: 30px;
-  padding: 14px 28px;
-  font-size: 16px;
+  appearance: none;
   border: none;
   background: var(--accent);
   color: white;
-  border-radius: 8px;
+  border-radius: 12px;
+  padding: 14px 26px;
+  cursor: pointer;
+  margin-top: 22px;
 }
-
-button:disabled {
-  opacity: 0.45;
-}
-
 button.secondary {
-  background: transparent;
+  background: white;
   color: var(--accent);
   border: 1px solid var(--line);
 }
-
+button:disabled {
+  opacity: .45;
+  cursor: default;
+}
+.button-row {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 18px;
+}
 .prompt-shell {
-  max-width: 760px;
+  max-width: 780px;
   margin: 0 auto;
+  text-align: center;
 }
-
-.prompt-title {
-  font-size: clamp(34px, 5vw, 52px);
-  letter-spacing: -0.04em;
-  margin-bottom: 10px;
-}
-
-.prompt-subtitle {
-  font-size: 18px;
-  margin-bottom: 26px;
-}
-
 .prompt-card-wrap {
   display: grid;
   grid-template-columns: 72px 1fr 72px;
@@ -160,7 +136,6 @@ button.secondary {
   align-items: center;
   margin: 26px 0 18px;
 }
-
 .prompt-card {
   background: var(--panel);
   border: 1px solid var(--line);
@@ -168,7 +143,6 @@ button.secondary {
   padding: 18px;
   box-shadow: 0 14px 34px rgba(0,0,0,0.04);
 }
-
 .prompt-card-label {
   font-size: 12px;
   letter-spacing: 0.2em;
@@ -176,18 +150,15 @@ button.secondary {
   color: var(--muted);
   margin-bottom: 14px;
 }
-
 .prompt-box {
   border: 1px solid var(--line);
   padding: 34px;
   border-radius: 14px;
-  margin: 0;
   font-size: clamp(24px, 4vw, 34px);
   line-height: 1.2;
   letter-spacing: -0.03em;
   background: #fbfbfa;
 }
-
 .prompt-arrow {
   width: 72px;
   height: 72px;
@@ -200,218 +171,225 @@ button.secondary {
   border: 1px solid var(--line);
   box-shadow: 0 10px 24px rgba(0,0,0,0.03);
 }
-
 .prompt-meta {
   color: var(--muted);
   font-size: 14px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  margin-bottom: 10px;
 }
-
+.camera-panel {
+  text-align: center;
+}
+.video-wrap {
+  position: relative;
+  margin-top: 18px;
+}
+video {
+  width: 100%;
+  max-height: 58vh;
+  background: #ddd;
+  border-radius: 16px;
+  display: block;
+}
+#playback {
+  margin-top: 18px;
+}
+.countdown-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(243, 242, 239, 0.84);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  z-index: 4;
+  backdrop-filter: blur(4px);
+}
+.countdown-number {
+  font-size: clamp(84px, 14vw, 150px);
+  font-weight: 700;
+  letter-spacing: -0.06em;
+  color: var(--accent);
+  animation: pulseCount 0.9s ease;
+}
+@keyframes pulseCount {
+  0% { transform: scale(0.85); opacity: 0.35; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.timer-text {
+  font-size: 18px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+textarea, input {
+  width: 100%;
+  padding: 14px;
+  margin-top: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  font-size: 16px;
+  background: #fafafa;
+}
+textarea {
+  min-height: 130px;
+  resize: vertical;
+}
 @media (max-width: 680px) {
   .prompt-card-wrap {
     grid-template-columns: 56px 1fr 56px;
     gap: 10px;
   }
-
   .prompt-arrow {
     width: 56px;
     height: 56px;
     font-size: 28px;
   }
-
   .prompt-box {
     padding: 24px;
     font-size: clamp(22px, 6vw, 30px);
   }
-}
-
-video {
-  width: 100%;
-  border-radius: 12px;
-}
-
-textarea, input {
-  width: 100%;
-  padding: 14px;
-  margin-top: 10px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  font-size: 16px;
-  background: #fafafa;
-}
-
-.panel {
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  padding: 28px;
-  box-shadow: 0 14px 34px rgba(0,0,0,0.05);
-}
-
-.section-title {
-  font-size: clamp(30px, 5vw, 44px);
-  letter-spacing: -0.03em;
-  margin-bottom: 10px;
-}
-
-.section-sub {
-  color: var(--muted);
-  font-size: 18px;
-  margin-bottom: 18px;
-}
-
-.button-row {
-  display: flex;
-  gap: 14px;
-  justify-content: center;
-  flex-wrap: wrap;
+  .panel {
+    padding: 20px;
+  }
 }
 </style>
 </head>
-
 <body>
 
-<!-- ATTRACT SCREEN -->
 <div id="attract" class="screen active">
-  <div class="attract-glow"></div>
-  <div class="attract-inner">
-    <div class="eyebrow-kiosk">StoryBooth</div>
-    <h1 class="attract-title">Become part of the story</h1>
-    <p class="attract-subtitle">Leave a message to be remembered</p>
-    <button onclick="startBooth()">Begin</button>
+  <div class="stage panel attract-wrap">
+    <div class="attract-glow"></div>
+    <div class="attract-inner">
+      <div class="eyebrow-kiosk">StoryBooth</div>
+      <h1>Become part of the story</h1>
+      <p>Leave a message to be remembered.</p>
+      <button id="beginButton" type="button">Begin</button>
+    </div>
   </div>
 </div>
 
-<!-- PROMPT SCREEN -->
 <div id="prompt" class="screen">
-  <div class="prompt-shell">
+  <div class="stage prompt-shell">
     <div class="eyebrow-kiosk">Prompt</div>
-    <h1 class="prompt-title">Share something meaningful</h1>
-    <p class="prompt-subtitle">Choose a question and take a moment before you begin.</p>
-
+    <h1 class="section-title">Share something meaningful</h1>
+    <p class="section-sub">Choose a question and take a moment before you begin.</p>
     <div class="prompt-card-wrap">
-      <button class="prompt-arrow" onclick="prevPrompt()" aria-label="Previous prompt">‹</button>
+      <button class="prompt-arrow" id="prevPromptButton" type="button" aria-label="Previous prompt">‹</button>
       <div class="prompt-card">
         <div class="prompt-card-label">Tonight’s question</div>
         <div class="prompt-box" id="promptText"></div>
       </div>
-      <button class="prompt-arrow" onclick="nextPrompt()" aria-label="Next prompt">›</button>
+      <button class="prompt-arrow" id="nextPromptButton" type="button" aria-label="Next prompt">›</button>
     </div>
-
     <div class="prompt-meta" id="promptMeta">1 of 5</div>
-    <button onclick="goCamera()">Continue</button>
+    <button id="continueToCameraButton" type="button">Continue</button>
   </div>
 </div>
 
-<!-- CAMERA SCREEN -->
 <div id="camera" class="screen">
-  <h1>Recording</h1>
-  <div id="countdownOverlay" class="countdown-overlay" style="display:none;">
-    <div id="countdown" class="countdown-number">3</div>
+  <div class="stage panel camera-panel">
+    <div class="eyebrow-kiosk">Camera</div>
+    <h1 class="section-title">Recording</h1>
+    <div class="timer-text" id="recordingTimer">Max 60 seconds</div>
+    <div class="video-wrap">
+      <div id="countdownOverlay" class="countdown-overlay">
+        <div id="countdown" class="countdown-number">3</div>
+      </div>
+      <video id="video" autoplay muted playsinline></video>
+    </div>
+    <div class="button-row">
+      <button id="startButton" type="button">Start</button>
+      <button id="stopButton" class="secondary" type="button" disabled>Stop</button>
+    </div>
   </div>
-  <div id="recordingTimer" style="font-size:18px; color:var(--muted); margin-bottom:16px;">Max 60 seconds</div>
-  <video id="video" autoplay muted playsinline></video>
-  <button id="startButton" onclick="beginCountdown()">Start</button>
-  <button id="stopButton" class="secondary" onclick="stopRecording()">Stop</button>
 </div>
 
-<!-- REVIEW -->
 <div id="review" class="screen">
-  <div class="panel">
+  <div class="stage panel">
     <div class="eyebrow-kiosk">Review</div>
     <h1 class="section-title">Keep this video?</h1>
     <p class="section-sub">You can watch it back before deciding.</p>
-    <video id="playback" controls></video>
+    <video id="playback" controls playsinline></video>
     <div class="button-row">
-      <button onclick="acceptVideo()">Keep Video</button>
-      <button class="secondary" onclick="retake()">Record Again</button>
+      <button id="keepVideoButton" type="button">Keep Video</button>
+      <button id="recordAgainButton" class="secondary" type="button">Record Again</button>
     </div>
   </div>
 </div>
 
-<!-- GUESTBOOK -->
 <div id="guestbook" class="screen">
-  <div class="panel">
+  <div class="stage panel">
     <div class="eyebrow-kiosk">Guestbook</div>
     <h1 class="section-title">Leave a written message</h1>
     <p class="section-sub">This will be saved along with your video.</p>
     <textarea id="message" placeholder="Write something meaningful..."></textarea>
     <input id="name" placeholder="Your name (optional)" />
     <div class="button-row">
-      <button onclick="goEmail()">Continue</button>
+      <button id="continueToEmailButton" type="button">Continue</button>
     </div>
   </div>
 </div>
 
-<!-- EMAIL -->
 <div id="email" class="screen">
-  <div class="panel">
+  <div class="stage panel">
     <div class="eyebrow-kiosk">Delivery</div>
     <h1 class="section-title">Receive your video</h1>
     <p class="section-sub">Enter your email if you'd like a copy.</p>
     <input id="emailInput" placeholder="Email address (optional)" />
     <div class="button-row">
-      <button onclick="finish()">Finish</button>
+      <button id="finishButton" type="button">Finish</button>
     </div>
   </div>
 </div>
 
-<!-- THANK YOU -->
 <div id="thankyou" class="screen">
-  <div class="panel">
+  <div class="stage panel" style="text-align:center;">
     <div class="eyebrow-kiosk">Complete</div>
     <h1 class="section-title">Thank you</h1>
     <p class="section-sub">You are now part of their story.</p>
   </div>
 </div>
-<div id="thankyou" class="screen">
-  <h1>Thank you</h1>
-  <p>You are now part of their story</p>
-</div>
 
 <script>
-const STORAGE_KEY = 'storybooth_local_event_data_v1';
+const STORAGE_KEY = 'storybooth_local_event_data_v2';
 
-let prompts = [
-  "What do you admire most about them?",
-  "Share a favorite memory.",
-  "What advice would you give them?",
-  "What should they remember years from now?",
-  "Say something you've never said before."
+const prompts = [
+  'What do you admire most about them?',
+  'Share a favorite memory.',
+  'What advice would you give them?',
+  'What should they remember years from now?',
+  'Say something you have never said before.'
 ];
 
 let currentPrompt = 0;
-let mediaRecorder;
-let recordedBlob;
-let guestbookEntries = loadEventData().guestbookEntries || [];
-let emailEntries = loadEventData().emailEntries || [];
-let lastVideoURL = null;
+let mediaRecorder = null;
+let recordedBlob = null;
 let lastVideoBlob = null;
+let lastVideoURL = null;
 let maxRecordingSeconds = 60;
-let recordingInterval;
-let recordingStartedAt;
-let countdownInterval;
+let recordingInterval = null;
+let recordingStartedAt = 0;
+let countdownInterval = null;
 let isRecording = false;
+let currentStream = null;
 
-function show(screen) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(screen).classList.add('active');
+const persisted = loadEventData();
+let guestbookEntries = persisted.guestbookEntries || [];
+let emailEntries = persisted.emailEntries || [];
+
+function $(id) {
+  return document.getElementById(id);
 }
 
-function startBooth() {
-  show('prompt');
-  updatePrompt();
+function show(screenId) {
+  ['attract','prompt','camera','review','guestbook','email','thankyou'].forEach(id => {
+    $(id).classList.toggle('active', id === screenId);
+  });
 }
 
 function updatePrompt() {
-  const prompt = prompts[currentPrompt];
-  document.getElementById('promptText').innerText = prompt;
-  const promptMeta = document.getElementById('promptMeta');
-  if (promptMeta) {
-    promptMeta.innerText = `${currentPrompt + 1} of ${prompts.length}`;
-  }
+  $('promptText').innerText = prompts[currentPrompt];
+  $('promptMeta').innerText = `${currentPrompt + 1} of ${prompts.length}`;
 }
 
 function nextPrompt() {
@@ -424,90 +402,102 @@ function prevPrompt() {
   updatePrompt();
 }
 
+function startBooth() {
+  updatePrompt();
+  show('prompt');
+}
+
 async function goCamera() {
   show('camera');
-  const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-  document.getElementById('video').srcObject = stream;
-  window.stream = stream;
+  $('recordingTimer').innerText = `Max ${maxRecordingSeconds} seconds`;
+  $('stopButton').disabled = true;
+  await openCamera();
+}
+
+async function openCamera() {
+  if (currentStream) {
+    $('video').srcObject = currentStream;
+    return;
+  }
+  try {
+    currentStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    $('video').srcObject = currentStream;
+    await $('video').play().catch(() => {});
+  } catch (error) {
+    alert('Camera and microphone access are required.');
+    console.error(error);
+    show('attract');
+  }
 }
 
 function beginCountdown() {
   if (isRecording) return;
-
   let count = 3;
-  const countdownEl = document.getElementById('countdown');
-  const overlayEl = document.getElementById('countdownOverlay');
-  const startButton = document.getElementById('startButton');
-  const stopButton = document.getElementById('stopButton');
-
-  startButton.disabled = true;
-  stopButton.disabled = true;
-  overlayEl.style.display = 'flex';
-  countdownEl.innerText = count;
-  countdownEl.style.animation = 'none';
-  void countdownEl.offsetWidth;
-  countdownEl.style.animation = 'pulseCount 0.9s ease';
-
+  $('startButton').disabled = true;
+  $('stopButton').disabled = true;
+  $('countdownOverlay').style.display = 'flex';
+  $('countdown').innerText = count;
+  restartCountdownAnimation();
   clearInterval(countdownInterval);
   countdownInterval = setInterval(() => {
-    count--;
+    count -= 1;
     if (count > 0) {
-      countdownEl.innerText = count;
-      countdownEl.style.animation = 'none';
-      void countdownEl.offsetWidth;
-      countdownEl.style.animation = 'pulseCount 0.9s ease';
+      $('countdown').innerText = count;
+      restartCountdownAnimation();
     } else {
       clearInterval(countdownInterval);
-      overlayEl.style.display = 'none';
-      stopButton.disabled = false;
+      $('countdownOverlay').style.display = 'none';
+      $('stopButton').disabled = false;
       startRecording();
     }
   }, 1000);
 }
 
+function restartCountdownAnimation() {
+  $('countdown').style.animation = 'none';
+  void $('countdown').offsetWidth;
+  $('countdown').style.animation = 'pulseCount 0.9s ease';
+}
+
+function getBestMimeType() {
+  const options = ['video/mp4', 'video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm'];
+  return options.find(type => window.MediaRecorder && MediaRecorder.isTypeSupported(type)) || '';
+}
+
 function startRecording() {
-  if (!window.stream || isRecording) return;
-
-  let chunks = [];
-  const timerEl = document.getElementById('recordingTimer');
-  const startButton = document.getElementById('startButton');
-  const stopButton = document.getElementById('stopButton');
-
+  if (!currentStream || isRecording) return;
+  const chunks = [];
   const mimeType = getBestMimeType();
-  mediaRecorder = mimeType ? new MediaRecorder(window.stream, { mimeType }) : new MediaRecorder(window.stream);
+  mediaRecorder = mimeType ? new MediaRecorder(currentStream, { mimeType }) : new MediaRecorder(currentStream);
   isRecording = true;
 
-  mediaRecorder.ondataavailable = e => {
-    if (e.data && e.data.size > 0) chunks.push(e.data);
+  mediaRecorder.ondataavailable = event => {
+    if (event.data && event.data.size > 0) chunks.push(event.data);
   };
 
   mediaRecorder.onstop = () => {
     clearInterval(recordingInterval);
     isRecording = false;
-    startButton.disabled = false;
-    stopButton.disabled = true;
-    timerEl.innerText = `Max ${maxRecordingSeconds} seconds`;
-    recordedBlob = new Blob(chunks, { type: mediaRecorder.mimeType || getBestMimeType() || 'video/mp4' });
+    $('startButton').disabled = false;
+    $('stopButton').disabled = true;
+    $('recordingTimer').innerText = `Max ${maxRecordingSeconds} seconds`;
+
+    recordedBlob = new Blob(chunks, { type: mediaRecorder.mimeType || mimeType || 'video/mp4' });
     lastVideoBlob = recordedBlob;
-    const url = URL.createObjectURL(recordedBlob);
-    lastVideoURL = url;
-    const playback = document.getElementById('playback');
-    playback.src = url;
-    playback.load();
+    if (lastVideoURL) URL.revokeObjectURL(lastVideoURL);
+    lastVideoURL = URL.createObjectURL(recordedBlob);
+    $('playback').src = lastVideoURL;
+    $('playback').load();
     show('review');
   };
 
   mediaRecorder.start();
   recordingStartedAt = Date.now();
-
   recordingInterval = setInterval(() => {
     const elapsed = Math.floor((Date.now() - recordingStartedAt) / 1000);
     const remaining = Math.max(maxRecordingSeconds - elapsed, 0);
-    timerEl.innerText = `Time remaining: ${remaining}s`;
-
-    if (remaining <= 0) {
-      stopRecording();
-    }
+    $('recordingTimer').innerText = `Time remaining: ${remaining}s`;
+    if (remaining <= 0) stopRecording();
   }, 250);
 }
 
@@ -521,16 +511,15 @@ function acceptVideo() {
 }
 
 function retake() {
-  document.getElementById('recordingTimer').innerText = `Max ${maxRecordingSeconds} seconds`;
-  document.getElementById('countdownOverlay').style.display = 'none';
-  document.getElementById('stopButton').disabled = true;
+  $('recordingTimer').innerText = `Max ${maxRecordingSeconds} seconds`;
+  $('countdownOverlay').style.display = 'none';
+  $('stopButton').disabled = true;
   show('camera');
 }
 
 function goEmail() {
-  const message = document.getElementById('message').value.trim();
-  const name = document.getElementById('name').value.trim();
-
+  const message = $('message').value.trim();
+  const name = $('name').value.trim();
   guestbookEntries.push({
     name,
     message,
@@ -542,9 +531,8 @@ function goEmail() {
 }
 
 function finish() {
-  const email = document.getElementById('emailInput').value.trim();
-  const name = document.getElementById('name').value.trim();
-
+  const email = $('emailInput').value.trim();
+  const name = $('name').value.trim();
   if (email) {
     emailEntries.push({
       name,
@@ -552,21 +540,18 @@ function finish() {
       time: new Date().toLocaleString()
     });
   }
-
   saveEventData();
   show('thankyou');
-
   setTimeout(() => {
     resetFormFields();
     show('attract');
   }, 4000);
 }
+
 function resetFormFields() {
-  document.getElementById('message').value = '';
-  document.getElementById('name').value = '';
-  document.getElementById('emailInput').value = '';
-  document.getElementById('playback').removeAttribute('src');
-  document.getElementById('playback').load();
+  $('message').value = '';
+  $('name').value = '';
+  $('emailInput').value = '';
 }
 
 function saveEventData() {
@@ -581,22 +566,32 @@ function loadEventData() {
   }
 }
 
+function downloadFile(content, fileName, type) {
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = fileName;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 500);
+}
+
+function escapeCsv(value) {
+  return String(value || '').replaceAll('"', '""');
+}
+
 function exportGuestbook() {
-  let csv = 'Name,Message,Prompt,Time
-';
-  guestbookEntries.forEach(e => {
-    csv += `"${escapeCsv(e.name)}","${escapeCsv(e.message)}","${escapeCsv(e.prompt)}","${escapeCsv(e.time)}"
-`;
+  let csv = 'Name,Message,Prompt,Time\n';
+  guestbookEntries.forEach(entry => {
+    csv += `"${escapeCsv(entry.name)}","${escapeCsv(entry.message)}","${escapeCsv(entry.prompt)}","${escapeCsv(entry.time)}"\n`;
   });
   downloadFile(csv, 'guestbook.csv', 'text/csv');
 }
 
 function exportEmails() {
-  let csv = 'Name,Email,Time
-';
-  emailEntries.forEach(e => {
-    csv += `"${escapeCsv(e.name)}","${escapeCsv(e.email)}","${escapeCsv(e.time)}"
-`;
+  let csv = 'Name,Email,Time\n';
+  emailEntries.forEach(entry => {
+    csv += `"${escapeCsv(entry.name)}","${escapeCsv(entry.email)}","${escapeCsv(entry.time)}"\n`;
   });
   downloadFile(csv, 'emails.csv', 'text/csv');
 }
@@ -612,62 +607,7 @@ function downloadLastVideo() {
   a.href = url;
   a.download = `storybooth-video.${ext}`;
   a.click();
-}
-
-function downloadFile(content, fileName, type) {
-  const blob = new Blob([content], { type });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = fileName;
-  a.click();
-}
-
-function escapeCsv(value) {
-  return String(value || '').replaceAll('"', '""');
-}
-
-function getBestMimeType() {
-  const options = ['video/mp4', 'video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm'];
-  return options.find(type => window.MediaRecorder && MediaRecorder.isTypeSupported(type)) || '';
-}
-
-let tapCount = 0;
-let tapTimer;
-document.addEventListener('click', function(e) {
-  if (e.clientY < 80 && e.clientX < 80) {
-    tapCount++;
-    clearTimeout(tapTimer);
-    tapTimer = setTimeout(() => tapCount = 0, 1500);
-    if (tapCount >= 5) {
-      openOperatorPanel();
-      tapCount = 0;
-    }
-  }
-});
-
-function openOperatorPanel() {
-  if (document.getElementById('operatorPanel')) return;
-  const panel = document.createElement('div');
-  panel.id = 'operatorPanel';
-  panel.style.cssText = 'position:fixed;inset:0;background:#ffffff;z-index:9999;padding:20px;overflow:auto;font-family:-apple-system,BlinkMacSystemFont,sans-serif;';
-  panel.innerHTML = `
-    <h2>Operator Panel</h2>
-    <p style="color:#6b6b6b;">Export your current event data from this device.</p>
-    <div style="display:flex;gap:12px;flex-wrap:wrap;">
-      <button onclick="exportGuestbook()">Download Guestbook CSV</button>
-      <button onclick="exportEmails()">Download Email List CSV</button>
-      <button onclick="downloadLastVideo()">Download Last Video</button>
-      <button onclick="resetEventData()" class="secondary" style="color:#222;">Reset Event Data</button>
-    </div>
-    <br><button onclick="closeOperatorPanel()">Close</button>
-  `;
-  document.body.appendChild(panel);
-}
-
-function closeOperatorPanel() {
-  const panel = document.getElementById('operatorPanel');
-  if (panel) panel.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 500);
 }
 
 function resetEventData() {
@@ -676,8 +616,62 @@ function resetEventData() {
   saveEventData();
   alert('Event data cleared on this device.');
 }
-</script>
 
+let tapCount = 0;
+let tapTimer = null;
+function openOperatorPanel() {
+  if ($('operatorPanel')) return;
+  const panel = document.createElement('div');
+  panel.id = 'operatorPanel';
+  panel.style.cssText = 'position:fixed;inset:0;background:#ffffff;z-index:9999;padding:20px;overflow:auto;font-family:-apple-system,BlinkMacSystemFont,sans-serif;';
+  panel.innerHTML = `
+    <h2>Operator Panel</h2>
+    <p style="color:#6b6b6b;">Export your current event data from this device.</p>
+    <div style="display:flex;gap:12px;flex-wrap:wrap; margin-top:16px;">
+      <button id="exportGuestbookBtn" type="button">Download Guestbook CSV</button>
+      <button id="exportEmailsBtn" type="button">Download Email List CSV</button>
+      <button id="downloadLastVideoBtn" type="button">Download Last Video</button>
+      <button id="resetEventDataBtn" class="secondary" type="button" style="color:#222;border:1px solid #ddd;">Reset Event Data</button>
+    </div>
+    <br><button id="closeOperatorPanelBtn" type="button">Close</button>
+  `;
+  document.body.appendChild(panel);
+  $('exportGuestbookBtn').addEventListener('click', exportGuestbook);
+  $('exportEmailsBtn').addEventListener('click', exportEmails);
+  $('downloadLastVideoBtn').addEventListener('click', downloadLastVideo);
+  $('resetEventDataBtn').addEventListener('click', resetEventData);
+  $('closeOperatorPanelBtn').addEventListener('click', closeOperatorPanel);
+}
+
+function closeOperatorPanel() {
+  const panel = $('operatorPanel');
+  if (panel) panel.remove();
+}
+
+document.addEventListener('click', function(e) {
+  if (e.clientY < 80 && e.clientX < 80) {
+    tapCount += 1;
+    clearTimeout(tapTimer);
+    tapTimer = setTimeout(() => { tapCount = 0; }, 1500);
+    if (tapCount >= 5) {
+      openOperatorPanel();
+      tapCount = 0;
+    }
+  }
+});
+
+$('beginButton').addEventListener('click', startBooth);
+$('prevPromptButton').addEventListener('click', prevPrompt);
+$('nextPromptButton').addEventListener('click', nextPrompt);
+$('continueToCameraButton').addEventListener('click', goCamera);
+$('startButton').addEventListener('click', beginCountdown);
+$('stopButton').addEventListener('click', stopRecording);
+$('keepVideoButton').addEventListener('click', acceptVideo);
+$('recordAgainButton').addEventListener('click', retake);
+$('continueToEmailButton').addEventListener('click', goEmail);
+$('finishButton').addEventListener('click', finish);
+updatePrompt();
+</script>
 </body>
 </html>
 
