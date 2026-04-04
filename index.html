@@ -1,1661 +1,2378 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>StoryBooth</title>
-<style>
-:root {
-  --bg: #F3F7F4;
-  --panel: #FFFFFF;
-  --text: #1F2623;
-  --muted: #66736C;
-  --line: #D8E2DA;
-
-  --deep-green: #164A41;
-  --sage: #9DC88D;
-  --soft-sage: #DDE8D4;
-  --gold: #D4A84E;
-
-  --accent: var(--deep-green);
-  --accent-soft: var(--sage);
-  --danger: #B84C4C;
-  --shadow-soft: 0 20px 60px rgba(17, 45, 40, 0.10);
-}
-* { box-sizing: border-box; }
-
-html, body {
-  margin: 0;
-  width: 100%;
-  height: 100%;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background: var(--bg);
-  color: var(--text);
-}
-
-body {
-  overflow: hidden;
-  transition: background 0.35s ease, color 0.35s ease;
-}
-
-button, input, textarea, select { font: inherit; }
-
-.screen {
-  position: fixed;
-  inset: 0;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-}
-
-.screen.active { display: flex; }
-
-.stage { width: min(960px, 100%); }
-
-.panel {
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: 26px;
-  padding: 34px;
-  box-shadow: var(--shadow-soft);
-  position: relative;
-}
-
-.panel::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 26px;
-  pointer-events: none;
-  background: linear-gradient(120deg, rgba(212,168,78,0.06), transparent 42%, rgba(157,200,141,0.06));
-}
-
-.eyebrow-kiosk {
-  display: inline-block;
-  font-size: 12px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 16px;
-}
-
-h1 {
-  font-size: clamp(34px, 5vw, 58px);
-  letter-spacing: -0.04em;
-  margin: 0 0 12px;
-  font-weight: 500;
-}
-
-.section-title {
-  font-size: clamp(28px, 4vw, 42px);
-  letter-spacing: -0.03em;
-  margin: 0 0 10px;
-}
-
-p, .section-sub {
-  color: var(--muted);
-  font-size: 18px;
-  margin: 0;
-}
-
-.attract-wrap {
-  position: relative;
-  text-align: center;
-  padding: 48px 24px;
-  background:
-    radial-gradient(circle at 50% 28%, rgba(157,200,141,0.16), transparent 28%),
-    linear-gradient(145deg, #164A41 0%, #1F5A4E 100%);
-  color: #fff;
-  border-color: rgba(255,255,255,0.08);
-}
-
-.attract-wrap::after {
-  background: linear-gradient(120deg, rgba(212,168,78,0.10), transparent 40%, rgba(157,200,141,0.10));
-}
-
-.attract-glow {
-  position: absolute;
-  inset: 50% auto auto 50%;
-  width: 380px;
-  height: 380px;
-  background: radial-gradient(circle, rgba(157,200,141,0.20) 0%, rgba(157,200,141,0.08) 44%, transparent 72%);
-  transform: translate(-50%, -50%);
-  animation: driftGlow 7s ease-in-out infinite;
-  pointer-events: none;
-}
-
-.attract-inner { position: relative; z-index: 1; }
-
-#attractHeading {
-  color: #ffffff;
-}
-
-#attractSubheading {
-  color: rgba(255,255,255,0.82);
-}
-
-.attract-wrap .eyebrow-kiosk {
-  color: rgba(255,255,255,0.76);
-}
-
-.attract-wrap .meta-pill {
-  background: rgba(255,255,255,0.10);
-  border: 1px solid rgba(255,255,255,0.18);
-  color: rgba(255,255,255,0.88);
-}
-
-@keyframes driftGlow {
-  0% { transform: translate(-50%, -50%) scale(1); opacity: 0.7; }
-  50% { transform: translate(-50%, -52%) scale(1.08); opacity: 1; }
-  100% { transform: translate(-50%, -50%) scale(1); opacity: 0.7; }
-}
-
-button {
-  appearance: none;
-  border: none;
-  background: var(--accent);
-  color: white;
-  border-radius: 14px;
-  padding: 16px 28px;
-  cursor: pointer;
-  margin-top: 22px;
-  font-size: 16px;
-  letter-spacing: 0.04em;
-  box-shadow: 0 10px 25px rgba(22,74,65,0.14);
-  transition: all 0.25s ease;
-}
-
-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 14px 30px rgba(22,74,65,0.20);
-}
-
-button.secondary {
-  background: white;
-  color: var(--accent);
-  border: 1px solid var(--line);
-}
-
-button.danger {
-  background: var(--danger);
-}
-
-button:disabled {
-  opacity: .45;
-  cursor: default;
-  transform: none;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.04);
-}
-
-.button-row {
-  display: flex;
-  gap: 14px;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin-top: 18px;
-}
-
-.prompt-shell {
-  max-width: 780px;
-  margin: 0 auto;
-  text-align: center;
-}
-
-.prompt-card-wrap {
-  display: grid;
-  grid-template-columns: 72px 1fr 72px;
-  gap: 18px;
-  align-items: center;
-  margin: 26px 0 18px;
-}
-
-.prompt-card {
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  padding: 18px;
-  box-shadow: 0 14px 34px rgba(17,45,40,0.06);
-}
-
-.prompt-card-label {
-  font-size: 12px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 14px;
-}
-
-.prompt-box {
-  border: 1px solid var(--line);
-  padding: 40px;
-  border-radius: 16px;
-  font-size: clamp(26px, 4vw, 36px);
-  line-height: 1.3;
-  letter-spacing: -0.03em;
-  background: #FCFCF8;
-  box-shadow: inset 0 0 0 1px rgba(212,168,78,0.06);
-}
-
-.prompt-arrow {
-  width: 72px;
-  height: 72px;
-  margin-top: 0;
-  padding: 0;
-  font-size: 34px;
-  border-radius: 50%;
-  background: var(--panel);
-  color: var(--accent);
-  border: 1px solid var(--line);
-  box-shadow: 0 10px 24px rgba(17,45,40,0.05);
-}
-
-.prompt-meta {
-  color: var(--muted);
-  font-size: 14px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.camera-panel { text-align: center; }
-
-.video-wrap {
-  position: relative;
-  margin-top: 18px;
-}
-
-video, canvas, img.preview-image {
-  width: 100%;
-  max-height: 58vh;
-  background: #D7DDD8;
-  border-radius: 18px;
-  display: block;
-  object-fit: cover;
-  box-shadow: 0 20px 50px rgba(17,45,40,0.18);
-}
-
-#playback, #photoPreview { margin-top: 18px; }
-
-.countdown-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(248,247,242,0.88);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  border-radius: 18px;
-  z-index: 4;
-  backdrop-filter: blur(6px);
-}
-
-.countdown-number {
-  font-size: clamp(84px, 14vw, 150px);
-  font-weight: 700;
-  letter-spacing: -0.06em;
-  color: var(--accent);
-  animation: pulseCount 0.9s ease;
-}
-
-@keyframes pulseCount {
-  0% { transform: scale(0.85); opacity: 0.35; }
-  100% { transform: scale(1); opacity: 1; }
-}
-
-.record-status-wrap {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  margin: 10px 0 8px;
-}
-
-.progress-ring {
-  position: relative;
-  width: 118px;
-  height: 118px;
-}
-
-.progress-ring svg {
-  width: 118px;
-  height: 118px;
-  transform: rotate(-90deg);
-}
-
-.ring-track {
-  fill: none;
-  stroke: rgba(22,74,65,0.10);
-  stroke-width: 8;
-}
-
-.ring-progress {
-  fill: none;
-  stroke: var(--gold);
-  stroke-width: 8;
-  stroke-linecap: round;
-  stroke-dasharray: 326.73;
-  stroke-dashoffset: 326.73;
-  transition: stroke-dashoffset 0.2s linear, stroke 0.25s ease;
-}
-
-.ring-center {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  font-size: 13px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--muted);
-  padding: 18px;
-}
-
-body.recording .ring-progress {
-  stroke: #C65F5F;
-}
-
-.timer-text {
-  font-size: 18px;
-  color: var(--muted);
-  margin-bottom: 8px;
-}
-
-textarea, input, select {
-  width: 100%;
-  padding: 14px;
-  margin-top: 12px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  font-size: 16px;
-  background: #FAFAF7;
-  color: var(--text);
-}
-
-textarea {
-  min-height: 130px;
-  resize: vertical;
-}
-
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-  margin-top: 20px;
-}
-
-.form-grid .full { grid-column: 1 / -1; }
-
-label {
-  display: block;
-  font-size: 14px;
-  color: var(--muted);
-}
-
-.check-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-  margin-top: 14px;
-}
-
-.check-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 14px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: #FAFAF7;
-  color: var(--text);
-}
-
-.check-item input {
-  width: 18px;
-  height: 18px;
-  margin: 0;
-}
-
-.meta-strip {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin-top: 18px;
-}
-
-.meta-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  padding: 10px 16px;
-  background: rgba(255,255,255,0.90);
-  color: var(--muted);
-  font-size: 13px;
-  letter-spacing: 0.06em;
-}
-
-.mode-toggle {
-  display: inline-flex;
-  gap: 8px;
-  margin-top: 10px;
-  margin-bottom: 4px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.mode-chip {
-  margin-top: 0;
-  padding: 10px 16px;
-  border-radius: 999px;
-  border: 1px solid var(--line);
-  background: white;
-  color: var(--accent);
-}
-
-.mode-chip.active {
-  background: var(--gold);
-  color: var(--text);
-  border-color: rgba(212,168,78,0.6);
-  box-shadow: 0 8px 20px rgba(212,168,78,0.20);
-}
-
-.operator-fab {
-  position: fixed;
-  top: 14px;
-  right: 14px;
-  z-index: 20;
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.92);
-  color: var(--accent);
-  border: 1px solid var(--line);
-  box-shadow: 0 10px 24px rgba(17,45,40,0.08);
-  margin-top: 0;
-  padding: 0;
-  font-size: 22px;
-}
-
-.operator-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(17,45,40,0.28);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 18px;
-  z-index: 1000;
-}
-
-.operator-backdrop.open { display: flex; }
-
-.operator-panel {
-  width: min(980px, 100%);
-  max-height: 92vh;
-  overflow: auto;
-}
-
-.filter-none video,
-.filter-none #playback,
-.filter-none #photoPreview {
-  filter: none;
-}
-
-.filter-bw video,
-.filter-bw #playback,
-.filter-bw #photoPreview {
-  filter: grayscale(1) contrast(1.05);
-}
-
-.filter-warm video,
-.filter-warm #playback,
-.filter-warm #photoPreview {
-  filter: sepia(0.22) saturate(1.08) contrast(1.02) brightness(1.01);
-}
-
-.filter-soft video,
-.filter-soft #playback,
-.filter-soft #photoPreview {
-  filter: contrast(0.96) saturate(0.92) brightness(1.03);
-}
-
-@media (max-width: 760px) {
-  .prompt-card-wrap {
-    grid-template-columns: 56px 1fr 56px;
-    gap: 10px;
-  }
-
-  .prompt-arrow {
-    width: 56px;
-    height: 56px;
-    font-size: 28px;
-  }
-
-  .prompt-box {
-    padding: 24px;
-    font-size: clamp(22px, 6vw, 30px);
-  }
-
-  .panel { padding: 20px; }
-  .form-grid, .check-grid { grid-template-columns: 1fr; }
-}
-</style>
-</head>
-<body class="filter-none">
-
-<button id="openOperatorButton" class="operator-fab" type="button" aria-label="Open operator setup">⚙</button>
-
-<div id="attract" class="screen active">
-  <div class="stage panel attract-wrap">
-    <div class="attract-glow"></div>
-    <div class="attract-inner">
-      <div class="eyebrow-kiosk">StoryBooth</div>
-      <h1 id="attractHeading">Become part of the story</h1>
-      <p id="attractSubheading">Leave a message to be remembered.</p>
-      <div class="meta-strip">
-        <div class="meta-pill" id="eventNamePill">Untitled Event</div>
-      </div>
-      <button id="beginButton" type="button">Begin Your Story</button>
-    </div>
-  </div>
-</div>
-
-<div id="prompt" class="screen">
-  <div class="stage prompt-shell">
-    <div class="eyebrow-kiosk">Prompt</div>
-    <h1 class="section-title">Share something meaningful</h1>
-    <p class="section-sub">Choose a question and take a moment before you begin.</p>
-    <div class="prompt-card-wrap">
-      <button class="prompt-arrow" id="prevPromptButton" type="button" aria-label="Previous prompt">‹</button>
-      <div class="prompt-card">
-        <div class="prompt-card-label">Tonight’s question</div>
-        <div class="prompt-box" id="promptText"></div>
-      </div>
-      <button class="prompt-arrow" id="nextPromptButton" type="button" aria-label="Next prompt">›</button>
-    </div>
-    <div class="prompt-meta" id="promptMeta">1 of 5</div>
-    <button id="continueToCameraButton" type="button">Continue</button>
-  </div>
-</div>
-
-<div id="camera" class="screen">
-  <div class="stage panel camera-panel">
-    <div class="eyebrow-kiosk">Camera</div>
-    <h1 class="section-title" id="cameraTitle">Recording</h1>
-
-    <div class="mode-toggle">
-      <button id="videoModeButton" class="mode-chip active" type="button">Video</button>
-      <button id="photoModeButton" class="mode-chip" type="button">Photo</button>
-    </div>
-
-    <div class="record-status-wrap">
-      <div class="progress-ring" id="progressRing" aria-hidden="true">
-        <svg viewBox="0 0 120 120">
-          <circle class="ring-track" cx="60" cy="60" r="52"></circle>
-          <circle class="ring-progress" id="ringProgress" cx="60" cy="60" r="52"></circle>
-        </svg>
-        <div class="ring-center" id="ringCenter">Ready</div>
-      </div>
-      <div class="timer-text" id="recordingTimer">Max 60 seconds</div>
-    </div>
-
-    <div class="video-wrap">
-      <div id="countdownOverlay" class="countdown-overlay">
-        <div id="countdown" class="countdown-number">3</div>
-      </div>
-      <video id="video" autoplay muted playsinline></video>
-      <canvas id="photoCanvas" style="display:none;"></canvas>
-    </div>
-
-    <div class="button-row">
-      <button id="startButton" type="button">Start</button>
-      <button id="stopButton" class="secondary" type="button" disabled>Stop</button>
-    </div>
-  </div>
-</div>
-
-<div id="review" class="screen">
-  <div class="stage panel">
-    <div class="eyebrow-kiosk">Review</div>
-    <h1 class="section-title" id="reviewTitle">Keep this memory?</h1>
-    <p class="section-sub">Take a moment to see how it feels.</p>
-    <video id="playback" controls playsinline></video>
-    <img id="photoPreview" class="preview-image" style="display:none;" alt="Captured photo preview" />
-    <div class="button-row">
-      <button id="keepVideoButton" type="button">Keep</button>
-      <button id="recordAgainButton" class="secondary" type="button">Try Again</button>
-    </div>
-  </div>
-</div>
-
-<div id="guestbook" class="screen">
-  <div class="stage panel">
-    <div class="eyebrow-kiosk">Guestbook</div>
-    <h1 class="section-title">Leave a written message</h1>
-    <p class="section-sub">This will be saved along with your capture.</p>
-    <textarea id="message" placeholder="Write something meaningful..."></textarea>
-    <input id="name" placeholder="Your name (optional)" />
-    <div class="button-row">
-      <button id="continueToEmailButton" type="button">Continue</button>
-    </div>
-  </div>
-</div>
-
-<div id="email" class="screen">
-  <div class="stage panel">
-    <div class="eyebrow-kiosk">Delivery</div>
-    <h1 class="section-title">Receive your capture</h1>
-    <p class="section-sub">Enter your email if you'd like a copy later.</p>
-    <input id="emailInput" placeholder="Email address (optional)" />
-    <div class="button-row">
-      <button id="finishButton" type="button">Complete</button>
-    </div>
-  </div>
-</div>
-
-<div id="thankyou" class="screen">
-  <div class="stage panel" style="text-align:center;">
-    <div class="eyebrow-kiosk">Complete</div>
-    <h1 class="section-title">Thank you</h1>
-    <p class="section-sub">You are now part of their story.</p>
-  </div>
-</div>
-
-<div id="pinBackdrop" class="operator-backdrop">
-  <div class="panel" style="width:min(420px,100%); text-align:center;">
-    <div class="eyebrow-kiosk">Operator Access</div>
-    <h1 class="section-title">Enter PIN</h1>
-    <p class="section-sub">This keeps guests out of setup.</p>
-    <input
-      id="pinInput"
-      type="password"
-      inputmode="numeric"
-      placeholder="Enter PIN"
-      style="text-align:center; font-size:22px; letter-spacing:0.2em;"
-    />
-    <div class="button-row">
-      <button id="pinSubmitButton" type="button">Unlock</button>
-      <button id="pinCancelButton" class="secondary" type="button">Cancel</button>
-    </div>
-  </div>
-</div>
-
-<div id="operatorBackdrop" class="operator-backdrop">
-  <div class="panel operator-panel">
-    <div class="eyebrow-kiosk">Operator Setup</div>
-    <h1 class="section-title">Event setup</h1>
-    <p class="section-sub">Set your event before guests begin and export data from this device at the end.</p>
-
-    <div class="form-grid">
-      <label>
-        Event name
-        <input id="setupEventName" placeholder="Smith Wedding" />
-      </label>
-
-      <label>
-        Device name
-        <input id="setupDeviceName" placeholder="Booth 1" />
-      </label>
-
-      <label>
-        Welcome headline
-        <input id="setupHeadline" placeholder="Become part of the story" />
-      </label>
-
-      <label>
-        Welcome subheadline
-        <input id="setupSubheadline" placeholder="Leave a message to be remembered." />
-      </label>
-
-      <label>
-        Prompt category
-        <select id="setupPromptCategory"></select>
-      </label>
-
-      <label>
-        Recording limit (seconds)
-        <select id="setupRecordLimit">
-          <option value="30">30</option>
-          <option value="45">45</option>
-          <option value="60">60</option>
-          <option value="90">90</option>
-        </select>
-      </label>
-
-      <label>
-        Default mode
-        <select id="setupCaptureMode">
-          <option value="video">Video</option>
-          <option value="photo">Photo</option>
-        </select>
-      </label>
-
-      <label>
-        Booth filter
-        <select id="setupFilter">
-          <option value="none">None</option>
-          <option value="bw">Black &amp; White</option>
-          <option value="warm">Warm</option>
-          <option value="soft">Soft Film</option>
-        </select>
-      </label>
-
-      <label>
-        Photo burst count
-        <select id="setupPhotoBurstCount">
-          <option value="1">1</option>
-          <option value="3">3</option>
-        </select>
-      </label>
-
-      <label>
-        Admin PIN
-        <input id="setupAdminPin" type="password" inputmode="numeric" placeholder="1234" />
-      </label>
-
-      <label class="full">
-        Custom prompts (one per line)
-        <textarea id="setupCustomPrompts" placeholder="Enter one prompt per line if you want to override the category prompts."></textarea>
-      </label>
-    </div>
-
-    <div class="check-grid">
-      <label class="check-item"><input id="setupEnableGuestbook" type="checkbox" /> Enable guestbook</label>
-      <label class="check-item"><input id="setupEnableEmail" type="checkbox" /> Enable email capture</label>
-      <label class="check-item"><input id="setupEnableVideoMode" type="checkbox" /> Enable video mode</label>
-      <label class="check-item"><input id="setupEnablePhotoMode" type="checkbox" /> Enable photo mode</label>
-    </div>
-
-    <div class="meta-strip" style="justify-content:flex-start; margin-top:20px; margin-bottom:4px;">
-      <div class="meta-pill" id="summaryTotalCaptures">Captures: 0</div>
-      <div class="meta-pill" id="summaryGuestbookEntries">Guestbook: 0</div>
-      <div class="meta-pill" id="summaryEmailEntries">Emails: 0</div>
-      <div class="meta-pill" id="summaryCurrentMode">Current mode: Video</div>
-    </div>
-
-    <div class="button-row" style="justify-content:flex-start; margin-top:20px;">
-      <button id="saveSetupButton" type="button">Save setup</button>
-      <button id="closeSetupButton" class="secondary" type="button">Close</button>
-      <button id="exportGuestbookButton" class="secondary" type="button">Download Guestbook CSV</button>
-      <button id="exportEmailsButton" class="secondary" type="button">Download Email CSV</button>
-      <button id="downloadVideoButton" class="secondary" type="button">Download Last Video</button>
-      <button id="downloadPhotoButton" class="secondary" type="button">Download Last Photo</button>
-      <button id="resetEventButton" class="danger" type="button">Reset Event Data</button>
-    </div>
-  </div>
-</div>
-
-<script>
-const STORAGE_KEY = 'storybooth_local_event_data_v7';
-const IDLE_TIMEOUT_MS = 60000;
-const SETUP_KEY = 'storybooth_operator_setup_v5';
-const SESSION_COUNTER_KEY = 'storybooth_session_counter';
-
-const promptCategories = {
-  Wedding: [
-    'What do you admire most about them?',
-    'Share a favorite memory of the couple.',
-    'What advice would you give for marriage?',
-    'What should they remember years from now?',
-    'Say something you have never said before.'
-  ],
-  Birthday: [
-    'What do you love most about them?',
-    'Share a favorite birthday memory.',
-    'What makes them unforgettable?',
-    'What do you hope this next year brings?'
-  ],
-  Retirement: [
-    'What have you always admired about them?',
-    'What impact have they had on you?',
-    'What do you hope this next chapter brings?'
-  ],
-  Memorial: [
-    'Share a memory that has stayed with you.',
-    'What would you want others to remember about them?',
-    'What did they teach you?'
-  ],
-  'Baby Shower': [
-    'What would you like this baby to know someday?',
-    'What advice would you give the parents?',
-    'What is your hope for this family?'
-  ],
-  Corporate: [
-    'What has stood out most to you?',
-    'What would you want the team to remember?',
-    'Share a message of appreciation or encouragement.'
-  ],
-  Reunion: [
-    'What memory still makes you laugh?',
-    'What does this family mean to you?',
-    'What story should never be forgotten?'
-  ],
-  General: [
-    'Share something meaningful.',
-    'What should they remember years from now?',
-    'Leave a message from the heart.'
-  ]
-};
-
-const defaultSetup = {
-  eventName: 'Untitled Event',
-  deviceName: 'Booth 1',
-  headline: 'Become part of the story',
-  subheadline: 'Leave a message to be remembered.',
-  promptCategory: 'General',
-  customPrompts: '',
-  recordLimit: 60,
-  captureMode: 'video',
-  photoBurstCount: 1,
-  enableGuestbook: true,
-  enableEmail: true,
-  enableVideoMode: true,
-  enablePhotoMode: true,
-  filter: 'none',
-  adminPin: '1234'
-};
-
-let setup = loadSetup();
-let sessionCounter = Number(localStorage.getItem(SESSION_COUNTER_KEY) || 0);
-
-let prompts = getActivePrompts();
-let currentPrompt = 0;
-let mediaRecorder = null;
-let recordedBlob = null;
-let recordedPhotoData = null;
-let lastVideoBlob = null;
-let lastVideoURL = null;
-let lastPhotoData = null;
-let maxRecordingSeconds = Number(setup.recordLimit || 60);
-let recordingInterval = null;
-let recordingStartedAt = 0;
-let countdownInterval = null;
-let isRecording = false;
-let currentStream = null;
-let currentStreamMode = null;
-let idleTimeoutHandle = null;
-let currentCaptureMode = setup.captureMode || 'video';
-let currentFilter = setup.filter || 'none';
-let pinVerified = false;
-
-const persisted = loadEventData();
-let guestbookEntries = persisted.guestbookEntries || [];
-let emailEntries = persisted.emailEntries || [];
-
-function $(id) {
-  return document.getElementById(id);
-}
-
-function show(screenId) {
-  ['attract','prompt','camera','review','guestbook','email','thankyou'].forEach(id => {
-    $(id).classList.toggle('active', id === screenId);
-  });
-
-  if (screenId === 'attract' || screenId === 'thankyou') {
-    clearIdleTimeout();
-  } else {
-    resetIdleTimeout();
-  }
-}
-
-function loadSetup() {
-  try {
-    return { ...defaultSetup, ...(JSON.parse(localStorage.getItem(SETUP_KEY) || '{}')) };
-  } catch {
-    return { ...defaultSetup };
-  }
-}
-
-function saveSetup() {
-  localStorage.setItem(SETUP_KEY, JSON.stringify(setup));
-}
-
-function loadEventData() {
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-  } catch {
-    return {};
-  }
-}
-
-function saveEventData() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify({ guestbookEntries, emailEntries }));
-  updateSummaryPills();
-}
-
-function getActivePrompts() {
-  const custom = (setup.customPrompts || '')
-    .split('\n')
-    .map(v => v.trim())
-    .filter(Boolean);
-
-  if (custom.length) return custom;
-  return [...(promptCategories[setup.promptCategory] || promptCategories.General)];
-}
-
-function applySetupToUI() {
-  $('attractHeading').innerText = setup.headline;
-  $('attractSubheading').innerText = setup.subheadline;
-  $('eventNamePill').innerText = `Event: ${setup.eventName}`;
-  $('deviceNamePill').innerText = `Device: ${setup.deviceName}`;
-  $('modePill').innerText = `Mode: ${capitalize(currentCaptureMode)}`;
-
-  maxRecordingSeconds = Number(setup.recordLimit || 60);
-  prompts = getActivePrompts();
-  currentPrompt = 0;
-
-  applyFilter(setup.filter || 'none');
-  updatePrompt();
-  updateCaptureModeUI();
-  updateSummaryPills();
-  resetProgressRing();
-}
-
-function populateSetupForm() {
-  $('setupEventName').value = setup.eventName;
-  $('setupDeviceName').value = setup.deviceName;
-  $('setupHeadline').value = setup.headline;
-  $('setupSubheadline').value = setup.subheadline;
-  $('setupPromptCategory').innerHTML = Object.keys(promptCategories).map(name => `<option value="${name}">${name}</option>`).join('');
-  $('setupPromptCategory').value = setup.promptCategory;
-  $('setupCustomPrompts').value = setup.customPrompts;
-  $('setupRecordLimit').value = String(setup.recordLimit);
-  $('setupCaptureMode').value = setup.captureMode;
-  $('setupPhotoBurstCount').value = String(setup.photoBurstCount || 1);
-  $('setupFilter').value = setup.filter || 'none';
-  $('setupAdminPin').value = setup.adminPin || '';
-  $('setupEnableGuestbook').checked = !!setup.enableGuestbook;
-  $('setupEnableEmail').checked = !!setup.enableEmail;
-  $('setupEnableVideoMode').checked = !!setup.enableVideoMode;
-  $('setupEnablePhotoMode').checked = !!setup.enablePhotoMode;
-}
-
-function updatePrompt() {
-  $('promptText').innerText = prompts[currentPrompt] || '';
-  $('promptMeta').innerText = `${currentPrompt + 1} of ${prompts.length}`;
-}
-
-function nextPrompt() {
-  currentPrompt = (currentPrompt + 1) % prompts.length;
-  updatePrompt();
-}
-
-function prevPrompt() {
-  currentPrompt = (currentPrompt - 1 + prompts.length) % prompts.length;
-  updatePrompt();
-}
-
-function startBooth() {
-  updatePrompt();
-  show('prompt');
-}
-
-async function goCamera() {
-  show('camera');
-  updateCaptureModeUI();
-  $('stopButton').disabled = true;
-  $('startButton').disabled = false;
-  await openCameraForMode(currentCaptureMode);
-}
-
-function getConstraintsForMode(mode) {
-  if (mode === 'photo') {
-    return {
-      video: {
-        facingMode: 'user',
-        width: { ideal: 1280 },
-        height: { ideal: 720 }
-      },
-      audio: false
-    };
-  }
-
-  return {
-    video: {
-      facingMode: 'user',
-      width: { ideal: 1280 },
-      height: { ideal: 720 }
-    },
-    audio: true
-  };
-}
-
-function stopCurrentStream() {
-  if (!currentStream) return;
-  currentStream.getTracks().forEach(track => track.stop());
-  currentStream = null;
-  currentStreamMode = null;
-  $('video').srcObject = null;
-}
-
-async function openCameraForMode(mode, forceRefresh = false) {
-  if (currentStream && currentStreamMode === mode && !forceRefresh) {
-    $('video').srcObject = currentStream;
-    await $('video').play().catch(() => {});
-    return;
-  }
-
-  stopCurrentStream();
-
-  try {
-    const constraints = getConstraintsForMode(mode);
-    currentStream = await navigator.mediaDevices.getUserMedia(constraints);
-    currentStreamMode = mode;
-    $('video').srcObject = currentStream;
-    await $('video').play().catch(() => {});
-  } catch (error) {
-    console.error(error);
-    alert(mode === 'photo'
-      ? 'Camera access is required to take photos.'
-      : 'Camera and microphone access are required to record video.'
-    );
-    show('attract');
-  }
-}
-
-function updateCaptureModeUI() {
-  $('videoModeButton').classList.toggle('active', currentCaptureMode === 'video');
-  $('photoModeButton').classList.toggle('active', currentCaptureMode === 'photo');
-
-  $('videoModeButton').style.display = setup.enableVideoMode ? 'inline-flex' : 'none';
-  $('photoModeButton').style.display = setup.enablePhotoMode ? 'inline-flex' : 'none';
-
-  $('modePill').innerText = `Mode: ${capitalize(currentCaptureMode)}`;
-  $('cameraTitle').innerText = currentCaptureMode === 'video' ? 'Recording' : 'Photo capture';
-  $('reviewTitle').innerText = currentCaptureMode === 'video' ? 'Keep this memory?' : 'Keep this photo?';
-  $('startButton').innerText = currentCaptureMode === 'video'
-    ? 'Start'
-    : `Take Photo${Number(setup.photoBurstCount) > 1 ? ` (${setup.photoBurstCount})` : ''}`;
-
-  $('stopButton').style.display = currentCaptureMode === 'video' ? 'inline-flex' : 'none';
-  $('recordingTimer').innerText = currentCaptureMode === 'video'
-    ? `Max ${maxRecordingSeconds} seconds`
-    : (Number(setup.photoBurstCount) > 1 ? `Burst count: ${setup.photoBurstCount}` : 'Single photo');
-
-  updateSummaryPills();
-}
-
-function updateSummaryPills() {
-  $('summaryTotalCaptures').innerText = `Captures: ${Number(sessionCounter || 0)}`;
-  $('summaryGuestbookEntries').innerText = `Guestbook: ${guestbookEntries.length}`;
-  $('summaryEmailEntries').innerText = `Emails: ${emailEntries.length}`;
-  $('summaryCurrentMode').innerText = `Current mode: ${capitalize(currentCaptureMode)}`;
-}
-
-async function setCaptureMode(mode) {
-  if (mode === 'video' && !setup.enableVideoMode) return;
-  if (mode === 'photo' && !setup.enablePhotoMode) return;
-  if (isRecording) return;
-
-  currentCaptureMode = mode;
-  updateCaptureModeUI();
-  resetProgressRing();
-
-  if ($('camera').classList.contains('active')) {
-    await openCameraForMode(currentCaptureMode, true);
-  }
-}
-
-function beginCountdown() {
-  if (isRecording) return;
-  if (!currentStream) {
-    alert('Camera is not ready yet. Please try again.');
-    return;
-  }
-
-  let count = 3;
-  $('startButton').disabled = true;
-  $('stopButton').disabled = true;
-  $('countdownOverlay').style.display = 'flex';
-  $('countdown').innerText = count;
-  restartCountdownAnimation();
-
-  clearInterval(countdownInterval);
-  countdownInterval = setInterval(() => {
-    count -= 1;
-
-    if (count > 0) {
-      $('countdown').innerText = count;
-      restartCountdownAnimation();
-    } else {
-      clearInterval(countdownInterval);
-      $('countdownOverlay').style.display = 'none';
-
-      if (currentCaptureMode === 'video') {
-        $('stopButton').disabled = false;
-        startRecording();
-      } else {
-        capturePhoto();
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>StoryBooth Kiosk</title>
+  <style>
+    :root {
+      --bg: #f4f3ee;
+      --bg-2: #eeece4;
+      --panel: rgba(255,255,255,0.82);
+      --panel-strong: rgba(255,255,255,0.92);
+      --text: #17352a;
+      --muted: #5d7568;
+      --line: rgba(23,53,42,0.1);
+      --green-deep: #18372c;
+      --green: #2d5a4a;
+      --sage: #93a793;
+      --sage-soft: #cad3c7;
+      --gold: #b8964f;
+      --gold-soft: #dbc791;
+      --danger: #9e4b4b;
+      --shadow-lg: 0 28px 70px rgba(24,55,44,.12);
+      --shadow-md: 0 14px 34px rgba(24,55,44,.10);
+      --shadow-sm: 0 8px 20px rgba(24,55,44,.08);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --transition: 360ms cubic-bezier(.22,1,.36,1);
+      --header-h: 78px;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(184,150,79,.10), transparent 34%),
+        radial-gradient(circle at top right, rgba(147,167,147,.12), transparent 32%),
+        linear-gradient(180deg, #f8f7f3 0%, var(--bg) 55%, var(--bg-2) 100%);
+      color: var(--text);
+      user-select: none;
+      touch-action: manipulation;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.42), transparent 38%),
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,.45), transparent 20%),
+        radial-gradient(circle at 80% 10%, rgba(184,150,79,.08), transparent 24%);
+      z-index: 0;
+    }
+
+    .app {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .screen {
+      position: absolute;
+      inset: 0;
+      padding: calc(20px + var(--safe-top)) 20px calc(20px + var(--safe-bottom));
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(14px) scale(.99);
+      transition: opacity var(--transition), transform var(--transition), visibility 0s linear var(--transition);
+      pointer-events: none;
+    }
+
+    .screen.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0) scale(1);
+      transition: opacity var(--transition), transform var(--transition), visibility 0s;
+      pointer-events: auto;
+    }
+
+    .glass {
+      background: linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,255,255,.78));
+      border: 1px solid rgba(255,255,255,.65);
+      box-shadow: var(--shadow-lg);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-radius: var(--radius-xl);
+    }
+
+    .shell {
+      width: min(100%, 980px);
+      margin: auto;
+      min-height: min(100%, 1200px);
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 18px;
+      min-height: 64px;
+      margin-bottom: 18px;
+      background: rgba(255,255,255,.62);
+      border: 1px solid rgba(255,255,255,.5);
+      border-radius: 20px;
+      box-shadow: var(--shadow-sm);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .brand-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .brand {
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--green-deep);
+    }
+
+    .event-name {
+      color: var(--muted);
+      font-size: .95rem;
+      letter-spacing: .02em;
+    }
+
+    .session-pill, .status-chip, .mode-pill, .subtle-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-size: .92rem;
+      white-space: nowrap;
+      border: 1px solid rgba(23,53,42,.08);
+      background: rgba(255,255,255,.72);
+      box-shadow: 0 6px 16px rgba(24,55,44,.05);
+    }
+
+    .status-chip.ready {
+      background: rgba(147,167,147,.18);
+      color: var(--green-deep);
+      border-color: rgba(45,90,74,.12);
+    }
+
+    .status-chip.not-ready {
+      background: rgba(184,150,79,.15);
+      color: #6d5624;
+      border-color: rgba(184,150,79,.18);
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 0 0 currentColor;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(45,90,74,.35); }
+      70% { box-shadow: 0 0 0 12px rgba(45,90,74,0); }
+      100% { box-shadow: 0 0 0 0 rgba(45,90,74,0); }
+    }
+
+    .hero-card, .panel, .camera-card, .thanks-card {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card::after, .panel::after, .camera-card::after, .thanks-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(145deg, rgba(255,255,255,.35), transparent 35%);
+    }
+
+    .hero-card {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 34px 28px;
+    }
+
+    .monogram {
+      width: 112px;
+      height: 112px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      margin-bottom: 22px;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,.65), transparent 32%),
+        linear-gradient(135deg, rgba(184,150,79,.18), rgba(147,167,147,.24));
+      border: 1px solid rgba(184,150,79,.18);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.8), var(--shadow-md);
+      color: var(--green-deep);
+      font-size: 1.95rem;
+      font-family: "Georgia", "Times New Roman", serif;
+      letter-spacing: .06em;
+    }
+
+    .eyebrow {
+      margin-bottom: 10px;
+      font-size: .85rem;
+      text-transform: uppercase;
+      letter-spacing: .18em;
+      color: var(--gold);
+      font-weight: 700;
+    }
+
+    h1, h2, h3, h4, p { margin: 0; }
+
+    .title-xl {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2.15rem, 4vw, 4.25rem);
+      line-height: 1.02;
+      letter-spacing: -.02em;
+      color: var(--green-deep);
+      max-width: 12ch;
+      margin: 0 auto 14px;
+    }
+
+    .lead {
+      font-size: clamp(1rem, 2vw, 1.18rem);
+      line-height: 1.6;
+      color: var(--muted);
+      max-width: 36rem;
+      margin: 0 auto 22px;
+    }
+
+    .touch-hold {
+      margin-top: 18px;
+      color: rgba(23,53,42,.42);
+      font-size: .84rem;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    .cta-stack {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      margin-top: 10px;
+    }
+
+    .primary-btn, .secondary-btn, .ghost-btn, .mini-btn, .icon-btn {
+      appearance: none;
+      border: 0;
+      cursor: pointer;
+      font: inherit;
+      transition: transform .18s ease, opacity .18s ease, box-shadow .18s ease, background .18s ease;
+    }
+
+    .primary-btn:active, .secondary-btn:active, .ghost-btn:active, .mini-btn:active, .icon-btn:active {
+      transform: scale(.985);
+    }
+
+    .primary-btn {
+      min-width: 210px;
+      padding: 18px 24px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--green-deep), var(--green));
+      color: white;
+      font-size: 1.08rem;
+      font-weight: 700;
+      box-shadow: 0 16px 30px rgba(24,55,44,.2), inset 0 1px 0 rgba(255,255,255,.18);
+    }
+
+    .secondary-btn {
+      padding: 16px 22px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(255,255,255,.96), rgba(255,255,255,.82));
+      color: var(--green-deep);
+      border: 1px solid rgba(23,53,42,.08);
+      box-shadow: var(--shadow-sm);
+      font-weight: 700;
+    }
+
+    .ghost-btn {
+      padding: 15px 20px;
+      border-radius: 16px;
+      background: rgba(255,255,255,.45);
+      color: var(--green-deep);
+      border: 1px solid rgba(23,53,42,.08);
+      font-weight: 600;
+    }
+
+    .mini-btn {
+      padding: 10px 14px;
+      border-radius: 12px;
+      background: rgba(255,255,255,.8);
+      color: var(--green-deep);
+      border: 1px solid rgba(23,53,42,.08);
+      font-weight: 700;
+    }
+
+    .icon-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: rgba(255,255,255,.82);
+      border: 1px solid rgba(23,53,42,.08);
+      color: var(--green-deep);
+      box-shadow: var(--shadow-sm);
+      font-size: 1.15rem;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1.02fr .98fr;
+      gap: 18px;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .panel {
+      padding: 20px;
+    }
+
+    .panel h2 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(1.8rem, 3.5vw, 2.7rem);
+      color: var(--green-deep);
+      margin-bottom: 8px;
+    }
+
+    .panel-sub {
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 18px;
+    }
+
+    .prompt-stage {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .prompt-card {
+      min-height: 208px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 28px 22px;
+      text-align: center;
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at top left, rgba(184,150,79,.08), transparent 30%),
+        linear-gradient(180deg, rgba(255,255,255,.94), rgba(255,255,255,.80));
+      border: 1px solid rgba(23,53,42,.08);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.95), var(--shadow-sm);
+    }
+
+    .prompt-number {
+      font-size: .82rem;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .prompt-text {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(1.65rem, 3vw, 2.45rem);
+      line-height: 1.18;
+      color: var(--green-deep);
+      max-width: 16ch;
+    }
+
+    .mode-grid, .filter-grid, .review-actions, .form-actions, .footer-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .mode-card {
+      flex: 1 1 0;
+      min-width: 120px;
+      padding: 18px;
+      border-radius: 20px;
+      border: 1px solid rgba(23,53,42,.08);
+      background: rgba(255,255,255,.7);
+      box-shadow: var(--shadow-sm);
+      cursor: pointer;
+      text-align: left;
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease;
+    }
+
+    .mode-card.active {
+      background: linear-gradient(135deg, rgba(24,55,44,.96), rgba(45,90,74,.95));
+      color: white;
+      border-color: transparent;
+      box-shadow: 0 18px 28px rgba(24,55,44,.18);
+      transform: translateY(-1px);
+    }
+
+    .mode-card .mode-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    .mode-card small {
+      display: block;
+      color: inherit;
+      opacity: .76;
+      line-height: 1.5;
+    }
+
+    .right-column {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .summary-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .summary-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 15px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.68);
+      border: 1px solid rgba(23,53,42,.07);
+    }
+
+    .summary-item .num {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: .85rem;
+      color: white;
+      background: linear-gradient(135deg, var(--gold), #c7a55f);
+      box-shadow: 0 8px 18px rgba(184,150,79,.25);
+      flex-shrink: 0;
+    }
+
+    .summary-item strong {
+      display: block;
+      font-size: .98rem;
+      margin-bottom: 4px;
+      color: var(--green-deep);
+    }
+
+    .summary-item span {
+      color: var(--muted);
+      line-height: 1.45;
+      font-size: .94rem;
+    }
+
+    .camera-wrap {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .camera-card {
+      position: relative;
+      flex: 1;
+      min-height: 0;
+      border-radius: 30px;
+      overflow: hidden;
+      background: #10221b;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid rgba(255,255,255,.18);
+    }
+
+    video, canvas.preview-media, img.preview-media {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      background: #14251f;
+    }
+
+    .camera-overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    .camera-guide {
+      position: absolute;
+      inset: 10% 8%;
+      border-radius: 28px;
+      border: 2px solid rgba(255,255,255,.32);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.08);
+    }
+
+    .camera-guide::before,
+    .camera-guide::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: rgba(255,255,255,.14);
+      transform: translateX(-50%);
+    }
+
+    .camera-guide::after {
+      top: 50%;
+      left: 0;
+      right: 0;
+      width: auto;
+      height: 1px;
+      transform: translateY(-50%);
+    }
+
+    .corner {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      border-color: rgba(219,199,145,.82);
+      border-style: solid;
+      border-width: 0;
+      filter: drop-shadow(0 2px 10px rgba(0,0,0,.18));
+    }
+    .corner.tl { top: -1px; left: -1px; border-top-width: 3px; border-left-width: 3px; border-top-left-radius: 18px; }
+    .corner.tr { top: -1px; right: -1px; border-top-width: 3px; border-right-width: 3px; border-top-right-radius: 18px; }
+    .corner.bl { bottom: -1px; left: -1px; border-bottom-width: 3px; border-left-width: 3px; border-bottom-left-radius: 18px; }
+    .corner.br { bottom: -1px; right: -1px; border-bottom-width: 3px; border-right-width: 3px; border-bottom-right-radius: 18px; }
+
+    .camera-top-ui {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      right: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      z-index: 4;
+      pointer-events: none;
+    }
+
+    .camera-top-ui .cluster {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .camera-help {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 24px;
+      z-index: 4;
+      width: min(88%, 680px);
+      padding: 14px 16px;
+      border-radius: 20px;
+      background: rgba(15,27,23,.48);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,.14);
+      text-align: center;
+      color: rgba(255,255,255,.94);
+      box-shadow: 0 12px 24px rgba(0,0,0,.18);
+      pointer-events: none;
+    }
+
+    .camera-help strong {
+      display: block;
+      font-size: 1rem;
+      margin-bottom: 4px;
+      letter-spacing: .01em;
+    }
+
+    .camera-help span {
+      display: block;
+      font-size: .92rem;
+      opacity: .86;
+      line-height: 1.45;
+    }
+
+    .countdown {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      z-index: 5;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(5rem, 16vw, 10rem);
+      color: rgba(255,255,255,.95);
+      text-shadow: 0 10px 24px rgba(0,0,0,.25);
+      background: radial-gradient(circle, rgba(24,55,44,.18), rgba(0,0,0,.18));
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s ease;
+    }
+
+    .countdown.show { opacity: 1; }
+
+    .camera-controls {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 14px;
+      align-items: center;
+      padding: 10px 4px 0;
+    }
+
+    .camera-controls .left, .camera-controls .right {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .camera-controls .right {
+      justify-content: flex-end;
+    }
+
+    .record-shell {
+      position: relative;
+      width: 112px;
+      height: 112px;
+      display: grid;
+      place-items: center;
+    }
+
+    .record-shell svg {
+      position: absolute;
+      inset: 0;
+      transform: rotate(-90deg);
+      overflow: visible;
+    }
+
+    .record-shell circle.track {
+      fill: none;
+      stroke: rgba(24,55,44,.12);
+      stroke-width: 8;
+    }
+
+    .record-shell circle.progress {
+      fill: none;
+      stroke: var(--gold);
+      stroke-width: 8;
+      stroke-linecap: round;
+      stroke-dasharray: 301.59;
+      stroke-dashoffset: 301.59;
+      filter: drop-shadow(0 0 6px rgba(184,150,79,.24));
+    }
+
+    .record-btn {
+      width: 84px;
+      height: 84px;
+      border-radius: 50%;
+      border: 0;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      position: relative;
+      background: linear-gradient(135deg, var(--green-deep), var(--green));
+      box-shadow: 0 14px 28px rgba(24,55,44,.24), inset 0 1px 0 rgba(255,255,255,.12);
+      color: white;
+    }
+
+    .record-btn::before {
+      content: "";
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      background: currentColor;
+      transition: all .18s ease;
+    }
+
+    .record-btn.idle::before {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+    }
+
+    .record-btn.recording {
+      background: linear-gradient(135deg, #7e2e2e, #b24545);
+      box-shadow: 0 14px 28px rgba(126,46,46,.24), inset 0 1px 0 rgba(255,255,255,.1);
+    }
+
+    .record-label {
+      text-align: center;
+      font-size: .9rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .filter-chip {
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(23,53,42,.08);
+      background: rgba(255,255,255,.72);
+      box-shadow: var(--shadow-sm);
+      cursor: pointer;
+      font-weight: 700;
+      color: var(--green-deep);
+    }
+
+    .filter-chip.active {
+      background: linear-gradient(135deg, rgba(24,55,44,.96), rgba(45,90,74,.96));
+      color: white;
+      border-color: transparent;
+    }
+
+    .camera-timer {
+      font-feature-settings: "tnum" 1;
+      font-variant-numeric: tabular-nums;
+      font-weight: 700;
+      color: var(--green-deep);
+      min-width: 66px;
+      text-align: right;
+    }
+
+    .review-layout, .form-layout {
+      display: grid;
+      grid-template-columns: 1.08fr .92fr;
+      gap: 18px;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .review-card, .form-card, .thanks-card {
+      padding: 20px;
+    }
+
+    .media-frame {
+      min-height: 0;
+      height: 100%;
+      border-radius: 26px;
+      overflow: hidden;
+      background: #10221b;
+      box-shadow: var(--shadow-md);
+      border: 1px solid rgba(255,255,255,.14);
+    }
+
+    .detail-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      min-height: 0;
+    }
+
+    .detail-block {
+      padding: 16px;
+      border-radius: 20px;
+      background: rgba(255,255,255,.72);
+      border: 1px solid rgba(23,53,42,.07);
+    }
+
+    .detail-block h3 {
+      color: var(--green-deep);
+      margin-bottom: 8px;
+      font-size: 1.05rem;
+    }
+
+    .detail-block p {
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .input, .textarea, .select {
+      width: 100%;
+      appearance: none;
+      border: 1px solid rgba(23,53,42,.09);
+      background: rgba(255,255,255,.84);
+      color: var(--green-deep);
+      border-radius: 18px;
+      padding: 16px 16px;
+      font: inherit;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.92);
+      outline: none;
+    }
+
+    .input:focus, .textarea:focus, .select:focus {
+      border-color: rgba(184,150,79,.55);
+      box-shadow: 0 0 0 4px rgba(184,150,79,.12);
+    }
+
+    .textarea {
+      min-height: 170px;
+      resize: none;
+      line-height: 1.55;
+    }
+
+    .label {
+      display: block;
+      font-weight: 700;
+      color: var(--green-deep);
+      margin-bottom: 8px;
+    }
+
+    .field + .field { margin-top: 14px; }
+
+    .hint {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: .9rem;
+      line-height: 1.45;
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+      font-size: .95rem;
+      margin-top: 12px;
+    }
+
+    .checkbox-row input { width: 18px; height: 18px; }
+
+    .thanks-card {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 34px 26px;
+      background:
+        radial-gradient(circle at top center, rgba(219,199,145,.22), transparent 28%),
+        radial-gradient(circle at bottom left, rgba(147,167,147,.18), transparent 24%),
+        linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,255,255,.82));
+    }
+
+    .thanks-mark {
+      width: 124px;
+      height: 124px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      margin-bottom: 22px;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,.86), transparent 28%),
+        linear-gradient(145deg, rgba(184,150,79,.22), rgba(147,167,147,.18));
+      border: 1px solid rgba(184,150,79,.18);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.92), 0 18px 36px rgba(24,55,44,.10);
+      color: var(--green-deep);
+      font-size: 2.4rem;
+    }
+
+    .thanks-title {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2rem, 4vw, 3.6rem);
+      line-height: 1.03;
+      color: var(--green-deep);
+      margin-bottom: 12px;
+      max-width: 10ch;
+    }
+
+    .thanks-copy {
+      max-width: 30rem;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 1.05rem;
+      margin-bottom: 22px;
+    }
+
+    .thanks-meta {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .sparkle-row {
+      display: flex;
+      gap: 10px;
+      opacity: .76;
+    }
+
+    .sparkle {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--gold) 0%, rgba(184,150,79,.25) 64%, transparent 66%);
+      animation: floaty 3s ease-in-out infinite;
+    }
+
+    .sparkle:nth-child(2) { animation-delay: .4s; }
+    .sparkle:nth-child(3) { animation-delay: .8s; }
+
+    @keyframes floaty {
+      0%,100% { transform: translateY(0); opacity: .55; }
+      50% { transform: translateY(-7px); opacity: 1; }
+    }
+
+    .operator-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(15,25,21,.36);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      display: none;
+      z-index: 20;
+      padding: 18px;
+    }
+
+    .operator-backdrop.show { display: flex; }
+
+    .operator-panel {
+      width: min(100%, 980px);
+      height: min(100%, 1000px);
+      margin: auto;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      background: linear-gradient(180deg, rgba(255,255,255,.97), rgba(255,255,255,.90));
+      border-radius: 30px;
+      border: 1px solid rgba(255,255,255,.75);
+      box-shadow: 0 34px 80px rgba(0,0,0,.18);
+      overflow: hidden;
+    }
+
+    .operator-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .operator-head h3 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.9rem;
+      color: var(--green-deep);
+      margin-bottom: 4px;
+    }
+
+    .operator-body {
+      flex: 1;
+      min-height: 0;
+      overflow: auto;
+      padding-right: 4px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      align-content: start;
+    }
+
+    .settings-card {
+      padding: 18px;
+      border-radius: 22px;
+      background: rgba(255,255,255,.76);
+      border: 1px solid rgba(23,53,42,.07);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .settings-card h4 {
+      color: var(--green-deep);
+      font-size: 1.08rem;
+      margin-bottom: 12px;
+    }
+
+    .inline-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .toggle-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: rgba(255,255,255,.82);
+      border: 1px solid rgba(23,53,42,.07);
+    }
+
+    .toggle label { font-weight: 600; color: var(--green-deep); }
+
+    .toggle input { width: 22px; height: 22px; }
+
+    .pin-lock {
+      width: min(100%, 420px);
+      margin: auto;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .pin-lock h3 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 2rem;
+      color: var(--green-deep);
+      margin-bottom: 10px;
+    }
+
+    .pin-pad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .pin-btn {
+      padding: 18px 0;
+      border-radius: 18px;
+      border: 1px solid rgba(23,53,42,.08);
+      background: rgba(255,255,255,.85);
+      box-shadow: var(--shadow-sm);
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--green-deep);
+      cursor: pointer;
+    }
+
+    .pin-display {
+      min-height: 56px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      background: rgba(255,255,255,.78);
+      border: 1px solid rgba(23,53,42,.08);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.85);
+      margin: 16px 0 8px;
+    }
+
+    .pin-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: rgba(23,53,42,.16);
+    }
+
+    .pin-dot.filled { background: var(--green-deep); }
+
+    .sr-only {
+      position: absolute !important;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 900px) {
+      .grid-2, .review-layout, .form-layout, .operator-body {
+        grid-template-columns: 1fr;
+      }
+      .camera-controls {
+        grid-template-columns: 1fr;
+        justify-items: center;
+      }
+      .camera-controls .left, .camera-controls .right {
+        justify-content: center;
       }
     }
-  }, 1000);
-}
 
-function restartCountdownAnimation() {
-  $('countdown').style.animation = 'none';
-  void $('countdown').offsetWidth;
-  $('countdown').style.animation = 'pulseCount 0.9s ease';
-}
-
-function getBestMimeType() {
-  const options = ['video/mp4', 'video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm'];
-  return options.find(type => window.MediaRecorder && MediaRecorder.isTypeSupported(type)) || '';
-}
-
-function startRecording() {
-  if (!currentStream || isRecording) return;
-
-  if (!window.MediaRecorder) {
-    alert('Video recording is not supported on this device/browser.');
-    $('startButton').disabled = false;
-    $('stopButton').disabled = true;
-    return;
-  }
-
-  const chunks = [];
-  const mimeType = getBestMimeType();
-
-  try {
-    mediaRecorder = mimeType
-      ? new MediaRecorder(currentStream, { mimeType })
-      : new MediaRecorder(currentStream);
-  } catch (error) {
-    console.error(error);
-    alert('Video recording could not start on this device/browser.');
-    $('startButton').disabled = false;
-    $('stopButton').disabled = true;
-    return;
-  }
-
-  isRecording = true;
-  document.body.classList.add('recording');
-  $('ringCenter').innerText = 'REC';
-
-  mediaRecorder.ondataavailable = event => {
-    if (event.data && event.data.size > 0) chunks.push(event.data);
-  };
-
-  mediaRecorder.onstop = () => {
-    clearInterval(recordingInterval);
-    isRecording = false;
-    document.body.classList.remove('recording');
-    resetProgressRing();
-
-    $('startButton').disabled = false;
-    $('stopButton').disabled = true;
-    updateCaptureModeUI();
-
-    recordedBlob = new Blob(chunks, { type: mediaRecorder.mimeType || mimeType || 'video/mp4' });
-    recordedPhotoData = null;
-    lastVideoBlob = recordedBlob;
-
-    if (lastVideoURL) URL.revokeObjectURL(lastVideoURL);
-    lastVideoURL = URL.createObjectURL(recordedBlob);
-
-    $('playback').src = lastVideoURL;
-    $('playback').style.display = 'block';
-    $('playback').load();
-
-    $('photoPreview').style.display = 'none';
-    show('review');
-  };
-
-  mediaRecorder.onerror = (event) => {
-    console.error('MediaRecorder error:', event);
-    clearInterval(recordingInterval);
-    isRecording = false;
-    document.body.classList.remove('recording');
-    resetProgressRing();
-    $('startButton').disabled = false;
-    $('stopButton').disabled = true;
-    alert('There was a problem while recording video.');
-  };
-
-  mediaRecorder.start();
-  recordingStartedAt = Date.now();
-
-  recordingInterval = setInterval(() => {
-    const elapsedMs = Date.now() - recordingStartedAt;
-    const elapsed = Math.floor(elapsedMs / 1000);
-    const remaining = Math.max(maxRecordingSeconds - elapsed, 0);
-    const progress = Math.min(elapsedMs / (maxRecordingSeconds * 1000), 1);
-
-    $('recordingTimer').innerText = `Time remaining: ${remaining}s`;
-    updateProgressRing(progress);
-
-    if (remaining <= 0) stopRecording();
-  }, 200);
-}
-
-function stopRecording() {
-  if (!mediaRecorder || !isRecording) return;
-  mediaRecorder.stop();
-}
-
-async function capturePhoto() {
-  if (!currentStream) {
-    $('startButton').disabled = false;
-    alert('Camera is not ready yet. Please try again.');
-    return;
-  }
-
-  const video = $('video');
-  const canvas = $('photoCanvas');
-  const ctx = canvas.getContext('2d');
-  const burstCount = Number(setup.photoBurstCount || 1);
-  const frames = [];
-  const width = video.videoWidth || 1280;
-  const height = video.videoHeight || 720;
-
-  canvas.width = width;
-  canvas.height = height;
-
-  $('ringCenter').innerText = 'Photo';
-
-  for (let i = 0; i < burstCount; i++) {
-    ctx.filter = getCanvasFilterValue(currentFilter);
-    ctx.drawImage(video, 0, 0, width, height);
-    ctx.filter = 'none';
-    frames.push(canvas.toDataURL('image/jpeg', 0.92));
-
-    if (burstCount > 1 && i < burstCount - 1) {
-      await wait(250);
+    @media (max-width: 640px) {
+      .screen { padding-left: 14px; padding-right: 14px; }
+      .topbar { padding: 12px 14px; }
+      .prompt-stage { grid-template-columns: 44px 1fr 44px; }
+      .panel, .review-card, .form-card, .thanks-card, .operator-panel { padding: 16px; }
+      .primary-btn { width: 100%; }
+      .mode-grid { flex-direction: column; }
+      .camera-top-ui { top: 12px; left: 12px; right: 12px; }
+      .camera-help { bottom: 16px; width: calc(100% - 24px); }
+      .record-shell { width: 102px; height: 102px; }
+      .record-btn { width: 78px; height: 78px; }
+      .toggle-grid, .inline-grid { grid-template-columns: 1fr; }
     }
-  }
-
-  recordedPhotoData = frames[0];
-  lastPhotoData = frames[0];
-  recordedBlob = null;
-
-  $('photoPreview').src = frames[0];
-  $('photoPreview').style.display = 'block';
-  $('playback').style.display = 'none';
-
-  $('startButton').disabled = false;
-  $('stopButton').disabled = true;
-  updateCaptureModeUI();
-  show('review');
-}
-
-function acceptCapture() {
-  sessionCounter += 1;
-  localStorage.setItem(SESSION_COUNTER_KEY, String(sessionCounter));
-  updateSummaryPills();
-
-  if (setup.enableGuestbook) {
-    show('guestbook');
-    return;
-  }
-
-  if (setup.enableEmail) {
-    show('email');
-    return;
-  }
-
-  finish();
-}
-
-async function retake() {
-  resetProgressRing();
-  document.body.classList.remove('recording');
-  $('recordingTimer').innerText = currentCaptureMode === 'video'
-    ? `Max ${maxRecordingSeconds} seconds`
-    : (Number(setup.photoBurstCount) > 1 ? `Burst count: ${setup.photoBurstCount}` : 'Single photo');
-
-  $('countdownOverlay').style.display = 'none';
-  $('stopButton').disabled = true;
-  show('camera');
-  await openCameraForMode(currentCaptureMode, true);
-}
-
-function goEmail() {
-  const message = $('message').value.trim();
-  const name = $('name').value.trim();
-
-  guestbookEntries.push({
-    eventName: setup.eventName,
-    deviceName: setup.deviceName,
-    captureMode: currentCaptureMode,
-    name,
-    message,
-    prompt: prompts[currentPrompt],
-    time: new Date().toLocaleString()
-  });
-
-  saveEventData();
-
-  if (setup.enableEmail) {
-    show('email');
-  } else {
-    finish();
-  }
-}
-
-function finish() {
-  const email = $('emailInput').value.trim();
-  const name = $('name').value.trim();
-
-  if (setup.enableEmail && email) {
-    emailEntries.push({
-      eventName: setup.eventName,
-      deviceName: setup.deviceName,
-      captureMode: currentCaptureMode,
-      name,
-      email,
-      time: new Date().toLocaleString()
-    });
-  }
-
-  saveEventData();
-  show('thankyou');
-
-  setTimeout(() => {
-    resetFormFields();
-    show('attract');
-  }, 4000);
-}
-
-function resetFormFields() {
-  $('message').value = '';
-  $('name').value = '';
-  $('emailInput').value = '';
-}
-
-function resetIdleTimeout() {
-  clearTimeout(idleTimeoutHandle);
-  idleTimeoutHandle = setTimeout(() => {
-    handleIdleTimeout();
-  }, IDLE_TIMEOUT_MS);
-}
-
-function clearIdleTimeout() {
-  clearTimeout(idleTimeoutHandle);
-  idleTimeoutHandle = null;
-}
-
-function handleIdleTimeout() {
-  if (isRecording) stopRecording();
-
-  $('countdownOverlay').style.display = 'none';
-  resetFormFields();
-  resetProgressRing();
-  show('attract');
-}
-
-function downloadFile(content, fileName, type) {
-  const blob = new Blob([content], { type });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-
-  a.href = url;
-  a.download = fileName;
-  a.click();
-
-  setTimeout(() => URL.revokeObjectURL(url), 500);
-}
-
-function escapeCsv(value) {
-  return String(value || '').replaceAll('"', '""');
-}
-
-function exportGuestbook() {
-  let csv = 'Event,Device,Mode,Name,Message,Prompt,Time\n';
-
-  guestbookEntries.forEach(entry => {
-    csv += `"${escapeCsv(entry.eventName)}","${escapeCsv(entry.deviceName)}","${escapeCsv(entry.captureMode)}","${escapeCsv(entry.name)}","${escapeCsv(entry.message)}","${escapeCsv(entry.prompt)}","${escapeCsv(entry.time)}"\n`;
-  });
-
-  downloadFile(csv, `${slugify(setup.eventName)}-guestbook.csv`, 'text/csv');
-}
-
-function exportEmails() {
-  let csv = 'Event,Device,Mode,Name,Email,Time\n';
-
-  emailEntries.forEach(entry => {
-    csv += `"${escapeCsv(entry.eventName)}","${escapeCsv(entry.deviceName)}","${escapeCsv(entry.captureMode)}","${escapeCsv(entry.name)}","${escapeCsv(entry.email)}","${escapeCsv(entry.time)}"\n`;
-  });
-
-  downloadFile(csv, `${slugify(setup.eventName)}-emails.csv`, 'text/csv');
-}
-
-function downloadLastVideo() {
-  if (!lastVideoBlob) {
-    alert('No video recorded yet in this session.');
-    return;
-  }
-
-  const ext = (lastVideoBlob.type || '').includes('mp4') ? 'mp4' : 'webm';
-  const number = String(sessionCounter).padStart(3, '0');
-  const url = URL.createObjectURL(lastVideoBlob);
-  const a = document.createElement('a');
-
-  a.href = url;
-  a.download = `${slugify(setup.eventName)}-${slugify(setup.deviceName)}-clip-${number}.${ext}`;
-  a.click();
-
-  setTimeout(() => URL.revokeObjectURL(url), 500);
-}
-
-function downloadLastPhoto() {
-  if (!lastPhotoData) {
-    alert('No photo captured yet in this session.');
-    return;
-  }
-
-  const number = String(sessionCounter).padStart(3, '0');
-  const a = document.createElement('a');
-  a.href = lastPhotoData;
-  a.download = `${slugify(setup.eventName)}-${slugify(setup.deviceName)}-photo-${number}.jpg`;
-  a.click();
-}
-
-function resetEventData() {
-  guestbookEntries = [];
-  emailEntries = [];
-  sessionCounter = 0;
-  localStorage.setItem(SESSION_COUNTER_KEY, '0');
-  saveEventData();
-  updateSummaryPills();
-  alert('Event data cleared on this device.');
-}
-
-function slugify(value) {
-  return String(value || 'event')
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '');
-}
-
-function capitalize(value) {
-  return String(value || '').charAt(0).toUpperCase() + String(value || '').slice(1);
-}
-
-function applyFilter(filterName) {
-  document.body.classList.remove('filter-none', 'filter-bw', 'filter-warm', 'filter-soft');
-
-  const map = {
-    none: 'filter-none',
-    bw: 'filter-bw',
-    warm: 'filter-warm',
-    soft: 'filter-soft'
-  };
-
-  document.body.classList.add(map[filterName] || 'filter-none');
-  currentFilter = filterName || 'none';
-}
-
-function getCanvasFilterValue(filterName) {
-  switch (filterName) {
-    case 'bw':
-      return 'grayscale(1) contrast(1.05)';
-    case 'warm':
-      return 'sepia(0.22) saturate(1.08) contrast(1.02) brightness(1.01)';
-    case 'soft':
-      return 'contrast(0.96) saturate(0.92) brightness(1.03)';
-    default:
-      return 'none';
-  }
-}
-
-function resetProgressRing() {
-  const circumference = 326.73;
-  $('ringProgress').style.strokeDasharray = `${circumference}`;
-  $('ringProgress').style.strokeDashoffset = `${circumference}`;
-  $('ringCenter').innerText = currentCaptureMode === 'video' ? 'Ready' : 'Photo';
-  document.body.classList.remove('recording');
-}
-
-function updateProgressRing(progress) {
-  const circumference = 326.73;
-  const clamped = Math.max(0, Math.min(progress, 1));
-  const offset = circumference * (1 - clamped);
-  $('ringProgress').style.strokeDashoffset = `${offset}`;
-  $('ringCenter').innerText = `${Math.round(clamped * 100)}%`;
-}
-
-function openPinPrompt() {
-  $('pinBackdrop').classList.add('open');
-  $('pinInput').value = '';
-  setTimeout(() => $('pinInput').focus(), 50);
-}
-
-function closePinPrompt() {
-  $('pinBackdrop').classList.remove('open');
-}
-
-function submitPin() {
-  const entered = $('pinInput').value.trim();
-  const expected = String(setup.adminPin || '').trim();
-
-  if (!expected) {
-    closePinPrompt();
-    openOperatorPanelDirect();
-    return;
-  }
-
-  if (entered === expected) {
-    pinVerified = true;
-    closePinPrompt();
-    openOperatorPanelDirect();
-  } else {
-    alert('Incorrect PIN.');
-    $('pinInput').value = '';
-    $('pinInput').focus();
-  }
-}
-
-function openOperatorPanel() {
-  if (!setup.adminPin) {
-    openOperatorPanelDirect();
-    return;
-  }
-  openPinPrompt();
-}
-
-function openOperatorPanelDirect() {
-  populateSetupForm();
-  updateSummaryPills();
-  $('operatorBackdrop').classList.add('open');
-}
-
-function closeOperatorPanel() {
-  $('operatorBackdrop').classList.remove('open');
-  pinVerified = false;
-}
-
-function saveOperatorSetup() {
-  setup.eventName = $('setupEventName').value.trim() || defaultSetup.eventName;
-  setup.deviceName = $('setupDeviceName').value.trim() || defaultSetup.deviceName;
-  setup.headline = $('setupHeadline').value.trim() || defaultSetup.headline;
-  setup.subheadline = $('setupSubheadline').value.trim() || defaultSetup.subheadline;
-  setup.promptCategory = $('setupPromptCategory').value || defaultSetup.promptCategory;
-  setup.customPrompts = $('setupCustomPrompts').value;
-  setup.recordLimit = Number($('setupRecordLimit').value || defaultSetup.recordLimit);
-  setup.captureMode = $('setupCaptureMode').value || defaultSetup.captureMode;
-  setup.photoBurstCount = Number($('setupPhotoBurstCount').value || defaultSetup.photoBurstCount);
-  setup.filter = $('setupFilter').value || 'none';
-  setup.adminPin = $('setupAdminPin').value.trim();
-  setup.enableGuestbook = $('setupEnableGuestbook').checked;
-  setup.enableEmail = $('setupEnableEmail').checked;
-  setup.enableVideoMode = $('setupEnableVideoMode').checked;
-  setup.enablePhotoMode = $('setupEnablePhotoMode').checked;
-
-  if (!setup.enableVideoMode && !setup.enablePhotoMode) {
-    setup.enableVideoMode = true;
-  }
-
-  if (setup.captureMode === 'video' && !setup.enableVideoMode) {
-    setup.captureMode = 'photo';
-  }
-
-  if (setup.captureMode === 'photo' && !setup.enablePhotoMode) {
-    setup.captureMode = 'video';
-  }
-
-  currentCaptureMode = setup.captureMode;
-  saveSetup();
-  applySetupToUI();
-  closeOperatorPanel();
-}
-
-function wait(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-$('openOperatorButton').addEventListener('click', openOperatorPanel);
-$('closeSetupButton').addEventListener('click', closeOperatorPanel);
-$('saveSetupButton').addEventListener('click', saveOperatorSetup);
-$('exportGuestbookButton').addEventListener('click', exportGuestbook);
-$('exportEmailsButton').addEventListener('click', exportEmails);
-$('downloadVideoButton').addEventListener('click', downloadLastVideo);
-$('downloadPhotoButton').addEventListener('click', downloadLastPhoto);
-$('resetEventButton').addEventListener('click', resetEventData);
-
-$('beginButton').addEventListener('click', startBooth);
-$('prevPromptButton').addEventListener('click', prevPrompt);
-$('nextPromptButton').addEventListener('click', nextPrompt);
-$('continueToCameraButton').addEventListener('click', goCamera);
-$('startButton').addEventListener('click', beginCountdown);
-$('stopButton').addEventListener('click', stopRecording);
-$('keepVideoButton').addEventListener('click', acceptCapture);
-$('recordAgainButton').addEventListener('click', retake);
-$('continueToEmailButton').addEventListener('click', goEmail);
-$('finishButton').addEventListener('click', finish);
-$('videoModeButton').addEventListener('click', () => setCaptureMode('video'));
-$('photoModeButton').addEventListener('click', () => setCaptureMode('photo'));
-
-$('pinSubmitButton').addEventListener('click', submitPin);
-$('pinCancelButton').addEventListener('click', closePinPrompt);
-$('pinInput').addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') submitPin();
-});
-
-applySetupToUI();
-populateSetupForm();
-
-document.addEventListener('click', () => {
-  if (
-    !$('attract').classList.contains('active') &&
-    !$('operatorBackdrop').classList.contains('open') &&
-    !$('pinBackdrop').classList.contains('open')
-  ) {
-    resetIdleTimeout();
-  }
-}, true);
-
-document.addEventListener('keydown', () => {
-  if (
-    !$('attract').classList.contains('active') &&
-    !$('operatorBackdrop').classList.contains('open') &&
-    !$('pinBackdrop').classList.contains('open')
-  ) {
-    resetIdleTimeout();
-  }
-}, true);
-</script>
+  </style>
+</head>
+<body>
+  <div class="app" id="app">
+    <section class="screen active" id="screen-attract">
+      <div class="shell">
+        <div class="topbar">
+          <div class="brand-wrap">
+            <div class="brand" id="brandLabel">StoryBooth</div>
+            <div class="event-name" id="topEventName">Your Event</div>
+          </div>
+          <div class="session-pill"><span>Session</span> <strong id="sessionCountTop">0</strong></div>
+        </div>
+
+        <div class="hero-card glass hold-zone" id="holdZone">
+          <div class="monogram" aria-hidden="true">SB</div>
+          <div class="eyebrow">Premium Story Experience</div>
+          <h1 class="title-xl">Step in. Share a memory.</h1>
+          <p class="lead">
+            Leave a thoughtful message, capture a moment, and become part of the story.
+          </p>
+          <div class="cta-stack">
+            <button class="primary-btn" id="beginBtn">Begin</button>
+            <div class="touch-hold">Press and hold logo area for operator access</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-prompt">
+      <div class="shell">
+        <div class="topbar">
+          <div class="brand-wrap">
+            <div class="brand">Choose a Prompt</div>
+            <div class="event-name" id="promptEventName">Your Event</div>
+          </div>
+          <button class="ghost-btn" id="backToAttractBtn">Back</button>
+        </div>
+
+        <div class="grid-2">
+          <div class="panel glass">
+            <h2>Start with a great question.</h2>
+            <p class="panel-sub">Pick a prompt, then choose whether you'd like to record a video or take photos.</p>
+
+            <div class="prompt-stage">
+              <button class="icon-btn" id="prevPromptBtn" aria-label="Previous prompt">&#8592;</button>
+              <div class="prompt-card">
+                <div class="prompt-number" id="promptNumber">Prompt 1</div>
+                <div class="prompt-text" id="promptText"></div>
+              </div>
+              <button class="icon-btn" id="nextPromptBtn" aria-label="Next prompt">&#8594;</button>
+            </div>
+
+            <div class="mode-grid">
+              <button class="mode-card active" id="modeVideoCard" data-mode="video">
+                <div class="mode-top"><span>Video</span><span>●</span></div>
+                <small>Record a message with countdown and time limit.</small>
+              </button>
+              <button class="mode-card" id="modePhotoCard" data-mode="photo">
+                <div class="mode-top"><span>Photo</span><span>◐</span></div>
+                <small>Capture a still photo or a quick burst series.</small>
+              </button>
+            </div>
+
+            <div class="footer-actions" style="margin-top:18px;">
+              <button class="primary-btn" id="continueToCameraBtn">Continue</button>
+            </div>
+          </div>
+
+          <div class="right-column">
+            <div class="panel glass">
+              <h2 style="font-size:1.8rem;">What to expect</h2>
+              <div class="summary-list">
+                <div class="summary-item"><div class="num">1</div><div><strong>Choose your moment</strong><span>Start with a prompt or simply speak from the heart.</span></div></div>
+                <div class="summary-item"><div class="num">2</div><div><strong>Take your time</strong><span>You’ll see a short countdown before we capture anything.</span></div></div>
+                <div class="summary-item"><div class="num">3</div><div><strong>Review before saving</strong><span>Keep your photo or video only if you love it.</span></div></div>
+              </div>
+            </div>
+
+            <div class="panel glass">
+              <h2 style="font-size:1.8rem;">Session details</h2>
+              <div class="summary-list">
+                <div class="summary-item"><div class="num">A</div><div><strong>Filter options</strong><span>Choose from Original, B&amp;W, Warm, or Soft.</span></div></div>
+                <div class="summary-item"><div class="num">B</div><div><strong>Guestbook &amp; email</strong><span>Add a written note and optionally leave your email after your capture.</span></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-camera">
+      <div class="shell camera-wrap">
+        <div class="topbar">
+          <div class="brand-wrap">
+            <div class="brand" id="cameraModeHeading">Video Capture</div>
+            <div class="event-name" id="cameraPromptLine"></div>
+          </div>
+          <div style="display:flex; gap:10px; align-items:center;">
+            <div class="camera-timer" id="cameraTimer">00:00</div>
+            <button class="ghost-btn" id="cameraBackBtn">Back</button>
+          </div>
+        </div>
+
+        <div class="camera-card">
+          <video id="cameraPreview" autoplay playsinline muted></video>
+          <canvas id="photoCanvas" class="preview-media hidden"></canvas>
+
+          <div class="camera-overlay">
+            <div class="camera-top-ui">
+              <div class="cluster">
+                <div class="status-chip" id="cameraReadyChip"><span class="dot"></span><span id="cameraReadyText">Preparing camera…</span></div>
+                <div class="mode-pill" id="modePillText">Video</div>
+              </div>
+              <div class="cluster">
+                <div class="subtle-pill" id="burstPill">Burst: On</div>
+                <div class="subtle-pill" id="limitPill">Limit: 60s</div>
+              </div>
+            </div>
+
+            <div class="camera-guide">
+              <div class="corner tl"></div>
+              <div class="corner tr"></div>
+              <div class="corner bl"></div>
+              <div class="corner br"></div>
+            </div>
+
+            <div class="countdown" id="countdownOverlay">3</div>
+
+            <div class="camera-help" id="cameraHelpBox">
+              <strong id="cameraHelpTitle">Center yourself inside the frame.</strong>
+              <span id="cameraHelpText">Look toward the camera, take a breath, and tap the center button when you're ready.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="camera-controls">
+          <div class="left">
+            <div class="filter-grid" id="filterGrid"></div>
+          </div>
+
+          <div class="middle">
+            <div class="record-shell">
+              <svg viewBox="0 0 112 112" aria-hidden="true">
+                <circle class="track" cx="56" cy="56" r="48"></circle>
+                <circle class="progress" id="progressRing" cx="56" cy="56" r="48"></circle>
+              </svg>
+              <button class="record-btn idle" id="recordBtn" aria-label="Record or capture"></button>
+            </div>
+            <div class="record-label" id="recordLabel">Tap to begin</div>
+          </div>
+
+          <div class="right">
+            <button class="secondary-btn" id="swapBurstBtn">Burst On</button>
+            <button class="secondary-btn" id="flipCameraBtn">Flip Camera</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-review">
+      <div class="shell">
+        <div class="topbar">
+          <div class="brand-wrap">
+            <div class="brand">Review</div>
+            <div class="event-name">Keep this moment or retake it</div>
+          </div>
+          <button class="ghost-btn" id="reviewBackBtn">Retake</button>
+        </div>
+
+        <div class="review-layout">
+          <div class="review-card glass" style="min-height:0;">
+            <div class="media-frame" id="reviewMediaFrame"></div>
+          </div>
+          <div class="detail-stack">
+            <div class="detail-block glass">
+              <h3 id="reviewTitle">Looks good?</h3>
+              <p id="reviewCopy">Review your capture before saving it to this session.</p>
+            </div>
+            <div class="detail-block glass">
+              <h3>Session details</h3>
+              <p><strong>Prompt:</strong> <span id="reviewPrompt"></span></p>
+              <p style="margin-top:8px;"><strong>Filter:</strong> <span id="reviewFilter"></span></p>
+              <p style="margin-top:8px;"><strong>Capture type:</strong> <span id="reviewType"></span></p>
+            </div>
+            <div class="review-actions">
+              <button class="primary-btn" id="keepBtn">Keep</button>
+              <button class="secondary-btn" id="retakeBtn">Retake</button>
+              <button class="ghost-btn" id="downloadLastBtn">Download Last Capture</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-guestbook">
+      <div class="shell">
+        <div class="topbar">
+          <div class="brand-wrap">
+            <div class="brand">Guestbook Note</div>
+            <div class="event-name">Leave a written message</div>
+          </div>
+          <button class="ghost-btn" id="skipGuestbookBtn">Skip</button>
+        </div>
+
+        <div class="form-layout">
+          <div class="form-card glass">
+            <div class="field">
+              <label class="label" for="guestName">Your name</label>
+              <input class="input" id="guestName" placeholder="Enter your name" maxlength="80" />
+            </div>
+            <div class="field">
+              <label class="label" for="guestMessage">Message</label>
+              <textarea class="textarea" id="guestMessage" placeholder="Write a short message, memory, or note."></textarea>
+              <div class="hint">A name is required only if you want your note saved. Message is optional.</div>
+            </div>
+            <div class="form-actions" style="margin-top:18px;">
+              <button class="primary-btn" id="saveGuestbookBtn">Continue</button>
+              <button class="secondary-btn" id="guestbookSkip2Btn">Skip</button>
+            </div>
+          </div>
+
+          <div class="detail-stack">
+            <div class="detail-block glass">
+              <h3>A lasting note</h3>
+              <p>This written message can live alongside your photo or video as part of the event record.</p>
+            </div>
+            <div class="detail-block glass">
+              <h3>Optional and easy</h3>
+              <p>You can leave a full message, just your name, or skip this step entirely.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-email">
+      <div class="shell">
+        <div class="topbar">
+          <div class="brand-wrap">
+            <div class="brand">Email Copy</div>
+            <div class="event-name">Optional</div>
+          </div>
+          <button class="ghost-btn" id="skipEmailBtn">Skip</button>
+        </div>
+
+        <div class="form-layout">
+          <div class="form-card glass">
+            <div class="field">
+              <label class="label" for="emailInput">Email address</label>
+              <input class="input" id="emailInput" type="email" inputmode="email" placeholder="name@example.com" maxlength="140" />
+            </div>
+            <label class="checkbox-row"><input type="checkbox" id="emailConsent" checked /> I consent to receiving a copy or follow-up related to this event.</label>
+            <div class="hint">Since this version runs locally, your email is saved only on this device until you export the CSV.</div>
+            <div class="form-actions" style="margin-top:18px;">
+              <button class="primary-btn" id="saveEmailBtn">Finish</button>
+              <button class="secondary-btn" id="emailSkip2Btn">Skip</button>
+            </div>
+          </div>
+
+          <div class="detail-stack">
+            <div class="detail-block glass">
+              <h3>Keep it simple</h3>
+              <p>Guests can leave an email address if you’d like to follow up after the event.</p>
+            </div>
+            <div class="detail-block glass">
+              <h3>Offline-friendly</h3>
+              <p>No Wi‑Fi is required. Everything stays on the iPad until you export it.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-thanks">
+      <div class="shell">
+        <div class="thanks-card glass">
+          <div class="thanks-mark">✦</div>
+          <div class="eyebrow">Captured Beautifully</div>
+          <h2 class="thanks-title">Thank you for sharing.</h2>
+          <p class="thanks-copy">Your story is now part of this celebration. We saved your moment and will return to the welcome screen shortly for the next guest.</p>
+          <div class="thanks-meta">
+            <div class="subtle-pill"><strong id="thanksCaptureType">Video</strong></div>
+            <div class="subtle-pill"><span>Session</span> <strong id="thanksSessionCount">0</strong></div>
+          </div>
+          <div class="sparkle-row" aria-hidden="true">
+            <div class="sparkle"></div>
+            <div class="sparkle"></div>
+            <div class="sparkle"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="operator-backdrop" id="operatorModal">
+      <div class="operator-panel">
+        <div id="pinLockView" class="pin-lock">
+          <div class="eyebrow">Operator Access</div>
+          <h3>Enter PIN</h3>
+          <p class="lead" style="max-width:30rem; font-size:1rem; margin-bottom:0;">Use the admin PIN to open the setup panel.</p>
+          <div class="pin-display" id="pinDisplay"></div>
+          <div id="pinError" class="hint" style="color:var(--danger); min-height:20px;"></div>
+          <div class="pin-pad" id="pinPad"></div>
+          <div class="form-actions" style="justify-content:center; margin-top:14px;">
+            <button class="secondary-btn" id="pinClearBtn">Clear</button>
+            <button class="ghost-btn" id="closeOperatorBtn">Close</button>
+          </div>
+        </div>
+
+        <div id="operatorView" class="hidden" style="display:flex; flex-direction:column; min-height:0;">
+          <div class="operator-head">
+            <div>
+              <div class="eyebrow">Operator Setup</div>
+              <h3>StoryBooth Controls</h3>
+              <div class="event-name">Customize the kiosk experience for this event.</div>
+            </div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <button class="secondary-btn" id="exportGuestbookBtn">Export Guestbook CSV</button>
+              <button class="secondary-btn" id="exportEmailBtn">Export Emails CSV</button>
+              <button class="ghost-btn" id="closeOperatorPanelBtn">Done</button>
+            </div>
+          </div>
+
+          <div class="operator-body">
+            <div class="settings-card">
+              <h4>Branding & event</h4>
+              <div class="field">
+                <label class="label" for="brandInput">Booth name</label>
+                <input class="input" id="brandInput" placeholder="StoryBooth" />
+              </div>
+              <div class="field">
+                <label class="label" for="eventInput">Event name</label>
+                <input class="input" id="eventInput" placeholder="Enter event name" />
+              </div>
+              <div class="field">
+                <label class="label" for="pinInput">Admin PIN</label>
+                <input class="input" id="pinInput" inputmode="numeric" maxlength="8" placeholder="4 digits" />
+              </div>
+            </div>
+
+            <div class="settings-card">
+              <h4>Capture settings</h4>
+              <div class="inline-grid">
+                <div class="field">
+                  <label class="label" for="timeLimitSelect">Video limit</label>
+                  <select class="select" id="timeLimitSelect">
+                    <option value="30">30 seconds</option>
+                    <option value="45">45 seconds</option>
+                    <option value="60">60 seconds</option>
+                    <option value="90">90 seconds</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label class="label" for="idleTimeoutSelect">Idle timeout</label>
+                  <select class="select" id="idleTimeoutSelect">
+                    <option value="30">30 seconds</option>
+                    <option value="45">45 seconds</option>
+                    <option value="60">60 seconds</option>
+                    <option value="90">90 seconds</option>
+                    <option value="120">120 seconds</option>
+                  </select>
+                </div>
+              </div>
+              <div class="toggle-grid" style="margin-top:12px;">
+                <div class="toggle"><label for="enableVideo">Video mode</label><input type="checkbox" id="enableVideo" checked /></div>
+                <div class="toggle"><label for="enablePhoto">Photo mode</label><input type="checkbox" id="enablePhoto" checked /></div>
+                <div class="toggle"><label for="enableGuestbook">Guestbook</label><input type="checkbox" id="enableGuestbook" checked /></div>
+                <div class="toggle"><label for="enableEmail">Email capture</label><input type="checkbox" id="enableEmail" checked /></div>
+                <div class="toggle"><label for="enableCountdown">Countdown</label><input type="checkbox" id="enableCountdown" checked /></div>
+                <div class="toggle"><label for="enableBurst">Photo burst</label><input type="checkbox" id="enableBurst" checked /></div>
+              </div>
+            </div>
+
+            <div class="settings-card">
+              <h4>Prompts</h4>
+              <div class="field">
+                <label class="label" for="promptListInput">One prompt per line</label>
+                <textarea class="textarea" id="promptListInput"></textarea>
+              </div>
+            </div>
+
+            <div class="settings-card">
+              <h4>Session tools</h4>
+              <div class="summary-list">
+                <div class="summary-item"><div class="num">#</div><div><strong>Total sessions</strong><span id="operatorSessionCount">0</span></div></div>
+                <div class="summary-item"><div class="num">↓</div><div><strong>Last download</strong><span id="lastDownloadName">No capture downloaded yet.</span></div></div>
+              </div>
+              <div class="form-actions" style="margin-top:14px;">
+                <button class="secondary-btn" id="downloadLastCaptureBtn">Download Last Capture</button>
+                <button class="ghost-btn" id="resetSessionBtn">Reset Session Count</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-actions" style="padding-top:14px; justify-content:flex-end;">
+            <button class="primary-btn" id="saveSettingsBtn">Save Settings</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      const STORAGE_KEY = 'storybooth_premium_v1';
+      const DEFAULTS = {
+        brand: 'StoryBooth',
+        eventName: 'Your Event',
+        adminPin: '1234',
+        videoLimit: 60,
+        idleTimeout: 60,
+        enableVideo: true,
+        enablePhoto: true,
+        enableGuestbook: true,
+        enableEmail: true,
+        enableCountdown: true,
+        enableBurst: true,
+        prompts: [
+          'Share your favorite memory.',
+          'What do you love most about this person?',
+          'Offer a wish for the future.',
+          'Tell a funny story from your time together.'
+        ],
+        sessionCount: 0,
+        guestbookEntries: [],
+        emailEntries: [],
+        lastDownloadName: ''
+      };
+
+      const FILTERS = {
+        original: 'none',
+        bw: 'grayscale(1)',
+        warm: 'sepia(.26) saturate(1.1) contrast(1.02) brightness(1.02)',
+        soft: 'contrast(.96) saturate(.92) brightness(1.06)'
+      };
+
+      const state = {
+        settings: loadSettings(),
+        currentScreen: 'screen-attract',
+        selectedPromptIndex: 0,
+        captureMode: 'video',
+        filter: 'original',
+        burstMode: true,
+        countdownValue: 3,
+        mediaStream: null,
+        mediaRecorder: null,
+        recordedChunks: [],
+        recordingTimer: null,
+        elapsed: 0,
+        isRecording: false,
+        currentFacingMode: 'user',
+        currentCapture: null,
+        thanksTimer: null,
+        idleTimer: null,
+        pinEntry: '',
+        holdTimer: null,
+        holdTriggered: false
+      };
+
+      const $ = (id) => document.getElementById(id);
+      const screens = Array.from(document.querySelectorAll('.screen'));
+
+      const els = {
+        beginBtn: $('beginBtn'),
+        backToAttractBtn: $('backToAttractBtn'),
+        prevPromptBtn: $('prevPromptBtn'),
+        nextPromptBtn: $('nextPromptBtn'),
+        continueToCameraBtn: $('continueToCameraBtn'),
+        promptText: $('promptText'),
+        promptNumber: $('promptNumber'),
+        modeVideoCard: $('modeVideoCard'),
+        modePhotoCard: $('modePhotoCard'),
+        topEventName: $('topEventName'),
+        promptEventName: $('promptEventName'),
+        brandLabel: $('brandLabel'),
+        sessionCountTop: $('sessionCountTop'),
+        cameraPreview: $('cameraPreview'),
+        photoCanvas: $('photoCanvas'),
+        cameraModeHeading: $('cameraModeHeading'),
+        cameraPromptLine: $('cameraPromptLine'),
+        cameraReadyChip: $('cameraReadyChip'),
+        cameraReadyText: $('cameraReadyText'),
+        modePillText: $('modePillText'),
+        burstPill: $('burstPill'),
+        limitPill: $('limitPill'),
+        countdownOverlay: $('countdownOverlay'),
+        cameraHelpTitle: $('cameraHelpTitle'),
+        cameraHelpText: $('cameraHelpText'),
+        recordBtn: $('recordBtn'),
+        recordLabel: $('recordLabel'),
+        progressRing: $('progressRing'),
+        swapBurstBtn: $('swapBurstBtn'),
+        flipCameraBtn: $('flipCameraBtn'),
+        cameraTimer: $('cameraTimer'),
+        cameraBackBtn: $('cameraBackBtn'),
+        filterGrid: $('filterGrid'),
+        reviewMediaFrame: $('reviewMediaFrame'),
+        reviewTitle: $('reviewTitle'),
+        reviewCopy: $('reviewCopy'),
+        reviewPrompt: $('reviewPrompt'),
+        reviewFilter: $('reviewFilter'),
+        reviewType: $('reviewType'),
+        keepBtn: $('keepBtn'),
+        retakeBtn: $('retakeBtn'),
+        reviewBackBtn: $('reviewBackBtn'),
+        downloadLastBtn: $('downloadLastBtn'),
+        guestName: $('guestName'),
+        guestMessage: $('guestMessage'),
+        skipGuestbookBtn: $('skipGuestbookBtn'),
+        guestbookSkip2Btn: $('guestbookSkip2Btn'),
+        saveGuestbookBtn: $('saveGuestbookBtn'),
+        emailInput: $('emailInput'),
+        emailConsent: $('emailConsent'),
+        skipEmailBtn: $('skipEmailBtn'),
+        emailSkip2Btn: $('emailSkip2Btn'),
+        saveEmailBtn: $('saveEmailBtn'),
+        thanksCaptureType: $('thanksCaptureType'),
+        thanksSessionCount: $('thanksSessionCount'),
+        holdZone: $('holdZone'),
+        operatorModal: $('operatorModal'),
+        pinLockView: $('pinLockView'),
+        operatorView: $('operatorView'),
+        pinDisplay: $('pinDisplay'),
+        pinError: $('pinError'),
+        pinPad: $('pinPad'),
+        pinClearBtn: $('pinClearBtn'),
+        closeOperatorBtn: $('closeOperatorBtn'),
+        closeOperatorPanelBtn: $('closeOperatorPanelBtn'),
+        brandInput: $('brandInput'),
+        eventInput: $('eventInput'),
+        pinInput: $('pinInput'),
+        timeLimitSelect: $('timeLimitSelect'),
+        idleTimeoutSelect: $('idleTimeoutSelect'),
+        enableVideo: $('enableVideo'),
+        enablePhoto: $('enablePhoto'),
+        enableGuestbook: $('enableGuestbook'),
+        enableEmail: $('enableEmail'),
+        enableCountdown: $('enableCountdown'),
+        enableBurst: $('enableBurst'),
+        promptListInput: $('promptListInput'),
+        operatorSessionCount: $('operatorSessionCount'),
+        lastDownloadName: $('lastDownloadName'),
+        saveSettingsBtn: $('saveSettingsBtn'),
+        exportGuestbookBtn: $('exportGuestbookBtn'),
+        exportEmailBtn: $('exportEmailBtn'),
+        downloadLastCaptureBtn: $('downloadLastCaptureBtn'),
+        resetSessionBtn: $('resetSessionBtn')
+      };
+
+      init();
+
+      function init() {
+        renderFilterButtons();
+        buildPinPad();
+        bindEvents();
+        syncUIFromSettings();
+        updatePromptUI();
+        updateModeCards();
+        updateSessionDisplays();
+        updateCameraText();
+        resetProgressRing();
+        resetIdleTimer();
+      }
+
+      function loadSettings() {
+        try {
+          const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+          return { ...DEFAULTS, ...saved };
+        } catch {
+          return { ...DEFAULTS };
+        }
+      }
+
+      function saveSettings() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state.settings));
+      }
+
+      function bindEvents() {
+        els.beginBtn.addEventListener('click', () => goToScreen('screen-prompt'));
+        els.backToAttractBtn.addEventListener('click', () => goToScreen('screen-attract'));
+        els.prevPromptBtn.addEventListener('click', () => cyclePrompt(-1));
+        els.nextPromptBtn.addEventListener('click', () => cyclePrompt(1));
+        els.continueToCameraBtn.addEventListener('click', () => openCameraScreen());
+        els.modeVideoCard.addEventListener('click', () => setCaptureMode('video'));
+        els.modePhotoCard.addEventListener('click', () => setCaptureMode('photo'));
+        els.recordBtn.addEventListener('click', handleRecordButton);
+        els.swapBurstBtn.addEventListener('click', () => {
+          state.burstMode = !state.burstMode;
+          updateCameraText();
+        });
+        els.flipCameraBtn.addEventListener('click', async () => {
+          state.currentFacingMode = state.currentFacingMode === 'user' ? 'environment' : 'user';
+          await startCamera();
+        });
+        els.cameraBackBtn.addEventListener('click', async () => {
+          await stopCaptureFlow();
+          goToScreen('screen-prompt');
+        });
+        els.keepBtn.addEventListener('click', handleKeepCapture);
+        els.retakeBtn.addEventListener('click', retakeCapture);
+        els.reviewBackBtn.addEventListener('click', retakeCapture);
+        els.downloadLastBtn.addEventListener('click', downloadCurrentCapture);
+        els.downloadLastCaptureBtn.addEventListener('click', downloadCurrentCapture);
+        els.skipGuestbookBtn.addEventListener('click', afterGuestbook);
+        els.guestbookSkip2Btn.addEventListener('click', afterGuestbook);
+        els.saveGuestbookBtn.addEventListener('click', saveGuestbook);
+        els.skipEmailBtn.addEventListener('click', finishSession);
+        els.emailSkip2Btn.addEventListener('click', finishSession);
+        els.saveEmailBtn.addEventListener('click', saveEmail);
+        els.exportGuestbookBtn.addEventListener('click', exportGuestbookCsv);
+        els.exportEmailBtn.addEventListener('click', exportEmailCsv);
+        els.saveSettingsBtn.addEventListener('click', saveOperatorSettings);
+        els.closeOperatorBtn.addEventListener('click', closeOperatorModal);
+        els.closeOperatorPanelBtn.addEventListener('click', closeOperatorModal);
+        els.pinClearBtn.addEventListener('click', clearPin);
+        els.resetSessionBtn.addEventListener('click', () => {
+          state.settings.sessionCount = 0;
+          saveSettings();
+          updateSessionDisplays();
+        });
+
+        ['pointerdown', 'touchstart'].forEach(evt => {
+          els.holdZone.addEventListener(evt, startHoldAccess, { passive: true });
+        });
+        ['pointerup', 'pointerleave', 'touchend', 'touchcancel'].forEach(evt => {
+          els.holdZone.addEventListener(evt, cancelHoldAccess, { passive: true });
+        });
+
+        document.addEventListener('click', resetIdleTimer, true);
+        document.addEventListener('touchstart', resetIdleTimer, true);
+        document.addEventListener('keydown', resetIdleTimer, true);
+
+        document.addEventListener('visibilitychange', () => {
+          if (document.hidden) clearTimeout(state.idleTimer);
+          else resetIdleTimer();
+        });
+      }
+
+      function goToScreen(id) {
+        screens.forEach(s => s.classList.toggle('active', s.id === id));
+        state.currentScreen = id;
+        resetIdleTimer();
+      }
+
+      function cyclePrompt(dir) {
+        const len = state.settings.prompts.length || 1;
+        state.selectedPromptIndex = (state.selectedPromptIndex + dir + len) % len;
+        updatePromptUI();
+      }
+
+      function setCaptureMode(mode) {
+        if (mode === 'video' && !state.settings.enableVideo) return;
+        if (mode === 'photo' && !state.settings.enablePhoto) return;
+        state.captureMode = mode;
+        updateModeCards();
+        updateCameraText();
+      }
+
+      function updateModeCards() {
+        els.modeVideoCard.classList.toggle('active', state.captureMode === 'video');
+        els.modePhotoCard.classList.toggle('active', state.captureMode === 'photo');
+        els.modeVideoCard.style.display = state.settings.enableVideo ? '' : 'none';
+        els.modePhotoCard.style.display = state.settings.enablePhoto ? '' : 'none';
+
+        if (!state.settings.enableVideo && state.captureMode === 'video') state.captureMode = 'photo';
+        if (!state.settings.enablePhoto && state.captureMode === 'photo') state.captureMode = 'video';
+      }
+
+      function updatePromptUI() {
+        const prompts = state.settings.prompts.length ? state.settings.prompts : DEFAULTS.prompts;
+        const idx = Math.min(state.selectedPromptIndex, prompts.length - 1);
+        state.selectedPromptIndex = idx;
+        els.promptNumber.textContent = `Prompt ${idx + 1}`;
+        els.promptText.textContent = prompts[idx];
+      }
+
+      function updateSessionDisplays() {
+        els.sessionCountTop.textContent = state.settings.sessionCount;
+        els.operatorSessionCount.textContent = state.settings.sessionCount;
+        els.thanksSessionCount.textContent = state.settings.sessionCount;
+        const lastName = state.settings.lastDownloadName || 'No capture downloaded yet.';
+        els.lastDownloadName.textContent = lastName;
+      }
+
+      function syncUIFromSettings() {
+        els.brandLabel.textContent = state.settings.brand;
+        els.topEventName.textContent = state.settings.eventName;
+        els.promptEventName.textContent = state.settings.eventName;
+        $('promptEventName').textContent = state.settings.eventName;
+        els.brandInput.value = state.settings.brand;
+        els.eventInput.value = state.settings.eventName;
+        els.pinInput.value = state.settings.adminPin;
+        els.timeLimitSelect.value = String(state.settings.videoLimit);
+        els.idleTimeoutSelect.value = String(state.settings.idleTimeout);
+        els.enableVideo.checked = !!state.settings.enableVideo;
+        els.enablePhoto.checked = !!state.settings.enablePhoto;
+        els.enableGuestbook.checked = !!state.settings.enableGuestbook;
+        els.enableEmail.checked = !!state.settings.enableEmail;
+        els.enableCountdown.checked = !!state.settings.enableCountdown;
+        els.enableBurst.checked = !!state.settings.enableBurst;
+        els.promptListInput.value = state.settings.prompts.join('\n');
+        state.burstMode = !!state.settings.enableBurst;
+        updateSessionDisplays();
+        updateModeCards();
+      }
+
+      function updateCameraText() {
+        const prompt = state.settings.prompts[state.selectedPromptIndex] || '';
+        els.cameraModeHeading.textContent = state.captureMode === 'video' ? 'Video Capture' : 'Photo Capture';
+        els.cameraPromptLine.textContent = prompt;
+        els.modePillText.textContent = state.captureMode === 'video' ? 'Video' : 'Photo';
+        els.burstPill.textContent = state.captureMode === 'photo' ? `Burst: ${state.burstMode ? 'On' : 'Off'}` : 'Countdown ready';
+        els.limitPill.textContent = state.captureMode === 'video' ? `Limit: ${state.settings.videoLimit}s` : 'Still capture';
+        els.swapBurstBtn.style.display = state.captureMode === 'photo' ? '' : 'none';
+        els.flipCameraBtn.style.display = '';
+        els.recordLabel.textContent = state.captureMode === 'video' ? 'Tap to begin' : (state.burstMode ? 'Tap for burst' : 'Tap to capture');
+        if (state.captureMode === 'video') {
+          els.cameraHelpTitle.textContent = 'Center yourself inside the frame.';
+          els.cameraHelpText.textContent = 'Look toward the camera, take a breath, and tap the center button when you are ready to record.';
+        } else {
+          els.cameraHelpTitle.textContent = 'Hold still for a polished photo.';
+          els.cameraHelpText.textContent = state.burstMode
+            ? 'A short countdown will begin, then we will capture a quick burst of photos.'
+            : 'A short countdown will begin, then we will capture one photo.';
+        }
+      }
+
+      function renderFilterButtons() {
+        els.filterGrid.innerHTML = '';
+        [
+          ['original', 'Original'],
+          ['bw', 'B&W'],
+          ['warm', 'Warm'],
+          ['soft', 'Soft']
+        ].forEach(([key, label]) => {
+          const btn = document.createElement('button');
+          btn.className = 'filter-chip' + (state.filter === key ? ' active' : '');
+          btn.textContent = label;
+          btn.addEventListener('click', () => {
+            state.filter = key;
+            applyFilter();
+            renderFilterButtons();
+          });
+          els.filterGrid.appendChild(btn);
+        });
+      }
+
+      function applyFilter() {
+        els.cameraPreview.style.filter = FILTERS[state.filter];
+        els.photoCanvas.style.filter = FILTERS[state.filter];
+      }
+
+      async function openCameraScreen() {
+        goToScreen('screen-camera');
+        await startCamera();
+      }
+
+      async function startCamera() {
+        stopStream();
+        els.cameraReadyChip.className = 'status-chip not-ready';
+        els.cameraReadyText.textContent = 'Preparing camera…';
+        applyFilter();
+        try {
+          const constraints = {
+            audio: state.captureMode === 'video',
+            video: {
+              facingMode: { ideal: state.currentFacingMode },
+              width: { ideal: 1280 },
+              height: { ideal: 720 }
+            }
+          };
+          const stream = await navigator.mediaDevices.getUserMedia(constraints);
+          state.mediaStream = stream;
+          els.cameraPreview.srcObject = stream;
+          await els.cameraPreview.play().catch(() => {});
+          els.cameraReadyChip.className = 'status-chip ready';
+          els.cameraReadyText.textContent = 'Camera ready';
+          applyFilter();
+          resetProgressRing();
+          updateTimer(0);
+        } catch (err) {
+          els.cameraReadyChip.className = 'status-chip not-ready';
+          els.cameraReadyText.textContent = 'Camera unavailable';
+          alert('Camera access was blocked or unavailable in Safari. Make sure camera and microphone permissions are allowed.');
+        }
+      }
+
+      function stopStream() {
+        if (state.mediaStream) {
+          state.mediaStream.getTracks().forEach(t => t.stop());
+          state.mediaStream = null;
+        }
+        els.cameraPreview.srcObject = null;
+      }
+
+      async function handleRecordButton() {
+        resetIdleTimer();
+        if (!state.mediaStream) {
+          await startCamera();
+          return;
+        }
+        if (state.captureMode === 'video') {
+          if (state.isRecording) stopVideoRecording();
+          else beginCountdown(startVideoRecording);
+        } else {
+          beginCountdown(capturePhotoFlow);
+        }
+      }
+
+      function beginCountdown(callback) {
+        if (!state.settings.enableCountdown) {
+          callback();
+          return;
+        }
+        let value = 3;
+        els.countdownOverlay.textContent = String(value);
+        els.countdownOverlay.classList.add('show');
+        const tick = setInterval(() => {
+          value -= 1;
+          if (value <= 0) {
+            clearInterval(tick);
+            els.countdownOverlay.classList.remove('show');
+            callback();
+          } else {
+            els.countdownOverlay.textContent = String(value);
+          }
+        }, 700);
+      }
+
+      function startVideoRecording() {
+        if (!state.mediaStream) return;
+        state.recordedChunks = [];
+        let options = {};
+        if (MediaRecorder.isTypeSupported('video/webm;codecs=vp9')) options.mimeType = 'video/webm;codecs=vp9';
+        else if (MediaRecorder.isTypeSupported('video/webm;codecs=vp8')) options.mimeType = 'video/webm;codecs=vp8';
+        else if (MediaRecorder.isTypeSupported('video/webm')) options.mimeType = 'video/webm';
+
+        try {
+          state.mediaRecorder = new MediaRecorder(state.mediaStream, options);
+        } catch {
+          alert('This browser could not start video recording. On iPad, Safari support can vary by iOS version.');
+          return;
+        }
+
+        state.mediaRecorder.ondataavailable = (e) => {
+          if (e.data && e.data.size > 0) state.recordedChunks.push(e.data);
+        };
+        state.mediaRecorder.onstop = () => {
+          const blob = new Blob(state.recordedChunks, { type: state.mediaRecorder.mimeType || 'video/webm' });
+          state.currentCapture = {
+            type: 'video',
+            blob,
+            url: URL.createObjectURL(blob),
+            filter: state.filter,
+            prompt: state.settings.prompts[state.selectedPromptIndex] || ''
+          };
+          showReview();
+        };
+
+        state.mediaRecorder.start(250);
+        state.isRecording = true;
+        state.elapsed = 0;
+        els.recordBtn.classList.remove('idle');
+        els.recordBtn.classList.add('recording');
+        els.recordLabel.textContent = 'Tap to stop';
+        updateTimer(0);
+
+        state.recordingTimer = setInterval(() => {
+          state.elapsed += 1;
+          updateTimer(state.elapsed);
+          updateProgressRing(state.elapsed / state.settings.videoLimit);
+          if (state.elapsed >= state.settings.videoLimit) stopVideoRecording();
+        }, 1000);
+      }
+
+      function stopVideoRecording() {
+        if (!state.isRecording || !state.mediaRecorder) return;
+        clearInterval(state.recordingTimer);
+        state.recordingTimer = null;
+        state.isRecording = false;
+        els.recordBtn.classList.remove('recording');
+        els.recordBtn.classList.add('idle');
+        els.recordLabel.textContent = 'Processing…';
+        resetProgressRing();
+        try {
+          state.mediaRecorder.stop();
+        } catch {}
+      }
+
+      async function capturePhotoFlow() {
+        if (!state.mediaStream) return;
+        const canvas = els.photoCanvas;
+        const video = els.cameraPreview;
+        const width = video.videoWidth || 1280;
+        const height = video.videoHeight || 720;
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        const captures = [];
+        const burstCount = state.burstMode ? 3 : 1;
+
+        for (let i = 0; i < burstCount; i++) {
+          ctx.filter = FILTERS[state.filter];
+          ctx.drawImage(video, 0, 0, width, height);
+          const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.92));
+          captures.push(blob);
+          if (i < burstCount - 1) await wait(180);
+        }
+
+        state.currentCapture = {
+          type: 'photo',
+          blob: captures[0],
+          blobs: captures,
+          url: URL.createObjectURL(captures[0]),
+          filter: state.filter,
+          prompt: state.settings.prompts[state.selectedPromptIndex] || '',
+          burst: burstCount > 1
+        };
+        showReview();
+      }
+
+      function showReview() {
+        stopStream();
+        goToScreen('screen-review');
+        els.reviewMediaFrame.innerHTML = '';
+        els.reviewPrompt.textContent = state.currentCapture?.prompt || '—';
+        els.reviewFilter.textContent = filterLabel(state.currentCapture?.filter || 'original');
+        els.reviewType.textContent = state.currentCapture?.type === 'video'
+          ? 'Video'
+          : (state.currentCapture?.burst ? 'Photo burst' : 'Photo');
+
+        if (state.currentCapture?.type === 'video') {
+          const video = document.createElement('video');
+          video.src = state.currentCapture.url;
+          video.controls = true;
+          video.playsInline = true;
+          video.className = 'preview-media';
+          els.reviewMediaFrame.appendChild(video);
+          els.reviewTitle.textContent = 'Review your video';
+          els.reviewCopy.textContent = 'Play it back and keep it only if it feels just right.';
+        } else {
+          const img = document.createElement('img');
+          img.src = state.currentCapture.url;
+          img.alt = 'Captured photo preview';
+          img.className = 'preview-media';
+          els.reviewMediaFrame.appendChild(img);
+          els.reviewTitle.textContent = state.currentCapture.burst ? 'Review your burst' : 'Review your photo';
+          els.reviewCopy.textContent = state.currentCapture.burst
+            ? 'The first image is previewed here. The full burst is kept locally for download.'
+            : 'Take a look and keep it if you love it.';
+        }
+      }
+
+      function retakeCapture() {
+        revokeCurrentCaptureUrl();
+        state.currentCapture = null;
+        openCameraScreen();
+      }
+
+      function handleKeepCapture() {
+        state.settings.sessionCount += 1;
+        saveSettings();
+        updateSessionDisplays();
+        if (state.settings.enableGuestbook) goToScreen('screen-guestbook');
+        else afterGuestbook();
+      }
+
+      function saveGuestbook() {
+        const name = els.guestName.value.trim();
+        const message = els.guestMessage.value.trim();
+        if (name || message) {
+          if (!name) {
+            alert('Please add your name if you would like this guestbook note saved.');
+            return;
+          }
+          state.settings.guestbookEntries.push({
+            timestamp: new Date().toISOString(),
+            eventName: state.settings.eventName,
+            name,
+            message,
+            prompt: state.currentCapture?.prompt || '',
+            captureType: state.currentCapture?.type || ''
+          });
+          saveSettings();
+        }
+        els.guestName.value = '';
+        els.guestMessage.value = '';
+        afterGuestbook();
+      }
+
+      function afterGuestbook() {
+        els.guestName.value = '';
+        els.guestMessage.value = '';
+        if (state.settings.enableEmail) goToScreen('screen-email');
+        else finishSession();
+      }
+
+      function saveEmail() {
+        const email = els.emailInput.value.trim();
+        const consent = !!els.emailConsent.checked;
+        if (email) {
+          const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+          if (!valid) {
+            alert('Please enter a valid email address.');
+            return;
+          }
+          state.settings.emailEntries.push({
+            timestamp: new Date().toISOString(),
+            eventName: state.settings.eventName,
+            email,
+            consent,
+            prompt: state.currentCapture?.prompt || '',
+            captureType: state.currentCapture?.type || ''
+          });
+          saveSettings();
+        }
+        els.emailInput.value = '';
+        els.emailConsent.checked = true;
+        finishSession();
+      }
+
+      function finishSession() {
+        els.emailInput.value = '';
+        els.emailConsent.checked = true;
+        els.thanksCaptureType.textContent = state.currentCapture?.type === 'video'
+          ? 'Video'
+          : (state.currentCapture?.burst ? 'Photo Burst' : 'Photo');
+        els.thanksSessionCount.textContent = state.settings.sessionCount;
+        goToScreen('screen-thanks');
+        clearTimeout(state.thanksTimer);
+        state.thanksTimer = setTimeout(() => {
+          revokeCurrentCaptureUrl();
+          state.currentCapture = null;
+          goToScreen('screen-attract');
+        }, 6500);
+      }
+
+      function downloadCurrentCapture() {
+        if (!state.currentCapture) return;
+        if (state.currentCapture.type === 'video') {
+          triggerDownload(state.currentCapture.blob, fileName('video', 'webm'));
+        } else if (state.currentCapture.burst && state.currentCapture.blobs?.length) {
+          state.currentCapture.blobs.forEach((blob, idx) => {
+            setTimeout(() => triggerDownload(blob, fileName(`photo-${idx + 1}`, 'jpg')), idx * 120);
+          });
+        } else {
+          triggerDownload(state.currentCapture.blob, fileName('photo', 'jpg'));
+        }
+      }
+
+      function triggerDownload(blob, name) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = name;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        state.settings.lastDownloadName = name;
+        saveSettings();
+        updateSessionDisplays();
+      }
+
+      function exportGuestbookCsv() {
+        const rows = state.settings.guestbookEntries;
+        if (!rows.length) return alert('No guestbook entries yet.');
+        downloadCsv(rows, 'storybooth-guestbook.csv');
+      }
+
+      function exportEmailCsv() {
+        const rows = state.settings.emailEntries;
+        if (!rows.length) return alert('No email entries yet.');
+        downloadCsv(rows, 'storybooth-emails.csv');
+      }
+
+      function downloadCsv(rows, filename) {
+        const headers = Object.keys(rows[0]);
+        const csv = [headers.join(',')].concat(rows.map(row => headers.map(h => csvEscape(row[h])).join(','))).join('\n');
+        triggerDownload(new Blob([csv], { type: 'text/csv;charset=utf-8;' }), filename);
+      }
+
+      function csvEscape(value) {
+        const str = String(value ?? '');
+        return /[",\n]/.test(str) ? '"' + str.replace(/"/g, '""') + '"' : str;
+      }
+
+      function saveOperatorSettings() {
+        const prompts = els.promptListInput.value.split('\n').map(s => s.trim()).filter(Boolean);
+        state.settings.brand = els.brandInput.value.trim() || DEFAULTS.brand;
+        state.settings.eventName = els.eventInput.value.trim() || DEFAULTS.eventName;
+        state.settings.adminPin = els.pinInput.value.trim() || DEFAULTS.adminPin;
+        state.settings.videoLimit = Number(els.timeLimitSelect.value || DEFAULTS.videoLimit);
+        state.settings.idleTimeout = Number(els.idleTimeoutSelect.value || DEFAULTS.idleTimeout);
+        state.settings.enableVideo = els.enableVideo.checked;
+        state.settings.enablePhoto = els.enablePhoto.checked;
+        state.settings.enableGuestbook = els.enableGuestbook.checked;
+        state.settings.enableEmail = els.enableEmail.checked;
+        state.settings.enableCountdown = els.enableCountdown.checked;
+        state.settings.enableBurst = els.enableBurst.checked;
+        state.settings.prompts = prompts.length ? prompts : DEFAULTS.prompts.slice();
+        state.burstMode = state.settings.enableBurst;
+
+        if (!state.settings.enableVideo && !state.settings.enablePhoto) {
+          alert('At least one capture mode must stay enabled.');
+          state.settings.enableVideo = true;
+        }
+
+        if (!state.settings.enableVideo && state.captureMode === 'video') state.captureMode = 'photo';
+        if (!state.settings.enablePhoto && state.captureMode === 'photo') state.captureMode = 'video';
+
+        saveSettings();
+        syncUIFromSettings();
+        updatePromptUI();
+        updateModeCards();
+        updateCameraText();
+        closeOperatorModal();
+      }
+
+      function startHoldAccess(e) {
+        if (state.currentScreen === 'screen-camera' && state.isRecording) return;
+        cancelHoldAccess();
+        state.holdTriggered = false;
+        state.holdTimer = setTimeout(() => {
+          state.holdTriggered = true;
+          openOperatorModal();
+        }, 1300);
+      }
+
+      function cancelHoldAccess() {
+        clearTimeout(state.holdTimer);
+        state.holdTimer = null;
+      }
+
+      function openOperatorModal() {
+        clearPin();
+        els.operatorModal.classList.add('show');
+        els.pinLockView.classList.remove('hidden');
+        els.operatorView.classList.add('hidden');
+      }
+
+      function closeOperatorModal() {
+        els.operatorModal.classList.remove('show');
+        clearPin();
+      }
+
+      function buildPinPad() {
+        const buttons = ['1','2','3','4','5','6','7','8','9','⌫','0','↵'];
+        els.pinPad.innerHTML = '';
+        buttons.forEach(val => {
+          const btn = document.createElement('button');
+          btn.className = 'pin-btn';
+          btn.textContent = val;
+          btn.addEventListener('click', () => handlePinPress(val));
+          els.pinPad.appendChild(btn);
+        });
+        renderPin();
+      }
+
+      function handlePinPress(val) {
+        if (val === '⌫') {
+          state.pinEntry = state.pinEntry.slice(0, -1);
+        } else if (val === '↵') {
+          submitPin();
+          return;
+        } else if (state.pinEntry.length < 8) {
+          state.pinEntry += val;
+        }
+        renderPin();
+      }
+
+      function clearPin() {
+        state.pinEntry = '';
+        els.pinError.textContent = '';
+        renderPin();
+      }
+
+      function renderPin() {
+        els.pinDisplay.innerHTML = '';
+        const total = Math.max(4, state.settings.adminPin.length || 4);
+        for (let i = 0; i < total; i++) {
+          const dot = document.createElement('div');
+          dot.className = 'pin-dot' + (i < state.pinEntry.length ? ' filled' : '');
+          els.pinDisplay.appendChild(dot);
+        }
+      }
+
+      function submitPin() {
+        if (state.pinEntry === state.settings.adminPin) {
+          els.pinLockView.classList.add('hidden');
+          els.operatorView.classList.remove('hidden');
+          els.operatorView.style.display = 'flex';
+          els.pinLockView.style.display = 'none';
+        } else {
+          els.pinError.textContent = 'Incorrect PIN.';
+          state.pinEntry = '';
+          renderPin();
+        }
+      }
+
+      async function stopCaptureFlow() {
+        clearInterval(state.recordingTimer);
+        state.recordingTimer = null;
+        state.isRecording = false;
+        stopStream();
+        resetProgressRing();
+      }
+
+      function revokeCurrentCaptureUrl() {
+        if (state.currentCapture?.url) URL.revokeObjectURL(state.currentCapture.url);
+      }
+
+      function updateTimer(seconds) {
+        const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+        const secs = (seconds % 60).toString().padStart(2, '0');
+        els.cameraTimer.textContent = `${mins}:${secs}`;
+      }
+
+      function resetProgressRing() {
+        els.progressRing.style.strokeDashoffset = '301.59';
+      }
+
+      function updateProgressRing(fraction) {
+        const clamped = Math.max(0, Math.min(1, fraction));
+        const circumference = 301.59;
+        els.progressRing.style.strokeDashoffset = String(circumference * (1 - clamped));
+      }
+
+      function filterLabel(key) {
+        return ({ original: 'Original', bw: 'B&W', warm: 'Warm', soft: 'Soft' })[key] || 'Original';
+      }
+
+      function fileName(kind, ext) {
+        const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+        const base = state.settings.eventName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'storybooth';
+        return `${base}-${kind}-${stamp}.${ext}`;
+      }
+
+      function wait(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+      }
+
+      function resetIdleTimer() {
+        clearTimeout(state.idleTimer);
+        if (['screen-attract', 'screen-thanks'].includes(state.currentScreen) || els.operatorModal.classList.contains('show')) return;
+        state.idleTimer = setTimeout(async () => {
+          await stopCaptureFlow();
+          revokeCurrentCaptureUrl();
+          state.currentCapture = null;
+          goToScreen('screen-attract');
+        }, (state.settings.idleTimeout || DEFAULTS.idleTimeout) * 1000);
+      }
+
+      window.addEventListener('beforeunload', () => {
+        stopStream();
+        revokeCurrentCaptureUrl();
+      });
+    })();
+  </script>
 </body>
 </html>
