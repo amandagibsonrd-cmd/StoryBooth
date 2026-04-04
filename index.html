@@ -27,12 +27,12 @@
       --radius-lg: 22px;
       --radius-md: 16px;
       --transition: 360ms cubic-bezier(.22,1,.36,1);
-      --header-h: 78px;
       --safe-top: env(safe-area-inset-top, 0px);
       --safe-bottom: env(safe-area-inset-bottom, 0px);
     }
 
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
     html, body {
       margin: 0;
       width: 100%;
@@ -276,6 +276,17 @@
 
     .primary-btn:active, .secondary-btn:active, .ghost-btn:active, .mini-btn:active, .icon-btn:active {
       transform: scale(.985);
+    }
+
+    .primary-btn[disabled],
+    .secondary-btn[disabled],
+    .ghost-btn[disabled],
+    .mini-btn[disabled],
+    .icon-btn[disabled],
+    .record-btn[disabled] {
+      opacity: .55;
+      cursor: not-allowed;
+      transform: none;
     }
 
     .primary-btn {
@@ -558,6 +569,7 @@
       border-width: 0;
       filter: drop-shadow(0 2px 10px rgba(0,0,0,.18));
     }
+
     .corner.tl { top: -1px; left: -1px; border-top-width: 3px; border-left-width: 3px; border-top-left-radius: 18px; }
     .corner.tr { top: -1px; right: -1px; border-top-width: 3px; border-right-width: 3px; border-top-right-radius: 18px; }
     .corner.bl { bottom: -1px; left: -1px; border-bottom-width: 3px; border-left-width: 3px; border-bottom-left-radius: 18px; }
@@ -1016,7 +1028,10 @@
       border: 1px solid rgba(23,53,42,.07);
     }
 
-    .toggle label { font-weight: 600; color: var(--green-deep); }
+    .toggle label {
+      font-weight: 600;
+      color: var(--green-deep);
+    }
 
     .toggle input { width: 22px; height: 22px; }
 
@@ -1093,10 +1108,12 @@
       .grid-2, .review-layout, .form-layout, .operator-body {
         grid-template-columns: 1fr;
       }
+
       .camera-controls {
         grid-template-columns: 1fr;
         justify-items: center;
       }
+
       .camera-controls .left, .camera-controls .right {
         justify-content: center;
       }
@@ -1190,14 +1207,14 @@
               <div class="summary-list">
                 <div class="summary-item"><div class="num">1</div><div><strong>Choose your moment</strong><span>Start with a prompt or simply speak from the heart.</span></div></div>
                 <div class="summary-item"><div class="num">2</div><div><strong>Take your time</strong><span>You’ll see a short countdown before we capture anything.</span></div></div>
-                <div class="summary-item"><div class="num">3</div><div><strong>Review before saving</strong><span>Keep your photo or video only if you love it.</span></div></div>
+                <div class="summary-item"><div class="num">3</div><div><strong>Review before saving</strong><span>Keep your photo or video only if it feels right.</span></div></div>
               </div>
             </div>
 
             <div class="panel glass">
               <h2 style="font-size:1.8rem;">Session details</h2>
               <div class="summary-list">
-                <div class="summary-item"><div class="num">A</div><div><strong>Filter options</strong><span>Choose from Original, B&amp;W, Warm, or Soft.</span></div></div>
+                <div class="summary-item"><div class="num">A</div><div><strong>Filter options</strong><span>Filters are available for photo capture. Video records in Original mode for reliability.</span></div></div>
                 <div class="summary-item"><div class="num">B</div><div><strong>Guestbook &amp; email</strong><span>Add a written note and optionally leave your email after your capture.</span></div></div>
               </div>
             </div>
@@ -1292,7 +1309,7 @@
           <div class="detail-stack">
             <div class="detail-block glass">
               <h3 id="reviewTitle">Looks good?</h3>
-              <p id="reviewCopy">Review your capture before saving it to this session.</p>
+              <p id="reviewCopy">Review your capture before moving on.</p>
             </div>
             <div class="detail-block glass">
               <h3>Session details</h3>
@@ -1303,7 +1320,7 @@
             <div class="review-actions">
               <button class="primary-btn" id="keepBtn">Keep</button>
               <button class="secondary-btn" id="retakeBtn">Retake</button>
-              <button class="ghost-btn" id="downloadLastBtn">Download Last Capture</button>
+              <button class="ghost-btn" id="downloadCurrentBtn">Download Current Capture</button>
             </div>
           </div>
         </div>
@@ -1382,7 +1399,7 @@
             </div>
             <div class="detail-block glass">
               <h3>Offline-friendly</h3>
-              <p>No Wi‑Fi is required. Everything stays on the iPad until you export it.</p>
+              <p>No Wi-Fi is required. Guest data stays on the device until you export it.</p>
             </div>
           </div>
         </div>
@@ -1395,7 +1412,7 @@
           <div class="thanks-mark">✦</div>
           <div class="eyebrow">Captured Beautifully</div>
           <h2 class="thanks-title">Thank you for sharing.</h2>
-          <p class="thanks-copy">Your story is now part of this celebration. We saved your moment and will return to the welcome screen shortly for the next guest.</p>
+          <p class="thanks-copy">Your capture is complete. We’ll return to the welcome screen shortly for the next guest.</p>
           <div class="thanks-meta">
             <div class="subtle-pill"><strong id="thanksCaptureType">Video</strong></div>
             <div class="subtle-pill"><span>Session</span> <strong id="thanksSessionCount">0</strong></div>
@@ -1424,7 +1441,7 @@
           </div>
         </div>
 
-        <div id="operatorView" class="hidden" style="display:flex; flex-direction:column; min-height:0;">
+        <div id="operatorView" class="hidden" style="display:none; flex-direction:column; min-height:0;">
           <div class="operator-head">
             <div>
               <div class="eyebrow">Operator Setup</div>
@@ -1440,7 +1457,7 @@
 
           <div class="operator-body">
             <div class="settings-card">
-              <h4>Branding & event</h4>
+              <h4>Branding &amp; event</h4>
               <div class="field">
                 <label class="label" for="brandInput">Booth name</label>
                 <input class="input" id="brandInput" placeholder="StoryBooth" />
@@ -1451,8 +1468,9 @@
               </div>
               <div class="field">
                 <label class="label" for="pinInput">Admin PIN</label>
-                <input class="input" id="pinInput" inputmode="numeric" maxlength="8" placeholder="4 digits" />
+                <input class="input" id="pinInput" inputmode="numeric" maxlength="8" placeholder="4 digits or more" />
               </div>
+              <div class="hint">For rentals, use a unique PIN instead of the default.</div>
             </div>
 
             <div class="settings-card">
@@ -1500,11 +1518,21 @@
               <h4>Session tools</h4>
               <div class="summary-list">
                 <div class="summary-item"><div class="num">#</div><div><strong>Total sessions</strong><span id="operatorSessionCount">0</span></div></div>
-                <div class="summary-item"><div class="num">↓</div><div><strong>Last download</strong><span id="lastDownloadName">No capture downloaded yet.</span></div></div>
+                <div class="summary-item"><div class="num">↓</div><div><strong>Most recent download</strong><span id="lastDownloadName">No capture downloaded yet.</span></div></div>
               </div>
               <div class="form-actions" style="margin-top:14px;">
-                <button class="secondary-btn" id="downloadLastCaptureBtn">Download Last Capture</button>
+                <button class="secondary-btn" id="downloadCurrentCaptureBtn">Download Current Capture</button>
                 <button class="ghost-btn" id="resetSessionBtn">Reset Session Count</button>
+              </div>
+              <div class="hint" style="margin-top:12px;">Media is not permanently stored in this local-only version. Download captures during each session if you want to keep them.</div>
+            </div>
+
+            <div class="settings-card">
+              <h4>Rental checklist</h4>
+              <div class="summary-list">
+                <div class="summary-item"><div class="num">1</div><div><strong>Use Safari</strong><span>Run this on an updated iPad in Safari.</span></div></div>
+                <div class="summary-item"><div class="num">2</div><div><strong>Lock it down</strong><span>Turn on Guided Access, disable Auto-Lock, and use Do Not Disturb.</span></div></div>
+                <div class="summary-item"><div class="num">3</div><div><strong>Test first</strong><span>Check photo, video, flip camera, review playback, and download before the event starts.</span></div></div>
               </div>
             </div>
           </div>
@@ -1519,11 +1547,12 @@
 
   <script>
     (() => {
-      const STORAGE_KEY = 'storybooth_premium_v1';
+      const STORAGE_KEY = 'storybooth_premium_rental_v2';
+
       const DEFAULTS = {
         brand: 'StoryBooth',
         eventName: 'Your Event',
-        adminPin: '1234',
+        adminPin: '4829',
         videoLimit: 60,
         idleTimeout: 60,
         enableVideo: true,
@@ -1551,6 +1580,13 @@
         soft: 'contrast(.96) saturate(.92) brightness(1.06)'
       };
 
+      const PHOTO_FILTER_OPTIONS = [
+        ['original', 'Original'],
+        ['bw', 'B&W'],
+        ['warm', 'Warm'],
+        ['soft', 'Soft']
+      ];
+
       const state = {
         settings: loadSettings(),
         currentScreen: 'screen-attract',
@@ -1558,20 +1594,20 @@
         captureMode: 'video',
         filter: 'original',
         burstMode: true,
-        countdownValue: 3,
         mediaStream: null,
         mediaRecorder: null,
         recordedChunks: [],
         recordingTimer: null,
+        countdownTimer: null,
         elapsed: 0,
         isRecording: false,
+        isCountingDown: false,
         currentFacingMode: 'user',
         currentCapture: null,
         thanksTimer: null,
         idleTimer: null,
         pinEntry: '',
-        holdTimer: null,
-        holdTriggered: false
+        holdTimer: null
       };
 
       const $ = (id) => document.getElementById(id);
@@ -1620,7 +1656,7 @@
         keepBtn: $('keepBtn'),
         retakeBtn: $('retakeBtn'),
         reviewBackBtn: $('reviewBackBtn'),
-        downloadLastBtn: $('downloadLastBtn'),
+        downloadCurrentBtn: $('downloadCurrentBtn'),
         guestName: $('guestName'),
         guestMessage: $('guestMessage'),
         skipGuestbookBtn: $('skipGuestbookBtn'),
@@ -1660,17 +1696,19 @@
         saveSettingsBtn: $('saveSettingsBtn'),
         exportGuestbookBtn: $('exportGuestbookBtn'),
         exportEmailBtn: $('exportEmailBtn'),
-        downloadLastCaptureBtn: $('downloadLastCaptureBtn'),
+        downloadCurrentCaptureBtn: $('downloadCurrentCaptureBtn'),
         resetSessionBtn: $('resetSessionBtn')
       };
 
       init();
 
       function init() {
+        checkSupport();
         renderFilterButtons();
         buildPinPad();
         bindEvents();
         syncUIFromSettings();
+        normalizeAvailableModes();
         updatePromptUI();
         updateModeCards();
         updateSessionDisplays();
@@ -1679,10 +1717,27 @@
         resetIdleTimer();
       }
 
+      function checkSupport() {
+        const cameraOK = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+        const recorderOK = typeof MediaRecorder !== 'undefined';
+
+        if (!cameraOK) {
+          alert('This device does not support camera access in this browser.');
+        } else if (!recorderOK) {
+          alert('This browser may not fully support in-browser video recording. Photo mode should still work, but test video carefully on the rental device.');
+        }
+      }
+
       function loadSettings() {
         try {
           const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-          return { ...DEFAULTS, ...saved };
+          return {
+            ...DEFAULTS,
+            ...saved,
+            guestbookEntries: Array.isArray(saved.guestbookEntries) ? saved.guestbookEntries : DEFAULTS.guestbookEntries,
+            emailEntries: Array.isArray(saved.emailEntries) ? saved.emailEntries : DEFAULTS.emailEntries,
+            prompts: Array.isArray(saved.prompts) && saved.prompts.length ? saved.prompts : DEFAULTS.prompts
+          };
         } catch {
           return { ...DEFAULTS };
         }
@@ -1701,35 +1756,45 @@
         els.modeVideoCard.addEventListener('click', () => setCaptureMode('video'));
         els.modePhotoCard.addEventListener('click', () => setCaptureMode('photo'));
         els.recordBtn.addEventListener('click', handleRecordButton);
+
         els.swapBurstBtn.addEventListener('click', () => {
+          if (state.captureMode !== 'photo') return;
           state.burstMode = !state.burstMode;
           updateCameraText();
         });
+
         els.flipCameraBtn.addEventListener('click', async () => {
+          if (state.isRecording || state.isCountingDown) return;
           state.currentFacingMode = state.currentFacingMode === 'user' ? 'environment' : 'user';
           await startCamera();
         });
+
         els.cameraBackBtn.addEventListener('click', async () => {
           await stopCaptureFlow();
           goToScreen('screen-prompt');
         });
+
         els.keepBtn.addEventListener('click', handleKeepCapture);
         els.retakeBtn.addEventListener('click', retakeCapture);
         els.reviewBackBtn.addEventListener('click', retakeCapture);
-        els.downloadLastBtn.addEventListener('click', downloadCurrentCapture);
-        els.downloadLastCaptureBtn.addEventListener('click', downloadCurrentCapture);
+        els.downloadCurrentBtn.addEventListener('click', downloadCurrentCapture);
+        els.downloadCurrentCaptureBtn.addEventListener('click', downloadCurrentCapture);
+
         els.skipGuestbookBtn.addEventListener('click', afterGuestbook);
         els.guestbookSkip2Btn.addEventListener('click', afterGuestbook);
         els.saveGuestbookBtn.addEventListener('click', saveGuestbook);
+
         els.skipEmailBtn.addEventListener('click', finishSession);
         els.emailSkip2Btn.addEventListener('click', finishSession);
         els.saveEmailBtn.addEventListener('click', saveEmail);
+
         els.exportGuestbookBtn.addEventListener('click', exportGuestbookCsv);
         els.exportEmailBtn.addEventListener('click', exportEmailCsv);
         els.saveSettingsBtn.addEventListener('click', saveOperatorSettings);
         els.closeOperatorBtn.addEventListener('click', closeOperatorModal);
         els.closeOperatorPanelBtn.addEventListener('click', closeOperatorModal);
         els.pinClearBtn.addEventListener('click', clearPin);
+
         els.resetSessionBtn.addEventListener('click', () => {
           state.settings.sessionCount = 0;
           saveSettings();
@@ -1739,6 +1804,7 @@
         ['pointerdown', 'touchstart'].forEach(evt => {
           els.holdZone.addEventListener(evt, startHoldAccess, { passive: true });
         });
+
         ['pointerup', 'pointerleave', 'touchend', 'touchcancel'].forEach(evt => {
           els.holdZone.addEventListener(evt, cancelHoldAccess, { passive: true });
         });
@@ -1748,8 +1814,11 @@
         document.addEventListener('keydown', resetIdleTimer, true);
 
         document.addEventListener('visibilitychange', () => {
-          if (document.hidden) clearTimeout(state.idleTimer);
-          else resetIdleTimer();
+          if (document.hidden) {
+            clearTimeout(state.idleTimer);
+          } else {
+            resetIdleTimer();
+          }
         });
       }
 
@@ -1765,11 +1834,37 @@
         updatePromptUI();
       }
 
+      function normalizeAvailableModes() {
+        if (!state.settings.enableVideo && !state.settings.enablePhoto) {
+          state.settings.enableVideo = true;
+        }
+
+        if (state.captureMode === 'video' && !state.settings.enableVideo) {
+          state.captureMode = 'photo';
+        }
+
+        if (state.captureMode === 'photo' && !state.settings.enablePhoto) {
+          state.captureMode = 'video';
+        }
+
+        if (state.captureMode === 'video') {
+          state.filter = 'original';
+        }
+      }
+
       function setCaptureMode(mode) {
         if (mode === 'video' && !state.settings.enableVideo) return;
         if (mode === 'photo' && !state.settings.enablePhoto) return;
+
         state.captureMode = mode;
+
+        if (mode === 'video') {
+          state.filter = 'original';
+        }
+
         updateModeCards();
+        renderFilterButtons();
+        applyFilter();
         updateCameraText();
       }
 
@@ -1778,9 +1873,6 @@
         els.modePhotoCard.classList.toggle('active', state.captureMode === 'photo');
         els.modeVideoCard.style.display = state.settings.enableVideo ? '' : 'none';
         els.modePhotoCard.style.display = state.settings.enablePhoto ? '' : 'none';
-
-        if (!state.settings.enableVideo && state.captureMode === 'video') state.captureMode = 'photo';
-        if (!state.settings.enablePhoto && state.captureMode === 'photo') state.captureMode = 'video';
       }
 
       function updatePromptUI() {
@@ -1795,15 +1887,13 @@
         els.sessionCountTop.textContent = state.settings.sessionCount;
         els.operatorSessionCount.textContent = state.settings.sessionCount;
         els.thanksSessionCount.textContent = state.settings.sessionCount;
-        const lastName = state.settings.lastDownloadName || 'No capture downloaded yet.';
-        els.lastDownloadName.textContent = lastName;
+        els.lastDownloadName.textContent = state.settings.lastDownloadName || 'No capture downloaded yet.';
       }
 
       function syncUIFromSettings() {
         els.brandLabel.textContent = state.settings.brand;
         els.topEventName.textContent = state.settings.eventName;
         els.promptEventName.textContent = state.settings.eventName;
-        $('promptEventName').textContent = state.settings.eventName;
         els.brandInput.value = state.settings.brand;
         els.eventInput.value = state.settings.eventName;
         els.pinInput.value = state.settings.adminPin;
@@ -1818,7 +1908,6 @@
         els.promptListInput.value = state.settings.prompts.join('\n');
         state.burstMode = !!state.settings.enableBurst;
         updateSessionDisplays();
-        updateModeCards();
       }
 
       function updateCameraText() {
@@ -1826,14 +1915,16 @@
         els.cameraModeHeading.textContent = state.captureMode === 'video' ? 'Video Capture' : 'Photo Capture';
         els.cameraPromptLine.textContent = prompt;
         els.modePillText.textContent = state.captureMode === 'video' ? 'Video' : 'Photo';
-        els.burstPill.textContent = state.captureMode === 'photo' ? `Burst: ${state.burstMode ? 'On' : 'Off'}` : 'Countdown ready';
+        els.burstPill.textContent = state.captureMode === 'photo' ? `Burst: ${state.burstMode ? 'On' : 'Off'}` : 'Original video only';
         els.limitPill.textContent = state.captureMode === 'video' ? `Limit: ${state.settings.videoLimit}s` : 'Still capture';
         els.swapBurstBtn.style.display = state.captureMode === 'photo' ? '' : 'none';
-        els.flipCameraBtn.style.display = '';
-        els.recordLabel.textContent = state.captureMode === 'video' ? 'Tap to begin' : (state.burstMode ? 'Tap for burst' : 'Tap to capture');
+        els.recordLabel.textContent = state.captureMode === 'video'
+          ? (state.isRecording ? 'Tap to stop' : 'Tap to begin')
+          : (state.burstMode ? 'Tap for burst' : 'Tap to capture');
+
         if (state.captureMode === 'video') {
           els.cameraHelpTitle.textContent = 'Center yourself inside the frame.';
-          els.cameraHelpText.textContent = 'Look toward the camera, take a breath, and tap the center button when you are ready to record.';
+          els.cameraHelpText.textContent = 'Video records in Original mode for the most reliable playback and downloads.';
         } else {
           els.cameraHelpTitle.textContent = 'Hold still for a polished photo.';
           els.cameraHelpText.textContent = state.burstMode
@@ -1844,39 +1935,49 @@
 
       function renderFilterButtons() {
         els.filterGrid.innerHTML = '';
-        [
-          ['original', 'Original'],
-          ['bw', 'B&W'],
-          ['warm', 'Warm'],
-          ['soft', 'Soft']
-        ].forEach(([key, label]) => {
+
+        PHOTO_FILTER_OPTIONS.forEach(([key, label]) => {
           const btn = document.createElement('button');
+          const disabledForVideo = state.captureMode === 'video' && key !== 'original';
+
           btn.className = 'filter-chip' + (state.filter === key ? ' active' : '');
           btn.textContent = label;
+          btn.disabled = disabledForVideo;
+          btn.style.opacity = disabledForVideo ? '.45' : '1';
+          btn.style.cursor = disabledForVideo ? 'not-allowed' : 'pointer';
+
           btn.addEventListener('click', () => {
+            if (disabledForVideo) return;
             state.filter = key;
             applyFilter();
             renderFilterButtons();
           });
+
           els.filterGrid.appendChild(btn);
         });
       }
 
       function applyFilter() {
-        els.cameraPreview.style.filter = FILTERS[state.filter];
-        els.photoCanvas.style.filter = FILTERS[state.filter];
+        const filterValue = FILTERS[state.filter] || FILTERS.original;
+        els.cameraPreview.style.filter = filterValue;
+        els.photoCanvas.style.filter = filterValue;
       }
 
       async function openCameraScreen() {
         goToScreen('screen-camera');
+        renderFilterButtons();
+        applyFilter();
+        updateCameraText();
         await startCamera();
       }
 
       async function startCamera() {
-        stopStream();
+        await stopCaptureFlow();
         els.cameraReadyChip.className = 'status-chip not-ready';
         els.cameraReadyText.textContent = 'Preparing camera…';
+        updateTimer(0);
         applyFilter();
+
         try {
           const constraints = {
             audio: state.captureMode === 'video',
@@ -1886,15 +1987,17 @@
               height: { ideal: 720 }
             }
           };
+
           const stream = await navigator.mediaDevices.getUserMedia(constraints);
           state.mediaStream = stream;
           els.cameraPreview.srcObject = stream;
           await els.cameraPreview.play().catch(() => {});
+
           els.cameraReadyChip.className = 'status-chip ready';
           els.cameraReadyText.textContent = 'Camera ready';
-          applyFilter();
           resetProgressRing();
           updateTimer(0);
+          applyFilter();
         } catch (err) {
           els.cameraReadyChip.className = 'status-chip not-ready';
           els.cameraReadyText.textContent = 'Camera unavailable';
@@ -1904,7 +2007,7 @@
 
       function stopStream() {
         if (state.mediaStream) {
-          state.mediaStream.getTracks().forEach(t => t.stop());
+          state.mediaStream.getTracks().forEach(track => track.stop());
           state.mediaStream = null;
         }
         els.cameraPreview.srcObject = null;
@@ -1912,31 +2015,52 @@
 
       async function handleRecordButton() {
         resetIdleTimer();
+
+        if (state.isCountingDown) return;
+
         if (!state.mediaStream) {
           await startCamera();
           return;
         }
+
         if (state.captureMode === 'video') {
-          if (state.isRecording) stopVideoRecording();
-          else beginCountdown(startVideoRecording);
+          if (state.isRecording) {
+            stopVideoRecording();
+          } else {
+            beginCountdown(startVideoRecording);
+          }
         } else {
           beginCountdown(capturePhotoFlow);
         }
       }
 
       function beginCountdown(callback) {
+        if (state.isCountingDown) return;
+
         if (!state.settings.enableCountdown) {
           callback();
           return;
         }
-        let value = 3;
-        els.countdownOverlay.textContent = String(value);
+
+        state.isCountingDown = true;
+        els.recordBtn.disabled = true;
+        els.flipCameraBtn.disabled = true;
+        els.cameraBackBtn.disabled = true;
+        els.countdownOverlay.textContent = '3';
         els.countdownOverlay.classList.add('show');
-        const tick = setInterval(() => {
+
+        let value = 3;
+        state.countdownTimer = setInterval(() => {
           value -= 1;
+
           if (value <= 0) {
-            clearInterval(tick);
+            clearInterval(state.countdownTimer);
+            state.countdownTimer = null;
             els.countdownOverlay.classList.remove('show');
+            state.isCountingDown = false;
+            els.recordBtn.disabled = false;
+            els.flipCameraBtn.disabled = false;
+            els.cameraBackBtn.disabled = false;
             callback();
           } else {
             els.countdownOverlay.textContent = String(value);
@@ -1946,31 +2070,43 @@
 
       function startVideoRecording() {
         if (!state.mediaStream) return;
+
         state.recordedChunks = [];
         let options = {};
-        if (MediaRecorder.isTypeSupported('video/webm;codecs=vp9')) options.mimeType = 'video/webm;codecs=vp9';
-        else if (MediaRecorder.isTypeSupported('video/webm;codecs=vp8')) options.mimeType = 'video/webm;codecs=vp8';
-        else if (MediaRecorder.isTypeSupported('video/webm')) options.mimeType = 'video/webm';
+
+        if (MediaRecorder.isTypeSupported('video/webm;codecs=vp9')) {
+          options.mimeType = 'video/webm;codecs=vp9';
+        } else if (MediaRecorder.isTypeSupported('video/webm;codecs=vp8')) {
+          options.mimeType = 'video/webm;codecs=vp8';
+        } else if (MediaRecorder.isTypeSupported('video/webm')) {
+          options.mimeType = 'video/webm';
+        }
 
         try {
           state.mediaRecorder = new MediaRecorder(state.mediaStream, options);
-        } catch {
+        } catch (err) {
           alert('This browser could not start video recording. On iPad, Safari support can vary by iOS version.');
           return;
         }
 
         state.mediaRecorder.ondataavailable = (e) => {
-          if (e.data && e.data.size > 0) state.recordedChunks.push(e.data);
+          if (e.data && e.data.size > 0) {
+            state.recordedChunks.push(e.data);
+          }
         };
+
         state.mediaRecorder.onstop = () => {
-          const blob = new Blob(state.recordedChunks, { type: state.mediaRecorder.mimeType || 'video/webm' });
+          const mimeType = state.mediaRecorder?.mimeType || 'video/webm';
+          const blob = new Blob(state.recordedChunks, { type: mimeType });
+
           state.currentCapture = {
             type: 'video',
             blob,
             url: URL.createObjectURL(blob),
-            filter: state.filter,
+            filter: 'original',
             prompt: state.settings.prompts[state.selectedPromptIndex] || ''
           };
+
           showReview();
         };
 
@@ -1979,6 +2115,8 @@
         state.elapsed = 0;
         els.recordBtn.classList.remove('idle');
         els.recordBtn.classList.add('recording');
+        els.flipCameraBtn.disabled = true;
+        els.cameraBackBtn.disabled = true;
         els.recordLabel.textContent = 'Tap to stop';
         updateTimer(0);
 
@@ -1986,19 +2124,27 @@
           state.elapsed += 1;
           updateTimer(state.elapsed);
           updateProgressRing(state.elapsed / state.settings.videoLimit);
-          if (state.elapsed >= state.settings.videoLimit) stopVideoRecording();
+
+          if (state.elapsed >= state.settings.videoLimit) {
+            stopVideoRecording();
+          }
         }, 1000);
       }
 
       function stopVideoRecording() {
         if (!state.isRecording || !state.mediaRecorder) return;
+
         clearInterval(state.recordingTimer);
         state.recordingTimer = null;
         state.isRecording = false;
+
         els.recordBtn.classList.remove('recording');
         els.recordBtn.classList.add('idle');
+        els.flipCameraBtn.disabled = false;
+        els.cameraBackBtn.disabled = false;
         els.recordLabel.textContent = 'Processing…';
         resetProgressRing();
+
         try {
           state.mediaRecorder.stop();
         } catch {}
@@ -2006,22 +2152,29 @@
 
       async function capturePhotoFlow() {
         if (!state.mediaStream) return;
+
         const canvas = els.photoCanvas;
         const video = els.cameraPreview;
         const width = video.videoWidth || 1280;
         const height = video.videoHeight || 720;
         canvas.width = width;
         canvas.height = height;
+
         const ctx = canvas.getContext('2d');
         const captures = [];
         const burstCount = state.burstMode ? 3 : 1;
 
         for (let i = 0; i < burstCount; i++) {
-          ctx.filter = FILTERS[state.filter];
+          ctx.filter = FILTERS[state.filter] || FILTERS.original;
           ctx.drawImage(video, 0, 0, width, height);
           const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.92));
-          captures.push(blob);
+          if (blob) captures.push(blob);
           if (i < burstCount - 1) await wait(180);
+        }
+
+        if (!captures.length) {
+          alert('Photo capture failed. Please try again.');
+          return;
         }
 
         state.currentCapture = {
@@ -2033,6 +2186,7 @@
           prompt: state.settings.prompts[state.selectedPromptIndex] || '',
           burst: burstCount > 1
         };
+
         showReview();
       }
 
@@ -2063,7 +2217,7 @@
           els.reviewMediaFrame.appendChild(img);
           els.reviewTitle.textContent = state.currentCapture.burst ? 'Review your burst' : 'Review your photo';
           els.reviewCopy.textContent = state.currentCapture.burst
-            ? 'The first image is previewed here. The full burst is kept locally for download.'
+            ? 'The first image is previewed here. All burst images can be downloaded now.'
             : 'Take a look and keep it if you love it.';
         }
       }
@@ -2078,18 +2232,24 @@
         state.settings.sessionCount += 1;
         saveSettings();
         updateSessionDisplays();
-        if (state.settings.enableGuestbook) goToScreen('screen-guestbook');
-        else afterGuestbook();
+
+        if (state.settings.enableGuestbook) {
+          goToScreen('screen-guestbook');
+        } else {
+          afterGuestbook();
+        }
       }
 
       function saveGuestbook() {
         const name = els.guestName.value.trim();
         const message = els.guestMessage.value.trim();
+
         if (name || message) {
           if (!name) {
             alert('Please add your name if you would like this guestbook note saved.');
             return;
           }
+
           state.settings.guestbookEntries.push({
             timestamp: new Date().toISOString(),
             eventName: state.settings.eventName,
@@ -2098,8 +2258,10 @@
             prompt: state.currentCapture?.prompt || '',
             captureType: state.currentCapture?.type || ''
           });
+
           saveSettings();
         }
+
         els.guestName.value = '';
         els.guestMessage.value = '';
         afterGuestbook();
@@ -2108,19 +2270,25 @@
       function afterGuestbook() {
         els.guestName.value = '';
         els.guestMessage.value = '';
-        if (state.settings.enableEmail) goToScreen('screen-email');
-        else finishSession();
+
+        if (state.settings.enableEmail) {
+          goToScreen('screen-email');
+        } else {
+          finishSession();
+        }
       }
 
       function saveEmail() {
         const email = els.emailInput.value.trim();
         const consent = !!els.emailConsent.checked;
+
         if (email) {
           const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
           if (!valid) {
             alert('Please enter a valid email address.');
             return;
           }
+
           state.settings.emailEntries.push({
             timestamp: new Date().toISOString(),
             eventName: state.settings.eventName,
@@ -2129,8 +2297,10 @@
             prompt: state.currentCapture?.prompt || '',
             captureType: state.currentCapture?.type || ''
           });
+
           saveSettings();
         }
+
         els.emailInput.value = '';
         els.emailConsent.checked = true;
         finishSession();
@@ -2144,6 +2314,7 @@
           : (state.currentCapture?.burst ? 'Photo Burst' : 'Photo');
         els.thanksSessionCount.textContent = state.settings.sessionCount;
         goToScreen('screen-thanks');
+
         clearTimeout(state.thanksTimer);
         state.thanksTimer = setTimeout(() => {
           revokeCurrentCaptureUrl();
@@ -2153,12 +2324,18 @@
       }
 
       function downloadCurrentCapture() {
-        if (!state.currentCapture) return;
+        if (!state.currentCapture) {
+          alert('There is no current capture to download.');
+          return;
+        }
+
         if (state.currentCapture.type === 'video') {
           triggerDownload(state.currentCapture.blob, fileName('video', 'webm'));
         } else if (state.currentCapture.burst && state.currentCapture.blobs?.length) {
           state.currentCapture.blobs.forEach((blob, idx) => {
-            setTimeout(() => triggerDownload(blob, fileName(`photo-${idx + 1}`, 'jpg')), idx * 120);
+            setTimeout(() => {
+              triggerDownload(blob, fileName(`photo-${idx + 1}`, 'jpg'));
+            }, idx * 120);
           });
         } else {
           triggerDownload(state.currentCapture.blob, fileName('photo', 'jpg'));
@@ -2173,7 +2350,9 @@
         document.body.appendChild(a);
         a.click();
         a.remove();
+
         setTimeout(() => URL.revokeObjectURL(url), 1000);
+
         state.settings.lastDownloadName = name;
         saveSettings();
         updateSessionDisplays();
@@ -2181,19 +2360,28 @@
 
       function exportGuestbookCsv() {
         const rows = state.settings.guestbookEntries;
-        if (!rows.length) return alert('No guestbook entries yet.');
+        if (!rows.length) {
+          alert('No guestbook entries yet.');
+          return;
+        }
         downloadCsv(rows, 'storybooth-guestbook.csv');
       }
 
       function exportEmailCsv() {
         const rows = state.settings.emailEntries;
-        if (!rows.length) return alert('No email entries yet.');
+        if (!rows.length) {
+          alert('No email entries yet.');
+          return;
+        }
         downloadCsv(rows, 'storybooth-emails.csv');
       }
 
       function downloadCsv(rows, filename) {
         const headers = Object.keys(rows[0]);
-        const csv = [headers.join(',')].concat(rows.map(row => headers.map(h => csvEscape(row[h])).join(','))).join('\n');
+        const csv = [headers.join(',')]
+          .concat(rows.map(row => headers.map(h => csvEscape(row[h])).join(',')))
+          .join('\n');
+
         triggerDownload(new Blob([csv], { type: 'text/csv;charset=utf-8;' }), filename);
       }
 
@@ -2203,7 +2391,11 @@
       }
 
       function saveOperatorSettings() {
-        const prompts = els.promptListInput.value.split('\n').map(s => s.trim()).filter(Boolean);
+        const prompts = els.promptListInput.value
+          .split('\n')
+          .map(s => s.trim())
+          .filter(Boolean);
+
         state.settings.brand = els.brandInput.value.trim() || DEFAULTS.brand;
         state.settings.eventName = els.eventInput.value.trim() || DEFAULTS.eventName;
         state.settings.adminPin = els.pinInput.value.trim() || DEFAULTS.adminPin;
@@ -2216,30 +2408,28 @@
         state.settings.enableCountdown = els.enableCountdown.checked;
         state.settings.enableBurst = els.enableBurst.checked;
         state.settings.prompts = prompts.length ? prompts : DEFAULTS.prompts.slice();
-        state.burstMode = state.settings.enableBurst;
 
         if (!state.settings.enableVideo && !state.settings.enablePhoto) {
           alert('At least one capture mode must stay enabled.');
           state.settings.enableVideo = true;
         }
 
-        if (!state.settings.enableVideo && state.captureMode === 'video') state.captureMode = 'photo';
-        if (!state.settings.enablePhoto && state.captureMode === 'photo') state.captureMode = 'video';
-
+        state.burstMode = !!state.settings.enableBurst;
+        normalizeAvailableModes();
         saveSettings();
         syncUIFromSettings();
         updatePromptUI();
         updateModeCards();
+        renderFilterButtons();
+        applyFilter();
         updateCameraText();
         closeOperatorModal();
       }
 
-      function startHoldAccess(e) {
-        if (state.currentScreen === 'screen-camera' && state.isRecording) return;
+      function startHoldAccess() {
+        if (state.currentScreen === 'screen-camera' && (state.isRecording || state.isCountingDown)) return;
         cancelHoldAccess();
-        state.holdTriggered = false;
         state.holdTimer = setTimeout(() => {
-          state.holdTriggered = true;
           openOperatorModal();
         }, 1300);
       }
@@ -2252,18 +2442,29 @@
       function openOperatorModal() {
         clearPin();
         els.operatorModal.classList.add('show');
+
         els.pinLockView.classList.remove('hidden');
         els.operatorView.classList.add('hidden');
+
+        els.pinLockView.style.display = 'block';
+        els.operatorView.style.display = 'none';
       }
 
       function closeOperatorModal() {
         els.operatorModal.classList.remove('show');
         clearPin();
+
+        els.pinLockView.classList.remove('hidden');
+        els.operatorView.classList.add('hidden');
+
+        els.pinLockView.style.display = 'block';
+        els.operatorView.style.display = 'none';
       }
 
       function buildPinPad() {
         const buttons = ['1','2','3','4','5','6','7','8','9','⌫','0','↵'];
         els.pinPad.innerHTML = '';
+
         buttons.forEach(val => {
           const btn = document.createElement('button');
           btn.className = 'pin-btn';
@@ -2271,6 +2472,7 @@
           btn.addEventListener('click', () => handlePinPress(val));
           els.pinPad.appendChild(btn);
         });
+
         renderPin();
       }
 
@@ -2283,6 +2485,7 @@
         } else if (state.pinEntry.length < 8) {
           state.pinEntry += val;
         }
+
         renderPin();
       }
 
@@ -2295,6 +2498,7 @@
       function renderPin() {
         els.pinDisplay.innerHTML = '';
         const total = Math.max(4, state.settings.adminPin.length || 4);
+
         for (let i = 0; i < total; i++) {
           const dot = document.createElement('div');
           dot.className = 'pin-dot' + (i < state.pinEntry.length ? ' filled' : '');
@@ -2304,10 +2508,11 @@
 
       function submitPin() {
         if (state.pinEntry === state.settings.adminPin) {
+          els.pinError.textContent = '';
           els.pinLockView.classList.add('hidden');
           els.operatorView.classList.remove('hidden');
-          els.operatorView.style.display = 'flex';
           els.pinLockView.style.display = 'none';
+          els.operatorView.style.display = 'flex';
         } else {
           els.pinError.textContent = 'Incorrect PIN.';
           state.pinEntry = '';
@@ -2318,13 +2523,30 @@
       async function stopCaptureFlow() {
         clearInterval(state.recordingTimer);
         state.recordingTimer = null;
+
+        clearInterval(state.countdownTimer);
+        state.countdownTimer = null;
+
         state.isRecording = false;
+        state.isCountingDown = false;
+
+        els.countdownOverlay.classList.remove('show');
+        els.recordBtn.disabled = false;
+        els.flipCameraBtn.disabled = false;
+        els.cameraBackBtn.disabled = false;
+        els.recordBtn.classList.remove('recording');
+        els.recordBtn.classList.add('idle');
+
         stopStream();
         resetProgressRing();
+        updateTimer(0);
+        updateCameraText();
       }
 
       function revokeCurrentCaptureUrl() {
-        if (state.currentCapture?.url) URL.revokeObjectURL(state.currentCapture.url);
+        if (state.currentCapture?.url) {
+          URL.revokeObjectURL(state.currentCapture.url);
+        }
       }
 
       function updateTimer(seconds) {
@@ -2349,7 +2571,11 @@
 
       function fileName(kind, ext) {
         const stamp = new Date().toISOString().replace(/[:.]/g, '-');
-        const base = state.settings.eventName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'storybooth';
+        const base = state.settings.eventName
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-|-$/g, '') || 'storybooth';
+
         return `${base}-${kind}-${stamp}.${ext}`;
       }
 
@@ -2359,7 +2585,14 @@
 
       function resetIdleTimer() {
         clearTimeout(state.idleTimer);
-        if (['screen-attract', 'screen-thanks'].includes(state.currentScreen) || els.operatorModal.classList.contains('show')) return;
+
+        if (
+          ['screen-attract', 'screen-thanks'].includes(state.currentScreen) ||
+          els.operatorModal.classList.contains('show')
+        ) {
+          return;
+        }
+
         state.idleTimer = setTimeout(async () => {
           await stopCaptureFlow();
           revokeCurrentCaptureUrl();
