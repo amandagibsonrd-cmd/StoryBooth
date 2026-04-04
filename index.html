@@ -465,7 +465,6 @@ label {
   overflow: auto;
 }
 
-/* Filters */
 .filter-none video,
 .filter-none #playback,
 .filter-none #photoPreview {
@@ -759,9 +758,9 @@ label {
 </div>
 
 <script>
-const STORAGE_KEY = 'storybooth_local_event_data_v5';
+const STORAGE_KEY = 'storybooth_local_event_data_v6';
 const IDLE_TIMEOUT_MS = 60000;
-const SETUP_KEY = 'storybooth_operator_setup_v3';
+const SETUP_KEY = 'storybooth_operator_setup_v4';
 const SESSION_COUNTER_KEY = 'storybooth_session_counter';
 
 const promptCategories = {
@@ -845,6 +844,7 @@ let recordingStartedAt = 0;
 let countdownInterval = null;
 let isRecording = false;
 let currentStream = null;
+let currentStreamMode = null;
 let idleTimeoutHandle = null;
 let currentCaptureMode = setup.captureMode || 'video';
 let currentFilter = setup.filter || 'none';
@@ -966,22 +966,61 @@ async function goCamera() {
   show('camera');
   updateCaptureModeUI();
   $('stopButton').disabled = true;
-  await openCamera();
+  $('startButton').disabled = false;
+  await openCameraForMode(currentCaptureMode);
 }
 
-async function openCamera() {
-  if (currentStream) {
+function getConstraintsForMode(mode) {
+  if (mode === 'photo') {
+    return {
+      video: {
+        facingMode: 'user',
+        width: { ideal: 1280 },
+        height: { ideal: 720 }
+      },
+      audio: false
+    };
+  }
+
+  return {
+    video: {
+      facingMode: 'user',
+      width: { ideal: 1280 },
+      height: { ideal: 720 }
+    },
+    audio: true
+  };
+}
+
+function stopCurrentStream() {
+  if (!currentStream) return;
+  currentStream.getTracks().forEach(track => track.stop());
+  currentStream = null;
+  currentStreamMode = null;
+  $('video').srcObject = null;
+}
+
+async function openCameraForMode(mode, forceRefresh = false) {
+  if (currentStream && currentStreamMode === mode && !forceRefresh) {
     $('video').srcObject = currentStream;
+    await $('video').play().catch(() => {});
     return;
   }
 
+  stopCurrentStream();
+
   try {
-    currentStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    const constraints = getConstraintsForMode(mode);
+    currentStream = await navigator.mediaDevices.getUserMedia(constraints);
+    currentStreamMode = mode;
     $('video').srcObject = currentStream;
     await $('video').play().catch(() => {});
   } catch (error) {
-    alert('Camera and microphone access are required.');
     console.error(error);
+    alert(mode === 'photo'
+      ? 'Camera access is required to take photos.'
+      : 'Camera and microphone access are required to record video.'
+    );
     show('attract');
   }
 }
@@ -1015,16 +1054,26 @@ function updateSummaryPills() {
   $('summaryCurrentMode').innerText = `Current mode: ${capitalize(currentCaptureMode)}`;
 }
 
-function setCaptureMode(mode) {
+async function setCaptureMode(mode) {
   if (mode === 'video' && !setup.enableVideoMode) return;
   if (mode === 'photo' && !setup.enablePhotoMode) return;
+  if (isRecording) return;
+
   currentCaptureMode = mode;
   updateCaptureModeUI();
   resetProgressRing();
+
+  if ($('camera').classList.contains('active')) {
+    await openCameraForMode(currentCaptureMode, true);
+  }
 }
 
 function beginCountdown() {
   if (isRecording) return;
+  if (!currentStream) {
+    alert('Camera is not ready yet. Please try again.');
+    return;
+  }
 
   let count = 3;
   $('startButton').disabled = true;
@@ -1068,9 +1117,27 @@ function getBestMimeType() {
 function startRecording() {
   if (!currentStream || isRecording) return;
 
+  if (!window.MediaRecorder) {
+    alert('Video recording is not supported on this device/browser.');
+    $('startButton').disabled = false;
+    $('stopButton').disabled = true;
+    return;
+  }
+
   const chunks = [];
   const mimeType = getBestMimeType();
-  mediaRecorder = mimeType ? new MediaRecorder(currentStream, { mimeType }) : new MediaRecorder(currentStream);
+
+  try {
+    mediaRecorder = mimeType
+      ? new MediaRecorder(currentStream, { mimeType })
+      : new MediaRecorder(currentStream);
+  } catch (error) {
+    console.error(error);
+    alert('Video recording could not start on this device/browser.');
+    $('startButton').disabled = false;
+    $('stopButton').disabled = true;
+    return;
+  }
 
   isRecording = true;
   document.body.classList.add('recording');
@@ -1105,6 +1172,17 @@ function startRecording() {
     show('review');
   };
 
+  mediaRecorder.onerror = (event) => {
+    console.error('MediaRecorder error:', event);
+    clearInterval(recordingInterval);
+    isRecording = false;
+    document.body.classList.remove('recording');
+    resetProgressRing();
+    $('startButton').disabled = false;
+    $('stopButton').disabled = true;
+    alert('There was a problem while recording video.');
+  };
+
   mediaRecorder.start();
   recordingStartedAt = Date.now();
 
@@ -1127,7 +1205,11 @@ function stopRecording() {
 }
 
 async function capturePhoto() {
-  if (!currentStream) return;
+  if (!currentStream) {
+    $('startButton').disabled = false;
+    alert('Camera is not ready yet. Please try again.');
+    return;
+  }
 
   const video = $('video');
   const canvas = $('photoCanvas');
@@ -1185,7 +1267,7 @@ function acceptCapture() {
   finish();
 }
 
-function retake() {
+async function retake() {
   resetProgressRing();
   document.body.classList.remove('recording');
   $('recordingTimer').innerText = currentCaptureMode === 'video'
@@ -1195,6 +1277,7 @@ function retake() {
   $('countdownOverlay').style.display = 'none';
   $('stopButton').disabled = true;
   show('camera');
+  await openCameraForMode(currentCaptureMode, true);
 }
 
 function goEmail() {
