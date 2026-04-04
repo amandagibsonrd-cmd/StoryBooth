@@ -14,9 +14,12 @@
   --accent: #2f3a44;
   --accent-soft: #8fa3ad;
   --gold: #c6a86a;
+  --danger: #b84c4c;
   --shadow-soft: 0 20px 60px rgba(0,0,0,0.06);
 }
+
 * { box-sizing: border-box; }
+
 html, body {
   margin: 0;
   width: 100%;
@@ -25,8 +28,14 @@ html, body {
   background: var(--bg);
   color: var(--text);
 }
-body { overflow: hidden; }
+
+body {
+  overflow: hidden;
+  transition: background 0.35s ease, color 0.35s ease;
+}
+
 button, input, textarea, select { font: inherit; }
+
 .screen {
   position: fixed;
   inset: 0;
@@ -35,8 +44,11 @@ button, input, textarea, select { font: inherit; }
   justify-content: center;
   padding: 24px;
 }
+
 .screen.active { display: flex; }
+
 .stage { width: min(960px, 100%); }
+
 .panel {
   background: var(--panel);
   border: 1px solid var(--line);
@@ -54,6 +66,7 @@ button, input, textarea, select { font: inherit; }
   pointer-events: none;
   background: linear-gradient(120deg, rgba(198,168,106,0.08), transparent 40%, rgba(143,163,173,0.08));
 }
+
 .eyebrow-kiosk {
   display: inline-block;
   font-size: 12px;
@@ -62,27 +75,32 @@ button, input, textarea, select { font: inherit; }
   color: var(--muted);
   margin-bottom: 16px;
 }
+
 h1 {
   font-size: clamp(34px, 5vw, 58px);
   letter-spacing: -0.04em;
   margin: 0 0 12px;
   font-weight: 500;
 }
+
 .section-title {
   font-size: clamp(28px, 4vw, 42px);
   letter-spacing: -0.03em;
   margin: 0 0 10px;
 }
+
 p, .section-sub {
   color: var(--muted);
   font-size: 18px;
   margin: 0;
 }
+
 .attract-wrap {
   position: relative;
   text-align: center;
   padding: 48px 24px;
 }
+
 .attract-glow {
   position: absolute;
   inset: 50% auto auto 50%;
@@ -93,12 +111,15 @@ p, .section-sub {
   animation: driftGlow 7s ease-in-out infinite;
   pointer-events: none;
 }
+
 .attract-inner { position: relative; z-index: 1; }
+
 @keyframes driftGlow {
   0% { transform: translate(-50%, -50%) scale(1); opacity: 0.7; }
   50% { transform: translate(-50%, -52%) scale(1.08); opacity: 1; }
   100% { transform: translate(-50%, -50%) scale(1); opacity: 0.7; }
 }
+
 button {
   appearance: none;
   border: none;
@@ -113,27 +134,29 @@ button {
   box-shadow: 0 10px 25px rgba(0,0,0,0.08);
   transition: all 0.25s ease;
 }
+
 button:hover {
   transform: translateY(-2px);
   box-shadow: 0 14px 30px rgba(0,0,0,0.12);
 }
+
 button.secondary {
   background: white;
   color: var(--accent);
   border: 1px solid var(--line);
 }
-button.danger {
-  background: #b84c4c;
-}
-button.secondary {
-  background: white;
-  color: var(--accent);
-  border: 1px solid var(--line);
-}
+
 button.danger {
   background: var(--danger);
 }
-button:disabled { opacity: .45; cursor: default; }
+
+button:disabled {
+  opacity: .45;
+  cursor: default;
+  transform: none;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.04);
+}
+
 .button-row {
   display: flex;
   gap: 14px;
@@ -141,11 +164,13 @@ button:disabled { opacity: .45; cursor: default; }
   justify-content: center;
   margin-top: 18px;
 }
+
 .prompt-shell {
   max-width: 780px;
   margin: 0 auto;
   text-align: center;
 }
+
 .prompt-card-wrap {
   display: grid;
   grid-template-columns: 72px 1fr 72px;
@@ -153,6 +178,7 @@ button:disabled { opacity: .45; cursor: default; }
   align-items: center;
   margin: 26px 0 18px;
 }
+
 .prompt-card {
   background: var(--panel);
   border: 1px solid var(--line);
@@ -160,6 +186,7 @@ button:disabled { opacity: .45; cursor: default; }
   padding: 18px;
   box-shadow: 0 14px 34px rgba(0,0,0,0.04);
 }
+
 .prompt-card-label {
   font-size: 12px;
   letter-spacing: 0.2em;
@@ -167,6 +194,7 @@ button:disabled { opacity: .45; cursor: default; }
   color: var(--muted);
   margin-bottom: 14px;
 }
+
 .prompt-box {
   border: 1px solid var(--line);
   padding: 40px;
@@ -177,6 +205,7 @@ button:disabled { opacity: .45; cursor: default; }
   background: #fcfcfb;
   box-shadow: inset 0 0 0 1px rgba(198,168,106,0.08);
 }
+
 .prompt-arrow {
   width: 72px;
   height: 72px;
@@ -189,14 +218,21 @@ button:disabled { opacity: .45; cursor: default; }
   border: 1px solid var(--line);
   box-shadow: 0 10px 24px rgba(0,0,0,0.03);
 }
+
 .prompt-meta {
   color: var(--muted);
   font-size: 14px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
+
 .camera-panel { text-align: center; }
-.video-wrap { position: relative; margin-top: 18px; }
+
+.video-wrap {
+  position: relative;
+  margin-top: 18px;
+}
+
 video, canvas, img.preview-image {
   width: 100%;
   max-height: 58vh;
@@ -206,7 +242,9 @@ video, canvas, img.preview-image {
   object-fit: cover;
   box-shadow: 0 20px 50px rgba(0,0,0,0.15);
 }
+
 #playback, #photoPreview { margin-top: 18px; }
+
 .countdown-overlay {
   position: absolute;
   inset: 0;
@@ -218,6 +256,7 @@ video, canvas, img.preview-image {
   z-index: 4;
   backdrop-filter: blur(6px);
 }
+
 .countdown-number {
   font-size: clamp(84px, 14vw, 150px);
   font-weight: 700;
@@ -225,15 +264,72 @@ video, canvas, img.preview-image {
   color: var(--accent);
   animation: pulseCount 0.9s ease;
 }
+
 @keyframes pulseCount {
   0% { transform: scale(0.85); opacity: 0.35; }
   100% { transform: scale(1); opacity: 1; }
 }
+
+.record-status-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0 8px;
+}
+
+.progress-ring {
+  position: relative;
+  width: 118px;
+  height: 118px;
+}
+
+.progress-ring svg {
+  width: 118px;
+  height: 118px;
+  transform: rotate(-90deg);
+}
+
+.ring-track {
+  fill: none;
+  stroke: rgba(47,58,68,0.10);
+  stroke-width: 8;
+}
+
+.ring-progress {
+  fill: none;
+  stroke: var(--gold);
+  stroke-width: 8;
+  stroke-linecap: round;
+  stroke-dasharray: 326.73;
+  stroke-dashoffset: 326.73;
+  transition: stroke-dashoffset 0.2s linear, stroke 0.25s ease;
+}
+
+.ring-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 18px;
+}
+
+body.recording .ring-progress {
+  stroke: #c65f5f;
+}
+
 .timer-text {
   font-size: 18px;
   color: var(--muted);
   margin-bottom: 8px;
 }
+
 textarea, input, select {
   width: 100%;
   padding: 14px;
@@ -242,26 +338,36 @@ textarea, input, select {
   border-radius: 12px;
   font-size: 16px;
   background: #fafafa;
+  color: var(--text);
 }
-textarea { min-height: 130px; resize: vertical; }
+
+textarea {
+  min-height: 130px;
+  resize: vertical;
+}
+
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
   margin-top: 20px;
 }
+
 .form-grid .full { grid-column: 1 / -1; }
+
 label {
   display: block;
   font-size: 14px;
   color: var(--muted);
 }
+
 .check-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
   margin-top: 14px;
 }
+
 .check-item {
   display: flex;
   align-items: center;
@@ -272,11 +378,13 @@ label {
   background: #fafafa;
   color: var(--text);
 }
+
 .check-item input {
   width: 18px;
   height: 18px;
   margin: 0;
 }
+
 .meta-strip {
   display: flex;
   gap: 10px;
@@ -284,6 +392,7 @@ label {
   justify-content: center;
   margin-top: 18px;
 }
+
 .meta-pill {
   display: inline-flex;
   align-items: center;
@@ -296,6 +405,7 @@ label {
   font-size: 13px;
   letter-spacing: 0.06em;
 }
+
 .mode-toggle {
   display: inline-flex;
   gap: 8px;
@@ -304,6 +414,7 @@ label {
   flex-wrap: wrap;
   justify-content: center;
 }
+
 .mode-chip {
   margin-top: 0;
   padding: 10px 16px;
@@ -312,10 +423,12 @@ label {
   background: white;
   color: var(--accent);
 }
+
 .mode-chip.active {
   background: var(--accent);
   color: white;
 }
+
 .operator-fab {
   position: fixed;
   top: 14px;
@@ -332,6 +445,7 @@ label {
   padding: 0;
   font-size: 22px;
 }
+
 .operator-backdrop {
   position: fixed;
   inset: 0;
@@ -342,32 +456,63 @@ label {
   padding: 18px;
   z-index: 1000;
 }
+
 .operator-backdrop.open { display: flex; }
+
 .operator-panel {
   width: min(980px, 100%);
   max-height: 92vh;
   overflow: auto;
 }
+
+/* Filters */
+.filter-none video,
+.filter-none #playback,
+.filter-none #photoPreview {
+  filter: none;
+}
+
+.filter-bw video,
+.filter-bw #playback,
+.filter-bw #photoPreview {
+  filter: grayscale(1) contrast(1.05);
+}
+
+.filter-warm video,
+.filter-warm #playback,
+.filter-warm #photoPreview {
+  filter: sepia(0.22) saturate(1.08) contrast(1.02) brightness(1.01);
+}
+
+.filter-soft video,
+.filter-soft #playback,
+.filter-soft #photoPreview {
+  filter: contrast(0.96) saturate(0.92) brightness(1.03);
+}
+
 @media (max-width: 760px) {
   .prompt-card-wrap {
     grid-template-columns: 56px 1fr 56px;
     gap: 10px;
   }
+
   .prompt-arrow {
     width: 56px;
     height: 56px;
     font-size: 28px;
   }
+
   .prompt-box {
     padding: 24px;
     font-size: clamp(22px, 6vw, 30px);
   }
+
   .panel { padding: 20px; }
   .form-grid, .check-grid { grid-template-columns: 1fr; }
 }
 </style>
 </head>
-<body>
+<body class="filter-none">
 
 <button id="openOperatorButton" class="operator-fab" type="button" aria-label="Open operator setup">⚙</button>
 
@@ -383,7 +528,7 @@ label {
         <div class="meta-pill" id="deviceNamePill">Device: Booth 1</div>
         <div class="meta-pill" id="modePill">Mode: Video</div>
       </div>
-      <button id="beginButton" type="button">Begin</button>
+      <button id="beginButton" type="button">Begin Your Story</button>
     </div>
   </div>
 </div>
@@ -410,11 +555,23 @@ label {
   <div class="stage panel camera-panel">
     <div class="eyebrow-kiosk">Camera</div>
     <h1 class="section-title" id="cameraTitle">Recording</h1>
+
     <div class="mode-toggle">
       <button id="videoModeButton" class="mode-chip active" type="button">Video</button>
       <button id="photoModeButton" class="mode-chip" type="button">Photo</button>
     </div>
-    <div class="timer-text" id="recordingTimer">Max 60 seconds</div>
+
+    <div class="record-status-wrap">
+      <div class="progress-ring" id="progressRing" aria-hidden="true">
+        <svg viewBox="0 0 120 120">
+          <circle class="ring-track" cx="60" cy="60" r="52"></circle>
+          <circle class="ring-progress" id="ringProgress" cx="60" cy="60" r="52"></circle>
+        </svg>
+        <div class="ring-center" id="ringCenter">Ready</div>
+      </div>
+      <div class="timer-text" id="recordingTimer">Max 60 seconds</div>
+    </div>
+
     <div class="video-wrap">
       <div id="countdownOverlay" class="countdown-overlay">
         <div id="countdown" class="countdown-number">3</div>
@@ -422,6 +579,7 @@ label {
       <video id="video" autoplay muted playsinline></video>
       <canvas id="photoCanvas" style="display:none;"></canvas>
     </div>
+
     <div class="button-row">
       <button id="startButton" type="button">Start</button>
       <button id="stopButton" class="secondary" type="button" disabled>Stop</button>
@@ -432,8 +590,8 @@ label {
 <div id="review" class="screen">
   <div class="stage panel">
     <div class="eyebrow-kiosk">Review</div>
-    <h1 class="section-title" id="reviewTitle">Keep this video?</h1>
-    <p class="section-sub">You can watch it back before deciding.</p>
+    <h1 class="section-title" id="reviewTitle">Keep this memory?</h1>
+    <p class="section-sub">Take a moment to see how it feels.</p>
     <video id="playback" controls playsinline></video>
     <img id="photoPreview" class="preview-image" style="display:none;" alt="Captured photo preview" />
     <div class="button-row">
@@ -463,7 +621,7 @@ label {
     <p class="section-sub">Enter your email if you'd like a copy later.</p>
     <input id="emailInput" placeholder="Email address (optional)" />
     <div class="button-row">
-      <button id="finishButton" type="button">Finish</button>
+      <button id="finishButton" type="button">Complete</button>
     </div>
   </div>
 </div>
@@ -473,6 +631,25 @@ label {
     <div class="eyebrow-kiosk">Complete</div>
     <h1 class="section-title">Thank you</h1>
     <p class="section-sub">You are now part of their story.</p>
+  </div>
+</div>
+
+<div id="pinBackdrop" class="operator-backdrop">
+  <div class="panel" style="width:min(420px,100%); text-align:center;">
+    <div class="eyebrow-kiosk">Operator Access</div>
+    <h1 class="section-title">Enter PIN</h1>
+    <p class="section-sub">This keeps guests out of setup.</p>
+    <input
+      id="pinInput"
+      type="password"
+      inputmode="numeric"
+      placeholder="Enter PIN"
+      style="text-align:center; font-size:22px; letter-spacing:0.2em;"
+    />
+    <div class="button-row">
+      <button id="pinSubmitButton" type="button">Unlock</button>
+      <button id="pinCancelButton" class="secondary" type="button">Cancel</button>
+    </div>
   </div>
 </div>
 
@@ -487,22 +664,27 @@ label {
         Event name
         <input id="setupEventName" placeholder="Smith Wedding" />
       </label>
+
       <label>
         Device name
         <input id="setupDeviceName" placeholder="Booth 1" />
       </label>
+
       <label>
         Welcome headline
         <input id="setupHeadline" placeholder="Become part of the story" />
       </label>
+
       <label>
         Welcome subheadline
         <input id="setupSubheadline" placeholder="Leave a message to be remembered." />
       </label>
+
       <label>
         Prompt category
         <select id="setupPromptCategory"></select>
       </label>
+
       <label>
         Recording limit (seconds)
         <select id="setupRecordLimit">
@@ -512,6 +694,7 @@ label {
           <option value="90">90</option>
         </select>
       </label>
+
       <label>
         Default mode
         <select id="setupCaptureMode">
@@ -519,6 +702,17 @@ label {
           <option value="photo">Photo</option>
         </select>
       </label>
+
+      <label>
+        Booth filter
+        <select id="setupFilter">
+          <option value="none">None</option>
+          <option value="bw">Black &amp; White</option>
+          <option value="warm">Warm</option>
+          <option value="soft">Soft Film</option>
+        </select>
+      </label>
+
       <label>
         Photo burst count
         <select id="setupPhotoBurstCount">
@@ -526,6 +720,12 @@ label {
           <option value="3">3</option>
         </select>
       </label>
+
+      <label>
+        Admin PIN
+        <input id="setupAdminPin" type="password" inputmode="numeric" placeholder="1234" />
+      </label>
+
       <label class="full">
         Custom prompts (one per line)
         <textarea id="setupCustomPrompts" placeholder="Enter one prompt per line if you want to override the category prompts."></textarea>
@@ -559,9 +759,10 @@ label {
 </div>
 
 <script>
-const STORAGE_KEY = 'storybooth_local_event_data_v4';
+const STORAGE_KEY = 'storybooth_local_event_data_v5';
 const IDLE_TIMEOUT_MS = 60000;
-const SETUP_KEY = 'storybooth_operator_setup_v2';
+const SETUP_KEY = 'storybooth_operator_setup_v3';
+const SESSION_COUNTER_KEY = 'storybooth_session_counter';
 
 const promptCategories = {
   Wedding: [
@@ -622,12 +823,14 @@ const defaultSetup = {
   enableGuestbook: true,
   enableEmail: true,
   enableVideoMode: true,
-  enablePhotoMode: true
+  enablePhotoMode: true,
+  filter: 'none',
+  adminPin: '1234'
 };
 
 let setup = loadSetup();
-let sessionCounter = Number(localStorage.getItem('storybooth_session_counter') || 0);
-updateSummaryPillsSoon = false;
+let sessionCounter = Number(localStorage.getItem(SESSION_COUNTER_KEY) || 0);
+
 let prompts = getActivePrompts();
 let currentPrompt = 0;
 let mediaRecorder = null;
@@ -644,17 +847,22 @@ let isRecording = false;
 let currentStream = null;
 let idleTimeoutHandle = null;
 let currentCaptureMode = setup.captureMode || 'video';
+let currentFilter = setup.filter || 'none';
+let pinVerified = false;
 
 const persisted = loadEventData();
 let guestbookEntries = persisted.guestbookEntries || [];
 let emailEntries = persisted.emailEntries || [];
 
-function $(id) { return document.getElementById(id); }
+function $(id) {
+  return document.getElementById(id);
+}
 
 function show(screenId) {
   ['attract','prompt','camera','review','guestbook','email','thankyou'].forEach(id => {
     $(id).classList.toggle('active', id === screenId);
   });
+
   if (screenId === 'attract' || screenId === 'thankyou') {
     clearIdleTimeout();
   } else {
@@ -674,8 +882,25 @@ function saveSetup() {
   localStorage.setItem(SETUP_KEY, JSON.stringify(setup));
 }
 
+function loadEventData() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+  } catch {
+    return {};
+  }
+}
+
+function saveEventData() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ guestbookEntries, emailEntries }));
+  updateSummaryPills();
+}
+
 function getActivePrompts() {
-  const custom = (setup.customPrompts || '').split('\n').map(v => v.trim()).filter(Boolean);
+  const custom = (setup.customPrompts || '')
+    .split('\n')
+    .map(v => v.trim())
+    .filter(Boolean);
+
   if (custom.length) return custom;
   return [...(promptCategories[setup.promptCategory] || promptCategories.General)];
 }
@@ -686,13 +911,16 @@ function applySetupToUI() {
   $('eventNamePill').innerText = `Event: ${setup.eventName}`;
   $('deviceNamePill').innerText = `Device: ${setup.deviceName}`;
   $('modePill').innerText = `Mode: ${capitalize(currentCaptureMode)}`;
+
   maxRecordingSeconds = Number(setup.recordLimit || 60);
-  $('recordingTimer').innerText = currentCaptureMode === 'video' ? `Max ${maxRecordingSeconds} seconds` : `Photo${Number(setup.photoBurstCount) > 1 ? ` burst: ${setup.photoBurstCount}` : ''}`;
   prompts = getActivePrompts();
   currentPrompt = 0;
+
+  applyFilter(setup.filter || 'none');
   updatePrompt();
   updateCaptureModeUI();
   updateSummaryPills();
+  resetProgressRing();
 }
 
 function populateSetupForm() {
@@ -706,6 +934,8 @@ function populateSetupForm() {
   $('setupRecordLimit').value = String(setup.recordLimit);
   $('setupCaptureMode').value = setup.captureMode;
   $('setupPhotoBurstCount').value = String(setup.photoBurstCount || 1);
+  $('setupFilter').value = setup.filter || 'none';
+  $('setupAdminPin').value = setup.adminPin || '';
   $('setupEnableGuestbook').checked = !!setup.enableGuestbook;
   $('setupEnableEmail').checked = !!setup.enableEmail;
   $('setupEnableVideoMode').checked = !!setup.enableVideoMode;
@@ -744,6 +974,7 @@ async function openCamera() {
     $('video').srcObject = currentStream;
     return;
   }
+
   try {
     currentStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
     $('video').srcObject = currentStream;
@@ -758,22 +989,27 @@ async function openCamera() {
 function updateCaptureModeUI() {
   $('videoModeButton').classList.toggle('active', currentCaptureMode === 'video');
   $('photoModeButton').classList.toggle('active', currentCaptureMode === 'photo');
+
   $('videoModeButton').style.display = setup.enableVideoMode ? 'inline-flex' : 'none';
   $('photoModeButton').style.display = setup.enablePhotoMode ? 'inline-flex' : 'none';
+
   $('modePill').innerText = `Mode: ${capitalize(currentCaptureMode)}`;
   $('cameraTitle').innerText = currentCaptureMode === 'video' ? 'Recording' : 'Photo capture';
-  $('reviewTitle').innerText = currentCaptureMode === 'video' ? 'Keep this video?' : 'Keep this photo?';
-  $('startButton').innerText = currentCaptureMode === 'video' ? 'Start' : `Take Photo${Number(setup.photoBurstCount) > 1 ? ` (${setup.photoBurstCount})` : ''}`;
+  $('reviewTitle').innerText = currentCaptureMode === 'video' ? 'Keep this memory?' : 'Keep this photo?';
+  $('startButton').innerText = currentCaptureMode === 'video'
+    ? 'Start'
+    : `Take Photo${Number(setup.photoBurstCount) > 1 ? ` (${setup.photoBurstCount})` : ''}`;
+
   $('stopButton').style.display = currentCaptureMode === 'video' ? 'inline-flex' : 'none';
   $('recordingTimer').innerText = currentCaptureMode === 'video'
     ? `Max ${maxRecordingSeconds} seconds`
     : (Number(setup.photoBurstCount) > 1 ? `Burst count: ${setup.photoBurstCount}` : 'Single photo');
+
   updateSummaryPills();
 }
 
 function updateSummaryPills() {
-  const total = Number(sessionCounter || 0);
-  $('summaryTotalCaptures').innerText = `Captures: ${total}`;
+  $('summaryTotalCaptures').innerText = `Captures: ${Number(sessionCounter || 0)}`;
   $('summaryGuestbookEntries').innerText = `Guestbook: ${guestbookEntries.length}`;
   $('summaryEmailEntries').innerText = `Emails: ${emailEntries.length}`;
   $('summaryCurrentMode').innerText = `Current mode: ${capitalize(currentCaptureMode)}`;
@@ -784,25 +1020,30 @@ function setCaptureMode(mode) {
   if (mode === 'photo' && !setup.enablePhotoMode) return;
   currentCaptureMode = mode;
   updateCaptureModeUI();
+  resetProgressRing();
 }
 
 function beginCountdown() {
   if (isRecording) return;
+
   let count = 3;
   $('startButton').disabled = true;
   $('stopButton').disabled = true;
   $('countdownOverlay').style.display = 'flex';
   $('countdown').innerText = count;
   restartCountdownAnimation();
+
   clearInterval(countdownInterval);
   countdownInterval = setInterval(() => {
     count -= 1;
+
     if (count > 0) {
       $('countdown').innerText = count;
       restartCountdownAnimation();
     } else {
       clearInterval(countdownInterval);
       $('countdownOverlay').style.display = 'none';
+
       if (currentCaptureMode === 'video') {
         $('stopButton').disabled = false;
         startRecording();
@@ -826,38 +1067,58 @@ function getBestMimeType() {
 
 function startRecording() {
   if (!currentStream || isRecording) return;
+
   const chunks = [];
   const mimeType = getBestMimeType();
   mediaRecorder = mimeType ? new MediaRecorder(currentStream, { mimeType }) : new MediaRecorder(currentStream);
+
   isRecording = true;
+  document.body.classList.add('recording');
+  $('ringCenter').innerText = 'REC';
+
   mediaRecorder.ondataavailable = event => {
     if (event.data && event.data.size > 0) chunks.push(event.data);
   };
+
   mediaRecorder.onstop = () => {
     clearInterval(recordingInterval);
     isRecording = false;
+    document.body.classList.remove('recording');
+    resetProgressRing();
+
     $('startButton').disabled = false;
     $('stopButton').disabled = true;
     updateCaptureModeUI();
+
     recordedBlob = new Blob(chunks, { type: mediaRecorder.mimeType || mimeType || 'video/mp4' });
     recordedPhotoData = null;
     lastVideoBlob = recordedBlob;
+
     if (lastVideoURL) URL.revokeObjectURL(lastVideoURL);
     lastVideoURL = URL.createObjectURL(recordedBlob);
+
     $('playback').src = lastVideoURL;
     $('playback').style.display = 'block';
     $('playback').load();
+
     $('photoPreview').style.display = 'none';
     show('review');
   };
+
   mediaRecorder.start();
   recordingStartedAt = Date.now();
+
   recordingInterval = setInterval(() => {
-    const elapsed = Math.floor((Date.now() - recordingStartedAt) / 1000);
+    const elapsedMs = Date.now() - recordingStartedAt;
+    const elapsed = Math.floor(elapsedMs / 1000);
     const remaining = Math.max(maxRecordingSeconds - elapsed, 0);
+    const progress = Math.min(elapsedMs / (maxRecordingSeconds * 1000), 1);
+
     $('recordingTimer').innerText = `Time remaining: ${remaining}s`;
+    updateProgressRing(progress);
+
     if (remaining <= 0) stopRecording();
-  }, 250);
+  }, 200);
 }
 
 function stopRecording() {
@@ -867,6 +1128,7 @@ function stopRecording() {
 
 async function capturePhoto() {
   if (!currentStream) return;
+
   const video = $('video');
   const canvas = $('photoCanvas');
   const ctx = canvas.getContext('2d');
@@ -874,12 +1136,18 @@ async function capturePhoto() {
   const frames = [];
   const width = video.videoWidth || 1280;
   const height = video.videoHeight || 720;
+
   canvas.width = width;
   canvas.height = height;
 
+  $('ringCenter').innerText = 'Photo';
+
   for (let i = 0; i < burstCount; i++) {
+    ctx.filter = getCanvasFilterValue(currentFilter);
     ctx.drawImage(video, 0, 0, width, height);
+    ctx.filter = 'none';
     frames.push(canvas.toDataURL('image/jpeg', 0.92));
+
     if (burstCount > 1 && i < burstCount - 1) {
       await wait(250);
     }
@@ -888,29 +1156,42 @@ async function capturePhoto() {
   recordedPhotoData = frames[0];
   lastPhotoData = frames[0];
   recordedBlob = null;
+
   $('photoPreview').src = frames[0];
   $('photoPreview').style.display = 'block';
   $('playback').style.display = 'none';
+
   $('startButton').disabled = false;
   $('stopButton').disabled = true;
   updateCaptureModeUI();
   show('review');
 }
 
-function acceptVideo() {
+function acceptCapture() {
+  sessionCounter += 1;
+  localStorage.setItem(SESSION_COUNTER_KEY, String(sessionCounter));
+  updateSummaryPills();
+
   if (setup.enableGuestbook) {
     show('guestbook');
     return;
   }
+
   if (setup.enableEmail) {
     show('email');
     return;
   }
+
   finish();
 }
 
 function retake() {
-  $('recordingTimer').innerText = currentCaptureMode === 'video' ? `Max ${maxRecordingSeconds} seconds` : (Number(setup.photoBurstCount) > 1 ? `Burst count: ${setup.photoBurstCount}` : 'Single photo');
+  resetProgressRing();
+  document.body.classList.remove('recording');
+  $('recordingTimer').innerText = currentCaptureMode === 'video'
+    ? `Max ${maxRecordingSeconds} seconds`
+    : (Number(setup.photoBurstCount) > 1 ? `Burst count: ${setup.photoBurstCount}` : 'Single photo');
+
   $('countdownOverlay').style.display = 'none';
   $('stopButton').disabled = true;
   show('camera');
@@ -919,6 +1200,7 @@ function retake() {
 function goEmail() {
   const message = $('message').value.trim();
   const name = $('name').value.trim();
+
   guestbookEntries.push({
     eventName: setup.eventName,
     deviceName: setup.deviceName,
@@ -928,7 +1210,9 @@ function goEmail() {
     prompt: prompts[currentPrompt],
     time: new Date().toLocaleString()
   });
+
   saveEventData();
+
   if (setup.enableEmail) {
     show('email');
   } else {
@@ -939,6 +1223,7 @@ function goEmail() {
 function finish() {
   const email = $('emailInput').value.trim();
   const name = $('name').value.trim();
+
   if (setup.enableEmail && email) {
     emailEntries.push({
       eventName: setup.eventName,
@@ -949,8 +1234,10 @@ function finish() {
       time: new Date().toLocaleString()
     });
   }
+
   saveEventData();
   show('thankyou');
+
   setTimeout(() => {
     resetFormFields();
     show('attract');
@@ -976,34 +1263,23 @@ function clearIdleTimeout() {
 }
 
 function handleIdleTimeout() {
-  if (isRecording) {
-    stopRecording();
-  }
+  if (isRecording) stopRecording();
+
   $('countdownOverlay').style.display = 'none';
   resetFormFields();
+  resetProgressRing();
   show('attract');
-}
-
-function saveEventData() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify({ guestbookEntries, emailEntries }));
-  updateSummaryPills();
-}
-
-function loadEventData() {
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-  } catch {
-    return {};
-  }
 }
 
 function downloadFile(content, fileName, type) {
   const blob = new Blob([content], { type });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
+
   a.href = url;
   a.download = fileName;
   a.click();
+
   setTimeout(() => URL.revokeObjectURL(url), 500);
 }
 
@@ -1013,17 +1289,21 @@ function escapeCsv(value) {
 
 function exportGuestbook() {
   let csv = 'Event,Device,Mode,Name,Message,Prompt,Time\n';
+
   guestbookEntries.forEach(entry => {
     csv += `"${escapeCsv(entry.eventName)}","${escapeCsv(entry.deviceName)}","${escapeCsv(entry.captureMode)}","${escapeCsv(entry.name)}","${escapeCsv(entry.message)}","${escapeCsv(entry.prompt)}","${escapeCsv(entry.time)}"\n`;
   });
+
   downloadFile(csv, `${slugify(setup.eventName)}-guestbook.csv`, 'text/csv');
 }
 
 function exportEmails() {
   let csv = 'Event,Device,Mode,Name,Email,Time\n';
+
   emailEntries.forEach(entry => {
     csv += `"${escapeCsv(entry.eventName)}","${escapeCsv(entry.deviceName)}","${escapeCsv(entry.captureMode)}","${escapeCsv(entry.name)}","${escapeCsv(entry.email)}","${escapeCsv(entry.time)}"\n`;
   });
+
   downloadFile(csv, `${slugify(setup.eventName)}-emails.csv`, 'text/csv');
 }
 
@@ -1032,13 +1312,16 @@ function downloadLastVideo() {
     alert('No video recorded yet in this session.');
     return;
   }
+
   const ext = (lastVideoBlob.type || '').includes('mp4') ? 'mp4' : 'webm';
   const number = String(sessionCounter).padStart(3, '0');
   const url = URL.createObjectURL(lastVideoBlob);
   const a = document.createElement('a');
+
   a.href = url;
   a.download = `${slugify(setup.eventName)}-${slugify(setup.deviceName)}-clip-${number}.${ext}`;
   a.click();
+
   setTimeout(() => URL.revokeObjectURL(url), 500);
 }
 
@@ -1047,6 +1330,7 @@ function downloadLastPhoto() {
     alert('No photo captured yet in this session.');
     return;
   }
+
   const number = String(sessionCounter).padStart(3, '0');
   const a = document.createElement('a');
   a.href = lastPhotoData;
@@ -1058,28 +1342,115 @@ function resetEventData() {
   guestbookEntries = [];
   emailEntries = [];
   sessionCounter = 0;
-  localStorage.setItem('storybooth_session_counter', '0');
+  localStorage.setItem(SESSION_COUNTER_KEY, '0');
   saveEventData();
   updateSummaryPills();
   alert('Event data cleared on this device.');
 }
 
 function slugify(value) {
-  return String(value || 'event').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  return String(value || 'event')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
 }
 
 function capitalize(value) {
   return String(value || '').charAt(0).toUpperCase() + String(value || '').slice(1);
 }
 
+function applyFilter(filterName) {
+  document.body.classList.remove('filter-none', 'filter-bw', 'filter-warm', 'filter-soft');
+
+  const map = {
+    none: 'filter-none',
+    bw: 'filter-bw',
+    warm: 'filter-warm',
+    soft: 'filter-soft'
+  };
+
+  document.body.classList.add(map[filterName] || 'filter-none');
+  currentFilter = filterName || 'none';
+}
+
+function getCanvasFilterValue(filterName) {
+  switch (filterName) {
+    case 'bw':
+      return 'grayscale(1) contrast(1.05)';
+    case 'warm':
+      return 'sepia(0.22) saturate(1.08) contrast(1.02) brightness(1.01)';
+    case 'soft':
+      return 'contrast(0.96) saturate(0.92) brightness(1.03)';
+    default:
+      return 'none';
+  }
+}
+
+function resetProgressRing() {
+  const circumference = 326.73;
+  $('ringProgress').style.strokeDasharray = `${circumference}`;
+  $('ringProgress').style.strokeDashoffset = `${circumference}`;
+  $('ringCenter').innerText = currentCaptureMode === 'video' ? 'Ready' : 'Photo';
+  document.body.classList.remove('recording');
+}
+
+function updateProgressRing(progress) {
+  const circumference = 326.73;
+  const clamped = Math.max(0, Math.min(progress, 1));
+  const offset = circumference * (1 - clamped);
+  $('ringProgress').style.strokeDashoffset = `${offset}`;
+  $('ringCenter').innerText = `${Math.round(clamped * 100)}%`;
+}
+
+function openPinPrompt() {
+  $('pinBackdrop').classList.add('open');
+  $('pinInput').value = '';
+  setTimeout(() => $('pinInput').focus(), 50);
+}
+
+function closePinPrompt() {
+  $('pinBackdrop').classList.remove('open');
+}
+
+function submitPin() {
+  const entered = $('pinInput').value.trim();
+  const expected = String(setup.adminPin || '').trim();
+
+  if (!expected) {
+    closePinPrompt();
+    openOperatorPanelDirect();
+    return;
+  }
+
+  if (entered === expected) {
+    pinVerified = true;
+    closePinPrompt();
+    openOperatorPanelDirect();
+  } else {
+    alert('Incorrect PIN.');
+    $('pinInput').value = '';
+    $('pinInput').focus();
+  }
+}
+
 function openOperatorPanel() {
+  if (!setup.adminPin) {
+    openOperatorPanelDirect();
+    return;
+  }
+  openPinPrompt();
+}
+
+function openOperatorPanelDirect() {
   populateSetupForm();
-updateSummaryPills();
+  updateSummaryPills();
   $('operatorBackdrop').classList.add('open');
 }
 
 function closeOperatorPanel() {
   $('operatorBackdrop').classList.remove('open');
+  pinVerified = false;
 }
 
 function saveOperatorSetup() {
@@ -1092,13 +1463,25 @@ function saveOperatorSetup() {
   setup.recordLimit = Number($('setupRecordLimit').value || defaultSetup.recordLimit);
   setup.captureMode = $('setupCaptureMode').value || defaultSetup.captureMode;
   setup.photoBurstCount = Number($('setupPhotoBurstCount').value || defaultSetup.photoBurstCount);
+  setup.filter = $('setupFilter').value || 'none';
+  setup.adminPin = $('setupAdminPin').value.trim();
   setup.enableGuestbook = $('setupEnableGuestbook').checked;
   setup.enableEmail = $('setupEnableEmail').checked;
   setup.enableVideoMode = $('setupEnableVideoMode').checked;
   setup.enablePhotoMode = $('setupEnablePhotoMode').checked;
-  if (!setup.enableVideoMode && !setup.enablePhotoMode) setup.enableVideoMode = true;
-  if (setup.captureMode === 'video' && !setup.enableVideoMode) setup.captureMode = 'photo';
-  if (setup.captureMode === 'photo' && !setup.enablePhotoMode) setup.captureMode = 'video';
+
+  if (!setup.enableVideoMode && !setup.enablePhotoMode) {
+    setup.enableVideoMode = true;
+  }
+
+  if (setup.captureMode === 'video' && !setup.enableVideoMode) {
+    setup.captureMode = 'photo';
+  }
+
+  if (setup.captureMode === 'photo' && !setup.enablePhotoMode) {
+    setup.captureMode = 'video';
+  }
+
   currentCaptureMode = setup.captureMode;
   saveSetup();
   applySetupToUI();
@@ -1117,34 +1500,48 @@ $('exportEmailsButton').addEventListener('click', exportEmails);
 $('downloadVideoButton').addEventListener('click', downloadLastVideo);
 $('downloadPhotoButton').addEventListener('click', downloadLastPhoto);
 $('resetEventButton').addEventListener('click', resetEventData);
+
 $('beginButton').addEventListener('click', startBooth);
 $('prevPromptButton').addEventListener('click', prevPrompt);
 $('nextPromptButton').addEventListener('click', nextPrompt);
 $('continueToCameraButton').addEventListener('click', goCamera);
 $('startButton').addEventListener('click', beginCountdown);
 $('stopButton').addEventListener('click', stopRecording);
-$('keepVideoButton').addEventListener('click', acceptVideo);
+$('keepVideoButton').addEventListener('click', acceptCapture);
 $('recordAgainButton').addEventListener('click', retake);
 $('continueToEmailButton').addEventListener('click', goEmail);
 $('finishButton').addEventListener('click', finish);
 $('videoModeButton').addEventListener('click', () => setCaptureMode('video'));
 $('photoModeButton').addEventListener('click', () => setCaptureMode('photo'));
 
+$('pinSubmitButton').addEventListener('click', submitPin);
+$('pinCancelButton').addEventListener('click', closePinPrompt);
+$('pinInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') submitPin();
+});
+
 applySetupToUI();
 populateSetupForm();
 
 document.addEventListener('click', () => {
-  if (!$('attract').classList.contains('active') && !$('operatorBackdrop').classList.contains('open')) {
+  if (
+    !$('attract').classList.contains('active') &&
+    !$('operatorBackdrop').classList.contains('open') &&
+    !$('pinBackdrop').classList.contains('open')
+  ) {
     resetIdleTimeout();
   }
 }, true);
 
 document.addEventListener('keydown', () => {
-  if (!$('attract').classList.contains('active') && !$('operatorBackdrop').classList.contains('open')) {
+  if (
+    !$('attract').classList.contains('active') &&
+    !$('operatorBackdrop').classList.contains('open') &&
+    !$('pinBackdrop').classList.contains('open')
+  ) {
     resetIdleTimeout();
   }
 }, true);
 </script>
 </body>
 </html>
-
