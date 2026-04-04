@@ -6,16 +6,22 @@
 <title>StoryBooth</title>
 <style>
 :root {
-  --bg: #f6f6f4;
-  --panel: #ffffff;
-  --text: #1f1f1f;
-  --muted: #7a7a7a;
-  --line: #e8e6e1;
-  --accent: #2f3a44;
-  --accent-soft: #8fa3ad;
-  --gold: #c6a86a;
-  --danger: #b84c4c;
-  --shadow-soft: 0 20px 60px rgba(0,0,0,0.06);
+  --bg: #F6F4EE;
+  --panel: #FFFDF8;
+  --text: #1F2623;
+  --muted: #66736C;
+  --line: #D9E1D7;
+
+  --deep-green: #164A41;
+  --sage: #9DC88D;
+  --soft-sage: #DDE8D4;
+  --gold: #D4A84E;
+  --warm-white: #F8F7F2;
+
+  --accent: var(--deep-green);
+  --accent-soft: var(--sage);
+  --danger: #B84C4C;
+  --shadow-soft: 0 20px 60px rgba(17, 45, 40, 0.10);
 }
 
 * { box-sizing: border-box; }
@@ -64,7 +70,7 @@ button, input, textarea, select { font: inherit; }
   inset: 0;
   border-radius: 26px;
   pointer-events: none;
-  background: linear-gradient(120deg, rgba(198,168,106,0.08), transparent 40%, rgba(143,163,173,0.08));
+  background: linear-gradient(120deg, rgba(212,168,78,0.06), transparent 42%, rgba(157,200,141,0.06));
 }
 
 .eyebrow-kiosk {
@@ -99,20 +105,47 @@ p, .section-sub {
   position: relative;
   text-align: center;
   padding: 48px 24px;
+  background:
+    radial-gradient(circle at 50% 28%, rgba(157,200,141,0.16), transparent 28%),
+    linear-gradient(145deg, #164A41 0%, #1F5A4E 100%);
+  color: #fff;
+  border-color: rgba(255,255,255,0.08);
+}
+
+.attract-wrap::after {
+  background: linear-gradient(120deg, rgba(212,168,78,0.10), transparent 40%, rgba(157,200,141,0.10));
 }
 
 .attract-glow {
   position: absolute;
   inset: 50% auto auto 50%;
-  width: 340px;
-  height: 340px;
-  background: radial-gradient(circle, rgba(122,138,150,0.14) 0%, rgba(122,138,150,0.06) 45%, transparent 72%);
+  width: 380px;
+  height: 380px;
+  background: radial-gradient(circle, rgba(157,200,141,0.20) 0%, rgba(157,200,141,0.08) 44%, transparent 72%);
   transform: translate(-50%, -50%);
   animation: driftGlow 7s ease-in-out infinite;
   pointer-events: none;
 }
 
 .attract-inner { position: relative; z-index: 1; }
+
+#attractHeading {
+  color: #ffffff;
+}
+
+#attractSubheading {
+  color: rgba(255,255,255,0.82);
+}
+
+.attract-wrap .eyebrow-kiosk {
+  color: rgba(255,255,255,0.76);
+}
+
+.attract-wrap .meta-pill {
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.18);
+  color: rgba(255,255,255,0.88);
+}
 
 @keyframes driftGlow {
   0% { transform: translate(-50%, -50%) scale(1); opacity: 0.7; }
@@ -131,13 +164,13 @@ button {
   margin-top: 22px;
   font-size: 16px;
   letter-spacing: 0.04em;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  box-shadow: 0 10px 25px rgba(22,74,65,0.14);
   transition: all 0.25s ease;
 }
 
 button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 14px 30px rgba(0,0,0,0.12);
+  box-shadow: 0 14px 30px rgba(22,74,65,0.20);
 }
 
 button.secondary {
@@ -184,7 +217,7 @@ button:disabled {
   border: 1px solid var(--line);
   border-radius: 18px;
   padding: 18px;
-  box-shadow: 0 14px 34px rgba(0,0,0,0.04);
+  box-shadow: 0 14px 34px rgba(17,45,40,0.06);
 }
 
 .prompt-card-label {
@@ -202,8 +235,8 @@ button:disabled {
   font-size: clamp(26px, 4vw, 36px);
   line-height: 1.3;
   letter-spacing: -0.03em;
-  background: #fcfcfb;
-  box-shadow: inset 0 0 0 1px rgba(198,168,106,0.08);
+  background: #FCFCF8;
+  box-shadow: inset 0 0 0 1px rgba(212,168,78,0.06);
 }
 
 .prompt-arrow {
@@ -216,7 +249,7 @@ button:disabled {
   background: var(--panel);
   color: var(--accent);
   border: 1px solid var(--line);
-  box-shadow: 0 10px 24px rgba(0,0,0,0.03);
+  box-shadow: 0 10px 24px rgba(17,45,40,0.05);
 }
 
 .prompt-meta {
@@ -236,11 +269,11 @@ button:disabled {
 video, canvas, img.preview-image {
   width: 100%;
   max-height: 58vh;
-  background: #ddd;
+  background: #D7DDD8;
   border-radius: 18px;
   display: block;
   object-fit: cover;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+  box-shadow: 0 20px 50px rgba(17,45,40,0.18);
 }
 
 #playback, #photoPreview { margin-top: 18px; }
@@ -248,7 +281,7 @@ video, canvas, img.preview-image {
 .countdown-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(246, 246, 244, 0.88);
+  background: rgba(248,247,242,0.88);
   display: none;
   align-items: center;
   justify-content: center;
@@ -292,7 +325,7 @@ video, canvas, img.preview-image {
 
 .ring-track {
   fill: none;
-  stroke: rgba(47,58,68,0.10);
+  stroke: rgba(22,74,65,0.10);
   stroke-width: 8;
 }
 
@@ -321,7 +354,7 @@ video, canvas, img.preview-image {
 }
 
 body.recording .ring-progress {
-  stroke: #c65f5f;
+  stroke: #C65F5F;
 }
 
 .timer-text {
@@ -337,7 +370,7 @@ textarea, input, select {
   border: 1px solid var(--line);
   border-radius: 12px;
   font-size: 16px;
-  background: #fafafa;
+  background: #FAFAF7;
   color: var(--text);
 }
 
@@ -375,7 +408,7 @@ label {
   padding: 12px 14px;
   border: 1px solid var(--line);
   border-radius: 12px;
-  background: #fafafa;
+  background: #FAFAF7;
   color: var(--text);
 }
 
@@ -400,7 +433,7 @@ label {
   border: 1px solid var(--line);
   border-radius: 999px;
   padding: 10px 16px;
-  background: rgba(255,255,255,0.9);
+  background: rgba(255,255,255,0.90);
   color: var(--muted);
   font-size: 13px;
   letter-spacing: 0.06em;
@@ -425,8 +458,10 @@ label {
 }
 
 .mode-chip.active {
-  background: var(--accent);
-  color: white;
+  background: var(--gold);
+  color: var(--text);
+  border-color: rgba(212,168,78,0.6);
+  box-shadow: 0 8px 20px rgba(212,168,78,0.20);
 }
 
 .operator-fab {
@@ -437,10 +472,10 @@ label {
   width: 52px;
   height: 52px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.9);
+  background: rgba(255,255,255,0.92);
   color: var(--accent);
   border: 1px solid var(--line);
-  box-shadow: 0 10px 24px rgba(0,0,0,0.06);
+  box-shadow: 0 10px 24px rgba(17,45,40,0.08);
   margin-top: 0;
   padding: 0;
   font-size: 22px;
@@ -449,7 +484,7 @@ label {
 .operator-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(20,20,20,0.28);
+  background: rgba(17,45,40,0.28);
   display: none;
   align-items: center;
   justify-content: center;
@@ -758,9 +793,9 @@ label {
 </div>
 
 <script>
-const STORAGE_KEY = 'storybooth_local_event_data_v6';
+const STORAGE_KEY = 'storybooth_local_event_data_v7';
 const IDLE_TIMEOUT_MS = 60000;
-const SETUP_KEY = 'storybooth_operator_setup_v4';
+const SETUP_KEY = 'storybooth_operator_setup_v5';
 const SESSION_COUNTER_KEY = 'storybooth_session_counter';
 
 const promptCategories = {
