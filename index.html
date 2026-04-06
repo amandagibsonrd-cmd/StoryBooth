@@ -3,22 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>StoryBooth Kiosk</title>
+  <title>StoryBooth Rental Stable</title>
   <style>
     :root {
-      --bg: #f4f3ee;
-      --bg-2: #eeece4;
-      --panel: rgba(255,255,255,0.82);
-      --panel-strong: rgba(255,255,255,0.92);
+      --bg: #f6f4ee;
+      --bg-2: #ece8df;
+      --panel: rgba(255,255,255,.88);
+      --panel-strong: rgba(255,255,255,.95);
       --text: #17352a;
       --muted: #5d7568;
-      --line: rgba(23,53,42,0.1);
+      --line: rgba(23,53,42,0.08);
       --green-deep: #18372c;
       --green: #2d5a4a;
       --sage: #93a793;
-      --sage-soft: #cad3c7;
       --gold: #b8964f;
-      --gold-soft: #dbc791;
       --danger: #9e4b4b;
       --shadow-lg: 0 28px 70px rgba(24,55,44,.12);
       --shadow-md: 0 14px 34px rgba(24,55,44,.10);
@@ -26,13 +24,12 @@
       --radius-xl: 28px;
       --radius-lg: 22px;
       --radius-md: 16px;
-      --transition: 360ms cubic-bezier(.22,1,.36,1);
+      --transition: 320ms cubic-bezier(.22,1,.36,1);
       --safe-top: env(safe-area-inset-top, 0px);
       --safe-bottom: env(safe-area-inset-bottom, 0px);
     }
 
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
     html, body {
       margin: 0;
       width: 100%;
@@ -90,8 +87,8 @@
     }
 
     .glass {
-      background: linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,255,255,.78));
-      border: 1px solid rgba(255,255,255,.65);
+      background: linear-gradient(180deg, rgba(255,255,255,.94), rgba(255,255,255,.82));
+      border: 1px solid rgba(255,255,255,.68);
       box-shadow: var(--shadow-lg);
       backdrop-filter: blur(18px);
       -webkit-backdrop-filter: blur(18px);
@@ -120,12 +117,7 @@
       -webkit-backdrop-filter: blur(14px);
     }
 
-    .brand-wrap {
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-    }
-
+    .brand-wrap { display: flex; flex-direction: column; gap: 3px; }
     .brand {
       font-size: 1rem;
       font-weight: 700;
@@ -133,12 +125,7 @@
       text-transform: uppercase;
       color: var(--green-deep);
     }
-
-    .event-name {
-      color: var(--muted);
-      font-size: .95rem;
-      letter-spacing: .02em;
-    }
+    .event-name { color: var(--muted); font-size: .95rem; letter-spacing: .02em; }
 
     .session-pill, .status-chip, .mode-pill, .subtle-pill {
       display: inline-flex;
@@ -180,11 +167,7 @@
       100% { box-shadow: 0 0 0 0 rgba(45,90,74,0); }
     }
 
-    .hero-card, .panel, .camera-card, .thanks-card {
-      position: relative;
-      overflow: hidden;
-    }
-
+    .hero-card, .panel, .camera-card, .thanks-card { position: relative; overflow: hidden; }
     .hero-card::after, .panel::after, .camera-card::after, .thanks-card::after {
       content: "";
       position: absolute;
@@ -217,7 +200,7 @@
       box-shadow: inset 0 1px 0 rgba(255,255,255,.8), var(--shadow-md);
       color: var(--green-deep);
       font-size: 1.95rem;
-      font-family: "Georgia", "Times New Roman", serif;
+      font-family: Georgia, "Times New Roman", serif;
       letter-spacing: .06em;
     }
 
@@ -250,14 +233,6 @@
       margin: 0 auto 22px;
     }
 
-    .touch-hold {
-      margin-top: 18px;
-      color: rgba(23,53,42,.42);
-      font-size: .84rem;
-      letter-spacing: .06em;
-      text-transform: uppercase;
-    }
-
     .cta-stack {
       display: flex;
       flex-direction: column;
@@ -266,7 +241,7 @@
       margin-top: 10px;
     }
 
-    .primary-btn, .secondary-btn, .ghost-btn, .mini-btn, .icon-btn {
+    .primary-btn, .secondary-btn, .ghost-btn, .icon-btn, .pin-btn {
       appearance: none;
       border: 0;
       cursor: pointer;
@@ -274,16 +249,11 @@
       transition: transform .18s ease, opacity .18s ease, box-shadow .18s ease, background .18s ease;
     }
 
-    .primary-btn:active, .secondary-btn:active, .ghost-btn:active, .mini-btn:active, .icon-btn:active {
+    .primary-btn:active, .secondary-btn:active, .ghost-btn:active, .icon-btn:active, .pin-btn:active {
       transform: scale(.985);
     }
 
-    .primary-btn[disabled],
-    .secondary-btn[disabled],
-    .ghost-btn[disabled],
-    .mini-btn[disabled],
-    .icon-btn[disabled],
-    .record-btn[disabled] {
+    .primary-btn[disabled], .secondary-btn[disabled], .ghost-btn[disabled], .icon-btn[disabled], .record-btn[disabled] {
       opacity: .55;
       cursor: not-allowed;
       transform: none;
@@ -319,15 +289,6 @@
       font-weight: 600;
     }
 
-    .mini-btn {
-      padding: 10px 14px;
-      border-radius: 12px;
-      background: rgba(255,255,255,.8);
-      color: var(--green-deep);
-      border: 1px solid rgba(23,53,42,.08);
-      font-weight: 700;
-    }
-
     .icon-btn {
       width: 44px;
       height: 44px;
@@ -349,10 +310,7 @@
       min-height: 0;
     }
 
-    .panel {
-      padding: 20px;
-    }
-
+    .panel { padding: 20px; }
     .panel h2 {
       font-family: Georgia, "Times New Roman", serif;
       font-size: clamp(1.8rem, 3.5vw, 2.7rem);
@@ -360,11 +318,7 @@
       margin-bottom: 8px;
     }
 
-    .panel-sub {
-      color: var(--muted);
-      line-height: 1.6;
-      margin-bottom: 18px;
-    }
+    .panel-sub { color: var(--muted); line-height: 1.6; margin-bottom: 18px; }
 
     .prompt-stage {
       display: grid;
@@ -407,11 +361,7 @@
       max-width: 16ch;
     }
 
-    .mode-grid, .filter-grid, .review-actions, .form-actions, .footer-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
+    .mode-grid, .filter-grid, .review-actions, .form-actions, .footer-actions { display: flex; flex-wrap: wrap; gap: 12px; }
 
     .mode-card {
       flex: 1 1 0;
@@ -442,23 +392,9 @@
       font-weight: 700;
     }
 
-    .mode-card small {
-      display: block;
-      color: inherit;
-      opacity: .76;
-      line-height: 1.5;
-    }
-
-    .right-column {
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-    }
-
-    .summary-list {
-      display: grid;
-      gap: 12px;
-    }
+    .mode-card small { display: block; color: inherit; opacity: .76; line-height: 1.5; }
+    .right-column { display: flex; flex-direction: column; gap: 18px; }
+    .summary-list { display: grid; gap: 12px; }
 
     .summary-item {
       display: flex;
@@ -484,27 +420,10 @@
       flex-shrink: 0;
     }
 
-    .summary-item strong {
-      display: block;
-      font-size: .98rem;
-      margin-bottom: 4px;
-      color: var(--green-deep);
-    }
+    .summary-item strong { display: block; font-size: .98rem; margin-bottom: 4px; color: var(--green-deep); }
+    .summary-item span { color: var(--muted); line-height: 1.45; font-size: .94rem; }
 
-    .summary-item span {
-      color: var(--muted);
-      line-height: 1.45;
-      font-size: .94rem;
-    }
-
-    .camera-wrap {
-      flex: 1;
-      min-height: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
+    .camera-wrap { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 16px; }
     .camera-card {
       position: relative;
       flex: 1;
@@ -539,27 +458,6 @@
       box-shadow: inset 0 0 0 1px rgba(255,255,255,.08);
     }
 
-    .camera-guide::before,
-    .camera-guide::after {
-      content: "";
-      position: absolute;
-      left: 50%;
-      top: 0;
-      bottom: 0;
-      width: 1px;
-      background: rgba(255,255,255,.14);
-      transform: translateX(-50%);
-    }
-
-    .camera-guide::after {
-      top: 50%;
-      left: 0;
-      right: 0;
-      width: auto;
-      height: 1px;
-      transform: translateY(-50%);
-    }
-
     .corner {
       position: absolute;
       width: 30px;
@@ -588,12 +486,7 @@
       pointer-events: none;
     }
 
-    .camera-top-ui .cluster {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
+    .camera-top-ui .cluster { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
 
     .camera-help {
       position: absolute;
@@ -614,19 +507,8 @@
       pointer-events: none;
     }
 
-    .camera-help strong {
-      display: block;
-      font-size: 1rem;
-      margin-bottom: 4px;
-      letter-spacing: .01em;
-    }
-
-    .camera-help span {
-      display: block;
-      font-size: .92rem;
-      opacity: .86;
-      line-height: 1.45;
-    }
+    .camera-help strong { display: block; font-size: 1rem; margin-bottom: 4px; }
+    .camera-help span { display: block; font-size: .92rem; opacity: .86; line-height: 1.45; }
 
     .countdown {
       position: absolute;
@@ -661,9 +543,7 @@
       flex-wrap: wrap;
     }
 
-    .camera-controls .right {
-      justify-content: flex-end;
-    }
+    .camera-controls .right { justify-content: flex-end; }
 
     .record-shell {
       position: relative;
@@ -719,23 +599,13 @@
       transition: all .18s ease;
     }
 
-    .record-btn.idle::before {
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-    }
-
+    .record-btn.idle::before { width: 30px; height: 30px; border-radius: 50%; }
     .record-btn.recording {
       background: linear-gradient(135deg, #7e2e2e, #b24545);
       box-shadow: 0 14px 28px rgba(126,46,46,.24), inset 0 1px 0 rgba(255,255,255,.1);
     }
 
-    .record-label {
-      text-align: center;
-      font-size: .9rem;
-      color: var(--muted);
-      margin-top: 2px;
-    }
+    .record-label { text-align: center; font-size: .9rem; color: var(--muted); margin-top: 2px; }
 
     .filter-chip {
       padding: 10px 14px;
@@ -771,9 +641,7 @@
       min-height: 0;
     }
 
-    .review-card, .form-card, .thanks-card {
-      padding: 20px;
-    }
+    .review-card, .form-card, .thanks-card { padding: 20px; }
 
     .media-frame {
       min-height: 0;
@@ -785,13 +653,7 @@
       border: 1px solid rgba(255,255,255,.14);
     }
 
-    .detail-stack {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      min-height: 0;
-    }
-
+    .detail-stack { display: flex; flex-direction: column; gap: 16px; min-height: 0; }
     .detail-block {
       padding: 16px;
       border-radius: 20px;
@@ -799,16 +661,8 @@
       border: 1px solid rgba(23,53,42,.07);
     }
 
-    .detail-block h3 {
-      color: var(--green-deep);
-      margin-bottom: 8px;
-      font-size: 1.05rem;
-    }
-
-    .detail-block p {
-      color: var(--muted);
-      line-height: 1.55;
-    }
+    .detail-block h3 { color: var(--green-deep); margin-bottom: 8px; font-size: 1.05rem; }
+    .detail-block p { color: var(--muted); line-height: 1.55; }
 
     .input, .textarea, .select {
       width: 100%;
@@ -828,27 +682,10 @@
       box-shadow: 0 0 0 4px rgba(184,150,79,.12);
     }
 
-    .textarea {
-      min-height: 170px;
-      resize: none;
-      line-height: 1.55;
-    }
-
-    .label {
-      display: block;
-      font-weight: 700;
-      color: var(--green-deep);
-      margin-bottom: 8px;
-    }
-
+    .textarea { min-height: 170px; resize: none; line-height: 1.55; }
+    .label { display: block; font-weight: 700; color: var(--green-deep); margin-bottom: 8px; }
     .field + .field { margin-top: 14px; }
-
-    .hint {
-      margin-top: 8px;
-      color: var(--muted);
-      font-size: .9rem;
-      line-height: 1.45;
-    }
+    .hint { margin-top: 8px; color: var(--muted); font-size: .9rem; line-height: 1.45; }
 
     .checkbox-row {
       display: flex;
@@ -916,12 +753,7 @@
       margin-bottom: 18px;
     }
 
-    .sparkle-row {
-      display: flex;
-      gap: 10px;
-      opacity: .76;
-    }
-
+    .sparkle-row { display: flex; gap: 10px; opacity: .76; }
     .sparkle {
       width: 10px;
       height: 10px;
@@ -999,24 +831,9 @@
       box-shadow: var(--shadow-sm);
     }
 
-    .settings-card h4 {
-      color: var(--green-deep);
-      font-size: 1.08rem;
-      margin-bottom: 12px;
-    }
-
-    .inline-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
-    .toggle-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-    }
-
+    .settings-card h4 { color: var(--green-deep); font-size: 1.08rem; margin-bottom: 12px; }
+    .inline-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .toggle-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
     .toggle {
       display: flex;
       align-items: center;
@@ -1028,20 +845,10 @@
       border: 1px solid rgba(23,53,42,.07);
     }
 
-    .toggle label {
-      font-weight: 600;
-      color: var(--green-deep);
-    }
-
+    .toggle label { font-weight: 600; color: var(--green-deep); }
     .toggle input { width: 22px; height: 22px; }
 
-    .pin-lock {
-      width: min(100%, 420px);
-      margin: auto;
-      padding: 24px;
-      text-align: center;
-    }
-
+    .pin-lock { width: min(100%, 420px); margin: auto; padding: 24px; text-align: center; }
     .pin-lock h3 {
       font-family: Georgia, "Times New Roman", serif;
       font-size: 2rem;
@@ -1049,13 +856,7 @@
       margin-bottom: 10px;
     }
 
-    .pin-pad {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-top: 16px;
-    }
-
+    .pin-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 16px; }
     .pin-btn {
       padding: 18px 0;
       border-radius: 18px;
@@ -1065,7 +866,6 @@
       font-size: 1.15rem;
       font-weight: 800;
       color: var(--green-deep);
-      cursor: pointer;
     }
 
     .pin-display {
@@ -1089,34 +889,12 @@
     }
 
     .pin-dot.filled { background: var(--green-deep); }
-
-    .sr-only {
-      position: absolute !important;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0,0,0,0);
-      white-space: nowrap;
-      border: 0;
-    }
-
     .hidden { display: none !important; }
 
     @media (max-width: 900px) {
-      .grid-2, .review-layout, .form-layout, .operator-body {
-        grid-template-columns: 1fr;
-      }
-
-      .camera-controls {
-        grid-template-columns: 1fr;
-        justify-items: center;
-      }
-
-      .camera-controls .left, .camera-controls .right {
-        justify-content: center;
-      }
+      .grid-2, .review-layout, .form-layout, .operator-body { grid-template-columns: 1fr; }
+      .camera-controls { grid-template-columns: 1fr; justify-items: center; }
+      .camera-controls .left, .camera-controls .right { justify-content: center; }
     }
 
     @media (max-width: 640px) {
@@ -1146,13 +924,11 @@
           <div class="session-pill"><span>Session</span> <strong id="sessionCountTop">0</strong></div>
         </div>
 
-        <div class="hero-card glass hold-zone" id="holdZone">
+        <div class="hero-card glass" id="holdZone">
           <div class="monogram" aria-hidden="true">SB</div>
-          <div class="eyebrow">Premium Story Experience</div>
+          <div class="eyebrow">Welcome</div>
           <h1 class="title-xl">Step in. Share a message.</h1>
-          <p class="lead">
-            Leave a thoughtful message, capture a moment, and become part of the story.
-          </p>
+          <p class="lead">Leave a thoughtful message, capture a moment, and become part of the story.</p>
           <div class="cta-stack">
             <button class="primary-btn" id="beginBtn">Begin</button>
           </div>
@@ -1210,13 +986,6 @@
               </div>
             </div>
 
-            <div class="panel glass">
-              <h2 style="font-size:1.8rem;">Session details</h2>
-              <div class="summary-list">
-                <div class="summary-item"><div class="num">A</div><div><strong>Filter options</strong><span>Filters are available for photo capture. Video records in Original mode for reliability.</span></div></div>
-                <div class="summary-item"><div class="num">B</div><div><strong>Guestbook &amp; email</strong><span>Add a written note and optionally leave your email after your capture.</span></div></div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -1247,7 +1016,7 @@
               </div>
               <div class="cluster">
                 <div class="subtle-pill" id="burstPill">Burst: On</div>
-                <div class="subtle-pill" id="limitPill">Limit: 60s</div>
+                <div class="subtle-pill" id="limitPill">Limit: 45s</div>
               </div>
             </div>
 
@@ -1384,7 +1153,7 @@
               <input class="input" id="emailInput" type="email" inputmode="email" placeholder="name@example.com" maxlength="140" />
             </div>
             <label class="checkbox-row"><input type="checkbox" id="emailConsent" checked /> I consent to receiving a copy or follow-up related to this event.</label>
-            <div class="hint">Since this version runs locally, your email is saved only on this device until you export the CSV.</div>
+            <div class="hint">This version saves email data locally on the device until you export the CSV.</div>
             <div class="form-actions" style="margin-top:18px;">
               <button class="primary-btn" id="saveEmailBtn">Finish</button>
               <button class="secondary-btn" id="emailSkip2Btn">Skip</button>
@@ -1481,14 +1250,11 @@
                     <option value="30">30 seconds</option>
                     <option value="45">45 seconds</option>
                     <option value="60">60 seconds</option>
-                    <option value="90">90 seconds</option>
                   </select>
                 </div>
                 <div class="field">
                   <label class="label" for="idleTimeoutSelect">Idle timeout</label>
                   <select class="select" id="idleTimeoutSelect">
-                    <option value="30">30 seconds</option>
-                    <option value="45">45 seconds</option>
                     <option value="60">60 seconds</option>
                     <option value="90">90 seconds</option>
                     <option value="120">120 seconds</option>
@@ -1514,6 +1280,15 @@
             </div>
 
             <div class="settings-card">
+              <h4>Operator Reminders</h4>
+              <div class="summary-list">
+                <div class="summary-item"><div class="num">1</div><div><strong>CSV saves locally</strong><span>Guestbook notes and emails stay on this device until exported.</span></div></div>
+                <div class="summary-item"><div class="num">2</div><div><strong>Download media</strong><span>Download media during or right after sessions for safekeeping.</span></div></div>
+                <div class="summary-item"><div class="num">3</div><div><strong>Test before guests arrive</strong><span>Run a quick camera test before the event begins.</span></div></div>
+              </div>
+            </div>
+
+            <div class="settings-card">
               <h4>Session tools</h4>
               <div class="summary-list">
                 <div class="summary-item"><div class="num">#</div><div><strong>Total sessions</strong><span id="operatorSessionCount">0</span></div></div>
@@ -1523,16 +1298,7 @@
                 <button class="secondary-btn" id="downloadCurrentCaptureBtn">Download Current Capture</button>
                 <button class="ghost-btn" id="resetSessionBtn">Reset Session Count</button>
               </div>
-              <div class="hint" style="margin-top:12px;">Media is not permanently stored in this local-only version. Download captures during each session if you want to keep them.</div>
-            </div>
-
-            <div class="settings-card">
-              <h4>Rental checklist</h4>
-              <div class="summary-list">
-                <div class="summary-item"><div class="num">1</div><div><strong>Use Safari</strong><span>Run this on an updated iPad in Safari.</span></div></div>
-                <div class="summary-item"><div class="num">2</div><div><strong>Lock it down</strong><span>Turn on Guided Access, disable Auto-Lock, and use Do Not Disturb.</span></div></div>
-                <div class="summary-item"><div class="num">3</div><div><strong>Test first</strong><span>Check photo, video, flip camera, review playback, and download before the event starts.</span></div></div>
-              </div>
+              <div class="hint" style="margin-top:12px;">Media is not permanently stored in this local-only build. Download captures during the session if you want to keep them.</div>
             </div>
           </div>
 
@@ -1546,14 +1312,14 @@
 
   <script>
     (() => {
-      const STORAGE_KEY = 'storybooth_premium_rental_v2';
+      const STORAGE_KEY = 'storybooth_rental_stable_v1';
 
       const DEFAULTS = {
         brand: 'StoryBooth',
         eventName: 'Your Event',
         adminPin: '4829',
-        videoLimit: 60,
-        idleTimeout: 60,
+        videoLimit: 45,
+        idleTimeout: 90,
         enableVideo: true,
         enablePhoto: true,
         enableGuestbook: true,
@@ -1606,7 +1372,12 @@
         thanksTimer: null,
         idleTimer: null,
         pinEntry: '',
-        holdTimer: null
+        holdTimer: null,
+        adminTapCount: 0,
+        adminTapTimer: null,
+        lastCameraStartAt: 0,
+        cameraWarmupMs: 350,
+        mediaRecorderSupported: typeof MediaRecorder !== 'undefined'
       };
 
       const $ = (id) => document.getElementById(id);
@@ -1718,12 +1489,12 @@
 
       function checkSupport() {
         const cameraOK = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
-        const recorderOK = typeof MediaRecorder !== 'undefined';
-
         if (!cameraOK) {
           alert('This device does not support camera access in this browser.');
-        } else if (!recorderOK) {
-          alert('This browser may not fully support in-browser video recording. Photo mode should still work, but test video carefully on the rental device.');
+          return;
+        }
+        if (!state.mediaRecorderSupported) {
+          alert('Video recording may not be supported on this device or iOS version. Photo mode should still work.');
         }
       }
 
@@ -1748,6 +1519,7 @@
 
       function bindEvents() {
         els.beginBtn.addEventListener('click', () => goToScreen('screen-prompt'));
+        els.topEventName.addEventListener('click', handleHiddenAdminTap);
         els.backToAttractBtn.addEventListener('click', () => goToScreen('screen-attract'));
         els.prevPromptBtn.addEventListener('click', () => cyclePrompt(-1));
         els.nextPromptBtn.addEventListener('click', () => cyclePrompt(1));
@@ -1765,7 +1537,7 @@
         els.flipCameraBtn.addEventListener('click', async () => {
           if (state.isRecording || state.isCountingDown) return;
           state.currentFacingMode = state.currentFacingMode === 'user' ? 'environment' : 'user';
-          await startCamera();
+          await restartCameraHard();
         });
 
         els.cameraBackBtn.addEventListener('click', async () => {
@@ -1774,8 +1546,8 @@
         });
 
         els.keepBtn.addEventListener('click', handleKeepCapture);
-        els.retakeBtn.addEventListener('click', retakeCapture);
-        els.reviewBackBtn.addEventListener('click', retakeCapture);
+        els.retakeBtn.addEventListener('click', () => retakeCapture());
+        els.reviewBackBtn.addEventListener('click', () => retakeCapture());
         els.downloadCurrentBtn.addEventListener('click', downloadCurrentCapture);
         els.downloadCurrentCaptureBtn.addEventListener('click', downloadCurrentCapture);
 
@@ -1798,14 +1570,6 @@
           state.settings.sessionCount = 0;
           saveSettings();
           updateSessionDisplays();
-        });
-
-        ['pointerdown', 'touchstart'].forEach(evt => {
-          els.holdZone.addEventListener(evt, startHoldAccess, { passive: true });
-        });
-
-        ['pointerup', 'pointerleave', 'touchend', 'touchcancel'].forEach(evt => {
-          els.holdZone.addEventListener(evt, cancelHoldAccess, { passive: true });
         });
 
         document.addEventListener('click', resetIdleTimer, true);
@@ -1834,33 +1598,17 @@
       }
 
       function normalizeAvailableModes() {
-        if (!state.settings.enableVideo && !state.settings.enablePhoto) {
-          state.settings.enableVideo = true;
-        }
-
-        if (state.captureMode === 'video' && !state.settings.enableVideo) {
-          state.captureMode = 'photo';
-        }
-
-        if (state.captureMode === 'photo' && !state.settings.enablePhoto) {
-          state.captureMode = 'video';
-        }
-
-        if (state.captureMode === 'video') {
-          state.filter = 'original';
-        }
+        if (!state.settings.enableVideo && !state.settings.enablePhoto) state.settings.enableVideo = true;
+        if (state.captureMode === 'video' && !state.settings.enableVideo) state.captureMode = 'photo';
+        if (state.captureMode === 'photo' && !state.settings.enablePhoto) state.captureMode = 'video';
+        if (state.captureMode === 'video') state.filter = 'original';
       }
 
       function setCaptureMode(mode) {
         if (mode === 'video' && !state.settings.enableVideo) return;
         if (mode === 'photo' && !state.settings.enablePhoto) return;
-
         state.captureMode = mode;
-
-        if (mode === 'video') {
-          state.filter = 'original';
-        }
-
+        if (mode === 'video') state.filter = 'original';
         updateModeCards();
         renderFilterButtons();
         applyFilter();
@@ -1923,7 +1671,7 @@
 
         if (state.captureMode === 'video') {
           els.cameraHelpTitle.textContent = 'Center yourself inside the frame.';
-          els.cameraHelpText.textContent = 'Video records in Original mode for the most reliable playback and downloads.';
+          els.cameraHelpText.textContent = 'Video records in Original mode for the best Safari compatibility.';
         } else {
           els.cameraHelpTitle.textContent = 'Hold still for a polished photo.';
           els.cameraHelpText.textContent = state.burstMode
@@ -1934,24 +1682,20 @@
 
       function renderFilterButtons() {
         els.filterGrid.innerHTML = '';
-
         PHOTO_FILTER_OPTIONS.forEach(([key, label]) => {
-          const btn = document.createElement('button');
           const disabledForVideo = state.captureMode === 'video' && key !== 'original';
-
+          const btn = document.createElement('button');
           btn.className = 'filter-chip' + (state.filter === key ? ' active' : '');
           btn.textContent = label;
           btn.disabled = disabledForVideo;
           btn.style.opacity = disabledForVideo ? '.45' : '1';
           btn.style.cursor = disabledForVideo ? 'not-allowed' : 'pointer';
-
           btn.addEventListener('click', () => {
             if (disabledForVideo) return;
             state.filter = key;
             applyFilter();
             renderFilterButtons();
           });
-
           els.filterGrid.appendChild(btn);
         });
       }
@@ -1967,11 +1711,17 @@
         renderFilterButtons();
         applyFilter();
         updateCameraText();
+        await restartCameraHard();
+      }
+
+      async function restartCameraHard() {
+        await stopCaptureFlow(false);
+        stopStream();
+        await wait(250);
         await startCamera();
       }
 
       async function startCamera() {
-        await stopCaptureFlow();
         els.cameraReadyChip.className = 'status-chip not-ready';
         els.cameraReadyText.textContent = 'Preparing camera…';
         updateTimer(0);
@@ -1990,7 +1740,9 @@
           const stream = await navigator.mediaDevices.getUserMedia(constraints);
           state.mediaStream = stream;
           els.cameraPreview.srcObject = stream;
+          await wait(state.cameraWarmupMs);
           await els.cameraPreview.play().catch(() => {});
+          state.lastCameraStartAt = Date.now();
 
           els.cameraReadyChip.className = 'status-chip ready';
           els.cameraReadyText.textContent = 'Camera ready';
@@ -2000,7 +1752,7 @@
         } catch (err) {
           els.cameraReadyChip.className = 'status-chip not-ready';
           els.cameraReadyText.textContent = 'Camera unavailable';
-          alert('Camera access was blocked or unavailable in Safari. Make sure camera and microphone permissions are allowed.');
+          alert('Camera access was blocked or unavailable. Make sure Safari camera and microphone permissions are allowed.');
         }
       }
 
@@ -2009,6 +1761,7 @@
           state.mediaStream.getTracks().forEach(track => track.stop());
           state.mediaStream = null;
         }
+        els.cameraPreview.pause();
         els.cameraPreview.srcObject = null;
       }
 
@@ -2018,9 +1771,11 @@
         if (state.isCountingDown) return;
 
         if (!state.mediaStream) {
-          await startCamera();
+          await restartCameraHard();
           return;
         }
+
+        if (Date.now() - state.lastCameraStartAt < state.cameraWarmupMs) return;
 
         if (state.captureMode === 'video') {
           if (state.isRecording) {
@@ -2064,27 +1819,44 @@
           } else {
             els.countdownOverlay.textContent = String(value);
           }
-        }, 700);
+        }, 800);
+      }
+
+      function getBestRecorderOptions() {
+        if (!state.mediaRecorderSupported) return null;
+
+        const optionsToTry = [
+          { mimeType: 'video/webm;codecs=vp8,opus' },
+          { mimeType: 'video/webm;codecs=vp8' },
+          { mimeType: 'video/webm' },
+          {}
+        ];
+
+        for (const opts of optionsToTry) {
+          if (!opts.mimeType) return opts;
+          if (typeof MediaRecorder.isTypeSupported === 'function' && MediaRecorder.isTypeSupported(opts.mimeType)) {
+            return opts;
+          }
+        }
+
+        return {};
       }
 
       function startVideoRecording() {
         if (!state.mediaStream) return;
 
-        state.recordedChunks = [];
-        let options = {};
-
-        if (MediaRecorder.isTypeSupported('video/webm;codecs=vp9')) {
-          options.mimeType = 'video/webm;codecs=vp9';
-        } else if (MediaRecorder.isTypeSupported('video/webm;codecs=vp8')) {
-          options.mimeType = 'video/webm;codecs=vp8';
-        } else if (MediaRecorder.isTypeSupported('video/webm')) {
-          options.mimeType = 'video/webm';
+        if (!state.mediaRecorderSupported) {
+          alert('Video recording is not supported on this device. Please use photo mode.');
+          return;
         }
 
+        state.recordedChunks = [];
+        const options = getBestRecorderOptions();
+
         try {
-          state.mediaRecorder = new MediaRecorder(state.mediaStream, options);
+          state.mediaRecorder = new MediaRecorder(state.mediaStream, options || {});
         } catch (err) {
-          alert('This browser could not start video recording. On iPad, Safari support can vary by iOS version.');
+          alert('This browser could not start video recording. Please test on the rental iPad. Photo mode should still work.');
           return;
         }
 
@@ -2098,6 +1870,7 @@
           const mimeType = state.mediaRecorder?.mimeType || 'video/webm';
           const blob = new Blob(state.recordedChunks, { type: mimeType });
 
+          revokeCurrentCaptureUrl();
           state.currentCapture = {
             type: 'video',
             blob,
@@ -2145,7 +1918,9 @@
         resetProgressRing();
 
         try {
-          state.mediaRecorder.stop();
+          if (state.mediaRecorder.state !== 'inactive') {
+            state.mediaRecorder.stop();
+          }
         } catch {}
       }
 
@@ -2168,7 +1943,7 @@
           ctx.drawImage(video, 0, 0, width, height);
           const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.92));
           if (blob) captures.push(blob);
-          if (i < burstCount - 1) await wait(180);
+          if (i < burstCount - 1) await wait(220);
         }
 
         if (!captures.length) {
@@ -2176,6 +1951,7 @@
           return;
         }
 
+        revokeCurrentCaptureUrl();
         state.currentCapture = {
           type: 'photo',
           blob: captures[0],
@@ -2205,9 +1981,10 @@
           video.controls = true;
           video.playsInline = true;
           video.className = 'preview-media';
+          video.preload = 'metadata';
           els.reviewMediaFrame.appendChild(video);
           els.reviewTitle.textContent = 'Review your video';
-          els.reviewCopy.textContent = 'Play it back and keep it only if it feels just right.';
+          els.reviewCopy.textContent = 'Play it back and keep it only if it feels right.';
         } else {
           const img = document.createElement('img');
           img.src = state.currentCapture.url;
@@ -2216,15 +1993,15 @@
           els.reviewMediaFrame.appendChild(img);
           els.reviewTitle.textContent = state.currentCapture.burst ? 'Review your burst' : 'Review your photo';
           els.reviewCopy.textContent = state.currentCapture.burst
-            ? 'The first image is previewed here. All burst images can be downloaded now.'
+            ? 'The first image is previewed here. All burst images will download when selected.'
             : 'Take a look and keep it if you love it.';
         }
       }
 
-      function retakeCapture() {
+      async function retakeCapture() {
         revokeCurrentCaptureUrl();
         state.currentCapture = null;
-        openCameraScreen();
+        await openCameraScreen();
       }
 
       function handleKeepCapture() {
@@ -2311,6 +2088,7 @@
         els.thanksCaptureType.textContent = state.currentCapture?.type === 'video'
           ? 'Video'
           : (state.currentCapture?.burst ? 'Photo Burst' : 'Photo');
+
         els.thanksSessionCount.textContent = state.settings.sessionCount;
         goToScreen('screen-thanks');
 
@@ -2329,16 +2107,22 @@
         }
 
         if (state.currentCapture.type === 'video') {
-          triggerDownload(state.currentCapture.blob, fileName('video', 'webm'));
+          triggerDownload(state.currentCapture.blob, fileName('video', preferredVideoExtension()));
         } else if (state.currentCapture.burst && state.currentCapture.blobs?.length) {
           state.currentCapture.blobs.forEach((blob, idx) => {
             setTimeout(() => {
               triggerDownload(blob, fileName(`photo-${idx + 1}`, 'jpg'));
-            }, idx * 120);
+            }, idx * 250);
           });
         } else {
           triggerDownload(state.currentCapture.blob, fileName('photo', 'jpg'));
         }
+      }
+
+      function preferredVideoExtension() {
+        const type = state.currentCapture?.blob?.type || '';
+        if (type.includes('mp4')) return 'mp4';
+        return 'webm';
       }
 
       function triggerDownload(blob, name) {
@@ -2425,17 +2209,17 @@
         closeOperatorModal();
       }
 
-      function startHoldAccess() {
-        if (state.currentScreen === 'screen-camera' && (state.isRecording || state.isCountingDown)) return;
-        cancelHoldAccess();
-        state.holdTimer = setTimeout(() => {
+      function handleHiddenAdminTap() {
+        state.adminTapCount += 1;
+        clearTimeout(state.adminTapTimer);
+        state.adminTapTimer = setTimeout(() => {
+          state.adminTapCount = 0;
+        }, 1200);
+        if (state.adminTapCount >= 5) {
+          state.adminTapCount = 0;
+          clearTimeout(state.adminTapTimer);
           openOperatorModal();
-        }, 1300);
-      }
-
-      function cancelHoldAccess() {
-        clearTimeout(state.holdTimer);
-        state.holdTimer = null;
+        }
       }
 
       function openOperatorModal() {
@@ -2519,12 +2303,20 @@
         }
       }
 
-      async function stopCaptureFlow() {
+      async function stopCaptureFlow(stopRecorder = true) {
         clearInterval(state.recordingTimer);
         state.recordingTimer = null;
 
         clearInterval(state.countdownTimer);
         state.countdownTimer = null;
+
+        if (stopRecorder && state.mediaRecorder && state.isRecording) {
+          try {
+            if (state.mediaRecorder.state !== 'inactive') {
+              state.mediaRecorder.stop();
+            }
+          } catch {}
+        }
 
         state.isRecording = false;
         state.isCountingDown = false;
@@ -2536,7 +2328,6 @@
         els.recordBtn.classList.remove('recording');
         els.recordBtn.classList.add('idle');
 
-        stopStream();
         resetProgressRing();
         updateTimer(0);
         updateCameraText();
@@ -2594,6 +2385,7 @@
 
         state.idleTimer = setTimeout(async () => {
           await stopCaptureFlow();
+          stopStream();
           revokeCurrentCaptureUrl();
           state.currentCapture = null;
           goToScreen('screen-attract');
