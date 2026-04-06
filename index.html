@@ -187,6 +187,7 @@
     }
 
     .monogram {
+      cursor: pointer;
       width: 112px;
       height: 112px;
       border-radius: 50%;
@@ -202,6 +203,142 @@
       font-size: 1.95rem;
       font-family: Georgia, "Times New Roman", serif;
       letter-spacing: .06em;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .monogram.has-image {
+      padding: 12px;
+      background: rgba(255,255,255,.72);
+    }
+
+    .monogram img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    body[data-theme="signature"] {
+      --bg: #f6f4ee;
+      --bg-2: #ece8df;
+      --text: #17352a;
+      --muted: #5d7568;
+      --green-deep: #18372c;
+      --green: #2d5a4a;
+      --sage: #93a793;
+      --gold: #b8964f;
+      --theme-hero-top: rgba(184,150,79,.10);
+      --theme-hero-right: rgba(147,167,147,.12);
+      --theme-base-top: #f8f7f3;
+      --theme-glass-top: rgba(255,255,255,.94);
+      --theme-glass-bottom: rgba(255,255,255,.82);
+      --theme-topbar: rgba(255,255,255,.62);
+      --theme-border: rgba(255,255,255,.50);
+    }
+
+    body[data-theme="airy"] {
+      --bg: #fbfcfd;
+      --bg-2: #eef4f8;
+      --text: #22313c;
+      --muted: #6a7c88;
+      --green-deep: #29414f;
+      --green: #5c7f92;
+      --sage: #bfd0db;
+      --gold: #d0b07a;
+      --theme-hero-top: rgba(160,196,220,.18);
+      --theme-hero-right: rgba(206,224,236,.24);
+      --theme-base-top: #ffffff;
+      --theme-glass-top: rgba(255,255,255,.96);
+      --theme-glass-bottom: rgba(245,250,253,.90);
+      --theme-topbar: rgba(255,255,255,.78);
+      --theme-border: rgba(255,255,255,.72);
+    }
+
+    body[data-theme="evening"] {
+      --bg: #17211f;
+      --bg-2: #0f1715;
+      --text: #eef4ef;
+      --muted: #b2c1b7;
+      --green-deep: #eef4ef;
+      --green: #8fb39e;
+      --sage: #587365;
+      --gold: #d0b07a;
+      --theme-hero-top: rgba(208,176,122,.12);
+      --theme-hero-right: rgba(72,98,88,.26);
+      --theme-base-top: #1c2925;
+      --theme-glass-top: rgba(30,42,38,.86);
+      --theme-glass-bottom: rgba(18,27,24,.78);
+      --theme-topbar: rgba(24,35,31,.72);
+      --theme-border: rgba(255,255,255,.10);
+      --shadow-lg: 0 28px 70px rgba(0,0,0,.34);
+      --shadow-md: 0 14px 34px rgba(0,0,0,.28);
+      --shadow-sm: 0 8px 20px rgba(0,0,0,.22);
+    }
+
+    html, body {
+      background:
+        radial-gradient(circle at top left, var(--theme-hero-top, rgba(184,150,79,.10)), transparent 34%),
+        radial-gradient(circle at top right, var(--theme-hero-right, rgba(147,167,147,.12)), transparent 32%),
+        linear-gradient(180deg, var(--theme-base-top, #f8f7f3) 0%, var(--bg) 55%, var(--bg-2) 100%);
+    }
+
+    .glass {
+      background: linear-gradient(180deg, var(--theme-glass-top, rgba(255,255,255,.94)), var(--theme-glass-bottom, rgba(255,255,255,.82)));
+    }
+
+    .topbar {
+      background: var(--theme-topbar, rgba(255,255,255,.62));
+      border: 1px solid var(--theme-border, rgba(255,255,255,.50));
+    }
+
+    body[data-theme="evening"]::before {
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.05), transparent 38%),
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,.08), transparent 20%),
+        radial-gradient(circle at 80% 10%, rgba(208,176,122,.08), transparent 24%);
+    }
+
+    body[data-theme="evening"] .session-pill,
+    body[data-theme="evening"] .status-chip,
+    body[data-theme="evening"] .mode-pill,
+    body[data-theme="evening"] .subtle-pill,
+    body[data-theme="evening"] .ghost-btn,
+    body[data-theme="evening"] .secondary-btn,
+    body[data-theme="evening"] .icon-btn,
+    body[data-theme="evening"] .filter-chip,
+    body[data-theme="evening"] .mode-card,
+    body[data-theme="evening"] .summary-item,
+    body[data-theme="evening"] .detail-block,
+    body[data-theme="evening"] .settings-card,
+    body[data-theme="evening"] .toggle,
+    body[data-theme="evening"] .pin-btn,
+    body[data-theme="evening"] .pin-display,
+    body[data-theme="evening"] .input,
+    body[data-theme="evening"] .textarea,
+    body[data-theme="evening"] .select {
+      background: rgba(27,39,35,.78);
+      color: var(--text);
+      border-color: rgba(255,255,255,.10);
+      box-shadow: none;
+    }
+
+    body[data-theme="evening"] .prompt-card,
+    body[data-theme="evening"] .thanks-card {
+      background:
+        radial-gradient(circle at top left, rgba(208,176,122,.10), transparent 30%),
+        linear-gradient(180deg, rgba(29,42,37,.92), rgba(20,29,26,.86));
+      border-color: rgba(255,255,255,.10);
+    }
+
+    body[data-theme="evening"] .camera-help {
+      background: rgba(12,18,16,.62);
+    }
+
+    body[data-theme="evening"] .mode-card.active,
+    body[data-theme="evening"] .filter-chip.active,
+    body[data-theme="evening"] .primary-btn {
+      box-shadow: 0 18px 28px rgba(0,0,0,.28);
     }
 
     .eyebrow {
@@ -777,7 +914,7 @@
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       display: none;
-      z-index: 20;
+      z-index: 999;
       padding: 18px;
     }
 
@@ -925,7 +1062,7 @@
         </div>
 
         <div class="hero-card glass" id="holdZone">
-          <div class="monogram" aria-hidden="true">SB</div>
+          <div class="monogram" id="adminLogo" role="button" aria-label="Operator access" tabindex="0">SB</div>
           <div class="eyebrow">Welcome</div>
           <h1 class="title-xl">Step in. Share a message.</h1>
           <p class="lead">Leave a thoughtful message, capture a moment, and become part of the story.</p>
@@ -1238,6 +1375,25 @@
                 <label class="label" for="pinInput">Admin PIN</label>
                 <input class="input" id="pinInput" inputmode="numeric" maxlength="8" placeholder="4 digits or more" />
               </div>
+              <div class="field">
+                <label class="label" for="themePresetSelect">Theme preset</label>
+                <select class="select" id="themePresetSelect">
+                  <option value="signature">Signature</option>
+                  <option value="airy">Airy Light</option>
+                  <option value="evening">Evening Neutral</option>
+                </select>
+              </div>
+              <div class="field">
+                <label class="label" for="logoUploadInput">Logo image</label>
+                <input class="input" id="logoUploadInput" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" />
+                <div class="hint">Upload a square PNG, JPG, WEBP, or SVG. It saves locally on this iPad for this rental setup.</div>
+              </div>
+              <div class="form-actions" style="margin-top:12px;">
+                <button class="secondary-btn" id="clearLogoBtn" type="button">Remove Logo</button>
+              </div>
+              <div class="toggle-grid" style="margin-top:12px;">
+                <div class="toggle"><label for="logoOnlyMode">Logo-only welcome mark</label><input type="checkbox" id="logoOnlyMode" /></div>
+              </div>
               <div class="hint">For rentals, use a unique PIN instead of the default.</div>
             </div>
 
@@ -1332,6 +1488,9 @@
           'Offer a wish for the future.',
           'Tell a funny story from your time together.'
         ],
+        logoDataUrl: '',
+        themePreset: 'signature',
+        logoOnlyMode: false,
         sessionCount: 0,
         guestbookEntries: [],
         emailEntries: [],
@@ -1377,7 +1536,8 @@
         adminTapTimer: null,
         lastCameraStartAt: 0,
         cameraWarmupMs: 350,
-        mediaRecorderSupported: typeof MediaRecorder !== 'undefined'
+        mediaRecorderSupported: typeof MediaRecorder !== 'undefined',
+        pendingLogoDataUrl: null
       };
 
       const $ = (id) => document.getElementById(id);
@@ -1440,6 +1600,11 @@
         thanksCaptureType: $('thanksCaptureType'),
         thanksSessionCount: $('thanksSessionCount'),
         holdZone: $('holdZone'),
+        adminLogo: $('adminLogo'),
+        themePresetSelect: $('themePresetSelect'),
+        logoUploadInput: $('logoUploadInput'),
+        clearLogoBtn: $('clearLogoBtn'),
+        logoOnlyMode: $('logoOnlyMode'),
         operatorModal: $('operatorModal'),
         pinLockView: $('pinLockView'),
         operatorView: $('operatorView'),
@@ -1519,7 +1684,22 @@
 
       function bindEvents() {
         els.beginBtn.addEventListener('click', () => goToScreen('screen-prompt'));
-        els.topEventName.addEventListener('click', handleHiddenAdminTap);
+        [els.adminLogo, els.brandLabel, els.topEventName].forEach(el => {
+          if (!el) return;
+          el.addEventListener('click', handleHiddenAdminTap);
+          el.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              handleHiddenAdminTap();
+            }
+          });
+          el.addEventListener('touchstart', startAdminHold, { passive: true });
+          el.addEventListener('mousedown', startAdminHold);
+          el.addEventListener('touchend', stopAdminHold);
+          el.addEventListener('touchcancel', stopAdminHold);
+          el.addEventListener('mouseup', stopAdminHold);
+          el.addEventListener('mouseleave', stopAdminHold);
+        });
         els.backToAttractBtn.addEventListener('click', () => goToScreen('screen-attract'));
         els.prevPromptBtn.addEventListener('click', () => cyclePrompt(-1));
         els.nextPromptBtn.addEventListener('click', () => cyclePrompt(1));
@@ -1565,6 +1745,12 @@
         els.closeOperatorBtn.addEventListener('click', closeOperatorModal);
         els.closeOperatorPanelBtn.addEventListener('click', closeOperatorModal);
         els.pinClearBtn.addEventListener('click', clearPin);
+        els.clearLogoBtn.addEventListener('click', () => {
+          state.pendingLogoDataUrl = '';
+          els.logoUploadInput.value = '';
+          applyLogoPreview('');
+        });
+        els.logoUploadInput.addEventListener('change', handleLogoUpload);
 
         els.resetSessionBtn.addEventListener('click', () => {
           state.settings.sessionCount = 0;
@@ -1637,6 +1823,30 @@
         els.lastDownloadName.textContent = state.settings.lastDownloadName || 'No capture downloaded yet.';
       }
 
+      function applyThemePreset(preset) {
+        document.body.setAttribute('data-theme', preset || 'signature');
+      }
+
+      function applyLogoPreview(dataUrl) {
+        const hasImage = !!dataUrl;
+        els.adminLogo.classList.toggle('has-image', hasImage);
+        els.adminLogo.innerHTML = hasImage
+          ? `<img src="${dataUrl}" alt="Booth logo" />`
+          : 'SB';
+        els.brandLabel.style.display = state.settings.logoOnlyMode ? 'none' : '';
+      }
+
+      function handleLogoUpload(e) {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          state.pendingLogoDataUrl = typeof reader.result === 'string' ? reader.result : '';
+          applyLogoPreview(state.pendingLogoDataUrl);
+        };
+        reader.readAsDataURL(file);
+      }
+
       function syncUIFromSettings() {
         els.brandLabel.textContent = state.settings.brand;
         els.topEventName.textContent = state.settings.eventName;
@@ -1652,8 +1862,12 @@
         els.enableEmail.checked = !!state.settings.enableEmail;
         els.enableCountdown.checked = !!state.settings.enableCountdown;
         els.enableBurst.checked = !!state.settings.enableBurst;
+        els.themePresetSelect.value = state.settings.themePreset || 'signature';
+        els.logoOnlyMode.checked = !!state.settings.logoOnlyMode;
         els.promptListInput.value = state.settings.prompts.join('\n');
         state.burstMode = !!state.settings.enableBurst;
+        applyThemePreset(state.settings.themePreset || 'signature');
+        applyLogoPreview(state.settings.logoDataUrl || '');
         updateSessionDisplays();
       }
 
@@ -2190,6 +2404,11 @@
         state.settings.enableEmail = els.enableEmail.checked;
         state.settings.enableCountdown = els.enableCountdown.checked;
         state.settings.enableBurst = els.enableBurst.checked;
+        state.settings.themePreset = els.themePresetSelect.value || 'signature';
+        state.settings.logoOnlyMode = !!els.logoOnlyMode.checked;
+        if (state.pendingLogoDataUrl !== null) {
+          state.settings.logoDataUrl = state.pendingLogoDataUrl;
+        }
         state.settings.prompts = prompts.length ? prompts : DEFAULTS.prompts.slice();
 
         if (!state.settings.enableVideo && !state.settings.enablePhoto) {
@@ -2200,6 +2419,7 @@
         state.burstMode = !!state.settings.enableBurst;
         normalizeAvailableModes();
         saveSettings();
+        state.pendingLogoDataUrl = null;
         syncUIFromSettings();
         updatePromptUI();
         updateModeCards();
@@ -2214,12 +2434,24 @@
         clearTimeout(state.adminTapTimer);
         state.adminTapTimer = setTimeout(() => {
           state.adminTapCount = 0;
-        }, 1200);
-        if (state.adminTapCount >= 5) {
+        }, 1800);
+        if (state.adminTapCount >= 4) {
           state.adminTapCount = 0;
           clearTimeout(state.adminTapTimer);
           openOperatorModal();
         }
+      }
+
+      function startAdminHold() {
+        clearTimeout(state.holdTimer);
+        state.holdTimer = setTimeout(() => {
+          state.adminTapCount = 0;
+          openOperatorModal();
+        }, 900);
+      }
+
+      function stopAdminHold() {
+        clearTimeout(state.holdTimer);
       }
 
       function openOperatorModal() {
