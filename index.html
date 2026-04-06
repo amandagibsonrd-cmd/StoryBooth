@@ -1221,11 +1221,18 @@
               <p><strong>Prompt:</strong> <span id="reviewPrompt"></span></p>
               <p style="margin-top:8px;"><strong>Filter:</strong> <span id="reviewFilter"></span></p>
               <p style="margin-top:8px;"><strong>Capture type:</strong> <span id="reviewType"></span></p>
+              <p style="margin-top:8px;"><strong>Recorder:</strong> <span id="reviewRecorder">—</span></p>
+            </div>
+            <div class="detail-block glass" id="reviewExportBlock">
+              <h3>Save workflow</h3>
+              <p id="reviewExportCopy">Export this approved capture before moving on.</p>
+              <div class="hint" id="reviewExportStatus" style="margin-top:10px;">Not exported yet.</div>
+              <label class="checkbox-row" style="margin-top:12px;"><input type="checkbox" id="backupConfirmed" /> I copied or confirmed a backup of this file.</label>
             </div>
             <div class="review-actions">
-              <button class="primary-btn" id="keepBtn">Keep</button>
+              <button class="primary-btn" id="keepBtn">Approve + Continue</button>
               <button class="secondary-btn" id="retakeBtn">Retake</button>
-              <button class="ghost-btn" id="downloadCurrentBtn">Download Current Capture</button>
+              <button class="ghost-btn" id="downloadCurrentBtn">Export Approved Capture</button>
             </div>
           </div>
         </div>
@@ -1452,8 +1459,10 @@
               </div>
               <div class="form-actions" style="margin-top:14px;">
                 <button class="secondary-btn" id="downloadCurrentCaptureBtn">Download Current Capture</button>
+                <button class="secondary-btn" id="runVideoTestBtn">Run Video Test</button>
                 <button class="ghost-btn" id="resetSessionBtn">Reset Session Count</button>
               </div>
+              <div class="hint" id="videoTestStatus" style="margin-top:12px;">Video test not run yet on this device.</div>
               <div class="hint" style="margin-top:12px;">Media is not permanently stored in this local-only build. Download captures during the session if you want to keep them.</div>
             </div>
           </div>
@@ -1494,7 +1503,9 @@
         sessionCount: 0,
         guestbookEntries: [],
         emailEntries: [],
-        lastDownloadName: ''
+        lastDownloadName: '',
+        videoApproved: null,
+        videoRecorderMimeType: ''
       };
 
       const FILTERS = {
@@ -1537,7 +1548,12 @@
         lastCameraStartAt: 0,
         cameraWarmupMs: 350,
         mediaRecorderSupported: typeof MediaRecorder !== 'undefined',
-        pendingLogoDataUrl: null
+        pendingLogoDataUrl: null,
+        shouldKeepRecordingOnStop: false,
+        suppressReviewOnStop: false,
+        videoFinalizeInProgress: false,
+        lastVideoRecorderMimeType: '',
+        operatorVideoTestActive: false
       };
 
       const $ = (id) => document.getElementById(id);
@@ -1583,6 +1599,11 @@
         reviewPrompt: $('reviewPrompt'),
         reviewFilter: $('reviewFilter'),
         reviewType: $('reviewType'),
+        reviewRecorder: $('reviewRecorder'),
+        reviewExportBlock: $('reviewExportBlock'),
+        reviewExportCopy: $('reviewExportCopy'),
+        reviewExportStatus: $('reviewExportStatus'),
+        backupConfirmed: $('backupConfirmed'),
         keepBtn: $('keepBtn'),
         retakeBtn: $('retakeBtn'),
         reviewBackBtn: $('reviewBackBtn'),
@@ -1632,6 +1653,8 @@
         exportGuestbookBtn: $('exportGuestbookBtn'),
         exportEmailBtn: $('exportEmailBtn'),
         downloadCurrentCaptureBtn: $('downloadCurrentCaptureBtn'),
+        runVideoTestBtn: $('runVideoTestBtn'),
+        videoTestStatus: $('videoTestStatus'),
         resetSessionBtn: $('resetSessionBtn')
       };
 
@@ -1647,6 +1670,8 @@
         updatePromptUI();
         updateModeCards();
         updateSessionDisplays();
+        updateVideoApprovalUI();
+        updateReviewExportUI();
         updateCameraText();
         resetProgressRing();
         resetIdleTimer();
@@ -1671,7 +1696,10 @@
             ...saved,
             guestbookEntries: Array.isArray(saved.guestbookEntries) ? saved.guestbookEntries : DEFAULTS.guestbookEntries,
             emailEntries: Array.isArray(saved.emailEntries) ? saved.emailEntries : DEFAULTS.emailEntries,
-            prompts: Array.isArray(saved.prompts) && saved.prompts.length ? saved.prompts : DEFAULTS.prompts
+            exportLog: Array.isArray(saved.exportLog) ? saved.exportLog : DEFAULTS.exportLog,
+            prompts: Array.isArray(saved.prompts) && saved.prompts.length ? saved.prompts : DEFAULTS.prompts,
+            videoApproved: typeof saved.videoApproved === 'boolean' ? saved.videoApproved : DEFAULTS.videoApproved,
+            videoRecorderMimeType: typeof saved.videoRecorderMimeType === 'string' ? saved.videoRecorderMimeType : DEFAULTS.videoRecorderMimeType
           };
         } catch {
           return { ...DEFAULTS };
@@ -1730,6 +1758,8 @@
         els.reviewBackBtn.addEventListener('click', () => retakeCapture());
         els.downloadCurrentBtn.addEventListener('click', downloadCurrentCapture);
         els.downloadCurrentCaptureBtn.addEventListener('click', downloadCurrentCapture);
+        els.runVideoTestBtn.addEventListener('click', runOperatorVideoTest);
+        els.backupConfirmed.addEventListener('change', updateReviewExportUI);
 
         els.skipGuestbookBtn.addEventListener('click', afterGuestbook);
         els.guestbookSkip2Btn.addEventListener('click', afterGuestbook);
@@ -1785,13 +1815,13 @@
 
       function normalizeAvailableModes() {
         if (!state.settings.enableVideo && !state.settings.enablePhoto) state.settings.enableVideo = true;
-        if (state.captureMode === 'video' && !state.settings.enableVideo) state.captureMode = 'photo';
+        if (state.captureMode === 'video' && !getVideoModeAllowed()) state.captureMode = 'photo';
         if (state.captureMode === 'photo' && !state.settings.enablePhoto) state.captureMode = 'video';
         if (state.captureMode === 'video') state.filter = 'original';
       }
 
       function setCaptureMode(mode) {
-        if (mode === 'video' && !state.settings.enableVideo) return;
+        if (mode === 'video' && !getVideoModeAllowed()) return;
         if (mode === 'photo' && !state.settings.enablePhoto) return;
         state.captureMode = mode;
         if (mode === 'video') state.filter = 'original';
@@ -1805,6 +1835,9 @@
         els.modeVideoCard.classList.toggle('active', state.captureMode === 'video');
         els.modePhotoCard.classList.toggle('active', state.captureMode === 'photo');
         els.modeVideoCard.style.display = state.settings.enableVideo ? '' : 'none';
+        els.modeVideoCard.disabled = !getVideoModeAllowed();
+        els.modeVideoCard.style.opacity = getVideoModeAllowed() ? '1' : '.55';
+        els.modeVideoCard.style.pointerEvents = getVideoModeAllowed() ? '' : 'none';
         els.modePhotoCard.style.display = state.settings.enablePhoto ? '' : 'none';
       }
 
@@ -1821,6 +1854,59 @@
         els.operatorSessionCount.textContent = state.settings.sessionCount;
         els.thanksSessionCount.textContent = state.settings.sessionCount;
         els.lastDownloadName.textContent = state.settings.lastDownloadName || 'No capture downloaded yet.';
+      }
+
+      function updateReviewExportUI() {
+        if (!els.reviewExportBlock) return;
+        const capture = state.currentCapture;
+        const needsBackup = !!(capture && capture.type === 'video');
+        els.reviewExportBlock.style.display = capture ? '' : 'none';
+        if (!capture) {
+          els.reviewExportStatus.textContent = 'Not exported yet.';
+          els.reviewExportCopy.textContent = 'Export this approved capture before moving on.';
+          els.keepBtn.textContent = 'Approve + Continue';
+          els.backupConfirmed.checked = false;
+          els.backupConfirmed.disabled = true;
+          return;
+        }
+        els.backupConfirmed.disabled = !needsBackup;
+        if (!needsBackup) {
+          els.backupConfirmed.checked = false;
+          els.reviewExportCopy.textContent = capture.burst ? 'Export the burst set before moving on if you want every image saved.' : 'Export this approved capture before moving on.';
+          els.reviewExportStatus.textContent = capture.exportedAt ? 'Export completed for this capture.' : 'Export optional for photos, but recommended.';
+          els.keepBtn.textContent = 'Approve + Continue';
+          return;
+        }
+        els.reviewExportCopy.textContent = 'For video-first events, export this approved clip and confirm backup before continuing.';
+        if (!capture.exportedAt) {
+          els.reviewExportStatus.textContent = 'Video not exported yet.';
+          els.keepBtn.textContent = 'Approve After Export';
+        } else if (!els.backupConfirmed.checked) {
+          els.reviewExportStatus.textContent = 'Exported. Confirm backup or file presence before continuing.';
+          els.keepBtn.textContent = 'Approve + Finish Save Check';
+        } else {
+          els.reviewExportStatus.textContent = 'Export and backup confirmed.';
+          els.keepBtn.textContent = 'Approve + Continue';
+        }
+      }
+
+      function updateVideoApprovalUI() {
+        const approved = state.settings.videoApproved;
+        let label = 'Video test not run yet on this device.';
+        if (approved === true) {
+          const mime = state.settings.videoRecorderMimeType || 'browser default';
+          label = `Video test passed. Recorder: ${mime}.`;
+        } else if (approved === false) {
+          label = 'Video test failed. Video mode is temporarily disabled for safety.';
+        }
+        if (els.videoTestStatus) els.videoTestStatus.textContent = label;
+      }
+
+      function getVideoModeAllowed() {
+        if (!state.settings.enableVideo) return false;
+        if (!state.mediaRecorderSupported) return false;
+        if (state.settings.videoApproved === false) return false;
+        return true;
       }
 
       function applyThemePreset(preset) {
@@ -1869,6 +1955,7 @@
         applyThemePreset(state.settings.themePreset || 'signature');
         applyLogoPreview(state.settings.logoDataUrl || '');
         updateSessionDisplays();
+        updateVideoApprovalUI();
       }
 
       function updateCameraText() {
@@ -1879,13 +1966,18 @@
         els.burstPill.textContent = state.captureMode === 'photo' ? `Burst: ${state.burstMode ? 'On' : 'Off'}` : 'Original video only';
         els.limitPill.textContent = state.captureMode === 'video' ? `Limit: ${state.settings.videoLimit}s` : 'Still capture';
         els.swapBurstBtn.style.display = state.captureMode === 'photo' ? '' : 'none';
+        if (state.captureMode === 'video' && !getVideoModeAllowed()) {
+          els.recordLabel.textContent = 'Run video test in operator panel';
+        }
         els.recordLabel.textContent = state.captureMode === 'video'
           ? (state.isRecording ? 'Tap to stop' : 'Tap to begin')
           : (state.burstMode ? 'Tap for burst' : 'Tap to capture');
 
         if (state.captureMode === 'video') {
           els.cameraHelpTitle.textContent = 'Center yourself inside the frame.';
-          els.cameraHelpText.textContent = 'Video records in Original mode for the best Safari compatibility.';
+          els.cameraHelpText.textContent = getVideoModeAllowed()
+            ? 'Video records in Original mode for the best Safari compatibility.'
+            : 'Video is locked until a successful operator test is completed.';
         } else {
           els.cameraHelpTitle.textContent = 'Hold still for a polished photo.';
           els.cameraHelpText.textContent = state.burstMode
@@ -1921,6 +2013,9 @@
       }
 
       async function openCameraScreen() {
+        if (state.captureMode === 'video' && !getVideoModeAllowed()) {
+          state.captureMode = state.settings.enablePhoto ? 'photo' : 'video';
+        }
         goToScreen('screen-camera');
         renderFilterButtons();
         applyFilter();
@@ -1941,17 +2036,31 @@
         updateTimer(0);
         applyFilter();
 
-        try {
-          const constraints = {
-            audio: state.captureMode === 'video',
-            video: {
-              facingMode: { ideal: state.currentFacingMode },
-              width: { ideal: 1280 },
-              height: { ideal: 720 }
-            }
-          };
+        const baseConstraints = {
+          video: {
+            facingMode: { ideal: state.currentFacingMode },
+            width: { ideal: 1280 },
+            height: { ideal: 720 }
+          }
+        };
 
-          const stream = await navigator.mediaDevices.getUserMedia(constraints);
+        try {
+          let stream = null;
+          const wantsAudio = state.captureMode === 'video' && getVideoModeAllowed();
+
+          try {
+            stream = await navigator.mediaDevices.getUserMedia({
+              ...baseConstraints,
+              audio: wantsAudio
+            });
+          } catch (err) {
+            if (!wantsAudio) throw err;
+            stream = await navigator.mediaDevices.getUserMedia({
+              ...baseConstraints,
+              audio: false
+            });
+          }
+
           state.mediaStream = stream;
           els.cameraPreview.srcObject = stream;
           await wait(state.cameraWarmupMs);
@@ -1959,7 +2068,7 @@
           state.lastCameraStartAt = Date.now();
 
           els.cameraReadyChip.className = 'status-chip ready';
-          els.cameraReadyText.textContent = 'Camera ready';
+          els.cameraReadyText.textContent = wantsAudio ? 'Camera ready' : 'Camera ready (no mic)';
           resetProgressRing();
           updateTimer(0);
           applyFilter();
@@ -1992,8 +2101,12 @@
         if (Date.now() - state.lastCameraStartAt < state.cameraWarmupMs) return;
 
         if (state.captureMode === 'video') {
+          if (!getVideoModeAllowed()) {
+            alert('Video is locked until the operator runs a successful video test on this device.');
+            return;
+          }
           if (state.isRecording) {
-            stopVideoRecording();
+            stopVideoRecording(true);
           } else {
             beginCountdown(startVideoRecording);
           }
@@ -2033,20 +2146,32 @@
           } else {
             els.countdownOverlay.textContent = String(value);
           }
-        }, 800);
+        }, 1000);
       }
 
       function getBestRecorderOptions() {
         if (!state.mediaRecorderSupported) return null;
 
         const optionsToTry = [
-          { mimeType: 'video/webm;codecs=vp8,opus' },
-          { mimeType: 'video/webm;codecs=vp8' },
+          {},
+          { mimeType: 'video/mp4' },
+          { mimeType: 'video/mp4;codecs=h264,aac' },
           { mimeType: 'video/webm' },
-          {}
+          { mimeType: 'video/webm;codecs=vp8,opus' },
+          { mimeType: 'video/webm;codecs=vp8' }
         ];
 
+        const deduped = [];
+        const seen = new Set();
+
         for (const opts of optionsToTry) {
+          const key = opts.mimeType || '__default__';
+          if (seen.has(key)) continue;
+          seen.add(key);
+          deduped.push(opts);
+        }
+
+        for (const opts of deduped) {
           if (!opts.mimeType) return opts;
           if (typeof MediaRecorder.isTypeSupported === 'function' && MediaRecorder.isTypeSupported(opts.mimeType)) {
             return opts;
@@ -2056,8 +2181,14 @@
         return {};
       }
 
+
       function startVideoRecording() {
         if (!state.mediaStream) return;
+
+        if (!getVideoModeAllowed()) {
+          alert('Video is currently disabled for safety on this device. Run the operator video test first.');
+          return;
+        }
 
         if (!state.mediaRecorderSupported) {
           alert('Video recording is not supported on this device. Please use photo mode.');
@@ -2069,8 +2200,16 @@
 
         try {
           state.mediaRecorder = new MediaRecorder(state.mediaStream, options || {});
+          state.lastVideoRecorderMimeType = state.mediaRecorder?.mimeType || options?.mimeType || 'browser default';
         } catch (err) {
-          alert('This browser could not start video recording. Please test on the rental iPad. Photo mode should still work.');
+          state.settings.videoApproved = false;
+          state.settings.videoRecorderMimeType = '';
+          saveSettings();
+          updateVideoApprovalUI();
+          normalizeAvailableModes();
+          updateModeCards();
+          if (state.captureMode === 'video') setCaptureMode('photo');
+          alert('This browser could not start video recording. Video mode was disabled for safety.');
           return;
         }
 
@@ -2080,9 +2219,51 @@
           }
         };
 
-        state.mediaRecorder.onstop = () => {
-          const mimeType = state.mediaRecorder?.mimeType || 'video/webm';
+        state.mediaRecorder.onerror = () => {
+          state.settings.videoApproved = false;
+          state.settings.videoRecorderMimeType = '';
+          saveSettings();
+          updateVideoApprovalUI();
+        };
+
+        state.mediaRecorder.onstop = async () => {
+          const keep = state.shouldKeepRecordingOnStop && !state.suppressReviewOnStop;
+          state.videoFinalizeInProgress = false;
+          state.shouldKeepRecordingOnStop = false;
+          const mimeType = state.mediaRecorder?.mimeType || state.lastVideoRecorderMimeType || 'video/webm';
           const blob = new Blob(state.recordedChunks, { type: mimeType });
+          const valid = blob && blob.size > 4096;
+
+          if (state.operatorVideoTestActive) {
+            const passed = !!valid;
+            state.settings.videoApproved = passed;
+            state.settings.videoRecorderMimeType = passed ? (mimeType || 'browser default') : '';
+            saveSettings();
+            updateVideoApprovalUI();
+            state.operatorVideoTestActive = false;
+            if (passed) {
+              alert('Video test passed. Video mode is approved for this device.');
+            } else {
+              alert('Video test failed. Video mode has been disabled for safety.');
+            }
+            normalizeAvailableModes();
+            updateModeCards();
+            if (state.captureMode === 'video' && !getVideoModeAllowed()) setCaptureMode('photo');
+            await openCameraScreen();
+            return;
+          }
+
+          if (!keep) {
+            state.recordedChunks = [];
+            return;
+          }
+
+          if (!valid) {
+            alert('That video did not save correctly. Please record it again.');
+            state.recordedChunks = [];
+            await openCameraScreen();
+            return;
+          }
 
           revokeCurrentCaptureUrl();
           state.currentCapture = {
@@ -2090,12 +2271,16 @@
             blob,
             url: URL.createObjectURL(blob),
             filter: 'original',
-            prompt: state.settings.prompts[state.selectedPromptIndex] || ''
+            prompt: state.settings.prompts[state.selectedPromptIndex] || '',
+            recorderMimeType: mimeType
           };
-
+          state.recordedChunks = [];
           showReview();
         };
 
+        state.shouldKeepRecordingOnStop = true;
+        state.suppressReviewOnStop = false;
+        state.videoFinalizeInProgress = true;
         state.mediaRecorder.start(250);
         state.isRecording = true;
         state.elapsed = 0;
@@ -2112,30 +2297,34 @@
           updateProgressRing(state.elapsed / state.settings.videoLimit);
 
           if (state.elapsed >= state.settings.videoLimit) {
-            stopVideoRecording();
+            stopVideoRecording(true);
           }
         }, 1000);
       }
 
-      function stopVideoRecording() {
+      function stopVideoRecording(keepCapture = true) {
         if (!state.isRecording || !state.mediaRecorder) return;
 
         clearInterval(state.recordingTimer);
         state.recordingTimer = null;
         state.isRecording = false;
+        state.shouldKeepRecordingOnStop = !!keepCapture;
+        state.suppressReviewOnStop = !keepCapture;
 
         els.recordBtn.classList.remove('recording');
         els.recordBtn.classList.add('idle');
-        els.flipCameraBtn.disabled = false;
-        els.cameraBackBtn.disabled = false;
-        els.recordLabel.textContent = 'Processing…';
+        els.flipCameraBtn.disabled = true;
+        els.cameraBackBtn.disabled = true;
+        els.recordLabel.textContent = keepCapture ? 'Processing…' : 'Cancelling…';
         resetProgressRing();
 
         try {
           if (state.mediaRecorder.state !== 'inactive') {
             state.mediaRecorder.stop();
           }
-        } catch {}
+        } catch {
+          state.videoFinalizeInProgress = false;
+        }
       }
 
       async function capturePhotoFlow() {
@@ -2173,7 +2362,9 @@
           url: URL.createObjectURL(captures[0]),
           filter: state.filter,
           prompt: state.settings.prompts[state.selectedPromptIndex] || '',
-          burst: burstCount > 1
+          burst: burstCount > 1,
+          exportedAt: '',
+          exportNames: []
         };
 
         showReview();
@@ -2188,6 +2379,12 @@
         els.reviewType.textContent = state.currentCapture?.type === 'video'
           ? 'Video'
           : (state.currentCapture?.burst ? 'Photo burst' : 'Photo');
+        els.reviewRecorder.textContent = state.currentCapture?.type === 'video'
+          ? (state.currentCapture?.recorderMimeType || 'browser default')
+          : '—';
+        els.backupConfirmed.checked = false;
+        state.pendingKeepAfterExport = false;
+        updateReviewExportUI();
 
         if (state.currentCapture?.type === 'video') {
           const video = document.createElement('video');
@@ -2219,6 +2416,28 @@
       }
 
       function handleKeepCapture() {
+        if (!state.currentCapture) return;
+
+        if (state.currentCapture.type === 'video') {
+          if (!state.currentCapture.exportedAt) {
+            state.pendingKeepAfterExport = true;
+            updateReviewExportUI();
+            alert('Export this approved video first, then confirm backup or file presence before continuing.');
+            return;
+          }
+          if (!els.backupConfirmed.checked) {
+            state.pendingKeepAfterExport = true;
+            updateReviewExportUI();
+            alert('Please confirm backup or that the saved file exists before moving on.');
+            return;
+          }
+        }
+
+        finalizeApprovedCapture();
+      }
+
+      function finalizeApprovedCapture() {
+        state.pendingKeepAfterExport = false;
         state.settings.sessionCount += 1;
         saveSettings();
         updateSessionDisplays();
@@ -2299,6 +2518,7 @@
       function finishSession() {
         els.emailInput.value = '';
         els.emailConsent.checked = true;
+        els.backupConfirmed.checked = false;
         els.thanksCaptureType.textContent = state.currentCapture?.type === 'video'
           ? 'Video'
           : (state.currentCapture?.burst ? 'Photo Burst' : 'Photo');
@@ -2320,17 +2540,34 @@
           return;
         }
 
+        const exportedNames = [];
         if (state.currentCapture.type === 'video') {
-          triggerDownload(state.currentCapture.blob, fileName('video', preferredVideoExtension()));
+          exportedNames.push(triggerDownload(state.currentCapture.blob, fileName('video', preferredVideoExtension())));
         } else if (state.currentCapture.burst && state.currentCapture.blobs?.length) {
           state.currentCapture.blobs.forEach((blob, idx) => {
+            const name = fileName(`photo-${idx + 1}`, 'jpg');
+            exportedNames.push(name);
             setTimeout(() => {
-              triggerDownload(blob, fileName(`photo-${idx + 1}`, 'jpg'));
+              triggerDownload(blob, name);
             }, idx * 250);
           });
         } else {
-          triggerDownload(state.currentCapture.blob, fileName('photo', 'jpg'));
+          exportedNames.push(triggerDownload(state.currentCapture.blob, fileName('photo', 'jpg')));
         }
+
+        state.currentCapture.exportedAt = new Date().toISOString();
+        state.currentCapture.exportNames = exportedNames.filter(Boolean);
+        state.settings.exportLog.push({
+          timestamp: state.currentCapture.exportedAt,
+          eventName: state.settings.eventName,
+          captureType: state.currentCapture.type,
+          prompt: state.currentCapture.prompt || '',
+          fileNames: state.currentCapture.exportNames.join(' | '),
+          backupConfirmed: state.currentCapture.type === 'video' ? !!els.backupConfirmed.checked : false
+        });
+        saveSettings();
+        updateSessionDisplays();
+        updateReviewExportUI();
       }
 
       function preferredVideoExtension() {
@@ -2353,6 +2590,7 @@
         state.settings.lastDownloadName = name;
         saveSettings();
         updateSessionDisplays();
+        return name;
       }
 
       function exportGuestbookCsv() {
@@ -2395,7 +2633,12 @@
 
         state.settings.brand = els.brandInput.value.trim() || DEFAULTS.brand;
         state.settings.eventName = els.eventInput.value.trim() || DEFAULTS.eventName;
-        state.settings.adminPin = els.pinInput.value.trim() || DEFAULTS.adminPin;
+        const proposedPin = els.pinInput.value.trim() || DEFAULTS.adminPin;
+        if (proposedPin.length < 4) {
+          alert('Admin PIN must be at least 4 digits.');
+          return;
+        }
+        state.settings.adminPin = proposedPin;
         state.settings.videoLimit = Number(els.timeLimitSelect.value || DEFAULTS.videoLimit);
         state.settings.idleTimeout = Number(els.idleTimeoutSelect.value || DEFAULTS.idleTimeout);
         state.settings.enableVideo = els.enableVideo.checked;
@@ -2405,6 +2648,10 @@
         state.settings.enableCountdown = els.enableCountdown.checked;
         state.settings.enableBurst = els.enableBurst.checked;
         state.settings.themePreset = els.themePresetSelect.value || 'signature';
+        if (!state.settings.enableVideo) {
+          state.settings.videoApproved = null;
+          state.settings.videoRecorderMimeType = '';
+        }
         state.settings.logoOnlyMode = !!els.logoOnlyMode.checked;
         if (state.pendingLogoDataUrl !== null) {
           state.settings.logoDataUrl = state.pendingLogoDataUrl;
@@ -2521,6 +2768,43 @@
         }
       }
 
+
+      async function runOperatorVideoTest() {
+        if (!state.settings.enableVideo) {
+          alert('Video mode is disabled in settings. Enable it first.');
+          return;
+        }
+        if (!state.mediaRecorderSupported) {
+          state.settings.videoApproved = false;
+          state.settings.videoRecorderMimeType = '';
+          saveSettings();
+          updateVideoApprovalUI();
+          alert('This browser does not support MediaRecorder on this device.');
+          return;
+        }
+
+        state.operatorVideoTestActive = true;
+        state.settings.videoApproved = null;
+        state.settings.videoRecorderMimeType = '';
+        saveSettings();
+        updateVideoApprovalUI();
+        state.captureMode = 'video';
+        updateModeCards();
+        renderFilterButtons();
+        applyFilter();
+        updateCameraText();
+        closeOperatorModal();
+
+        await openCameraScreen();
+        await wait(600);
+        beginCountdown(() => {
+          startVideoRecording();
+          setTimeout(() => {
+            if (state.isRecording) stopVideoRecording(true);
+          }, 3200);
+        });
+      }
+
       function submitPin() {
         if (state.pinEntry === state.settings.adminPin) {
           els.pinError.textContent = '';
@@ -2543,6 +2827,8 @@
         state.countdownTimer = null;
 
         if (stopRecorder && state.mediaRecorder && state.isRecording) {
+          state.shouldKeepRecordingOnStop = false;
+          state.suppressReviewOnStop = true;
           try {
             if (state.mediaRecorder.state !== 'inactive') {
               state.mediaRecorder.stop();
@@ -2554,9 +2840,9 @@
         state.isCountingDown = false;
 
         els.countdownOverlay.classList.remove('show');
-        els.recordBtn.disabled = false;
-        els.flipCameraBtn.disabled = false;
-        els.cameraBackBtn.disabled = false;
+        els.recordBtn.disabled = state.videoFinalizeInProgress;
+        els.flipCameraBtn.disabled = state.videoFinalizeInProgress;
+        els.cameraBackBtn.disabled = state.videoFinalizeInProgress;
         els.recordBtn.classList.remove('recording');
         els.recordBtn.classList.add('idle');
 
@@ -2610,7 +2896,8 @@
 
         if (
           ['screen-attract', 'screen-thanks'].includes(state.currentScreen) ||
-          els.operatorModal.classList.contains('show')
+          els.operatorModal.classList.contains('show') ||
+          state.videoFinalizeInProgress
         ) {
           return;
         }
