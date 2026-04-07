@@ -1227,7 +1227,6 @@
               <p><strong>Prompt:</strong> <span id="reviewPrompt"></span></p>
               <p style="margin-top:8px;"><strong>Filter:</strong> <span id="reviewFilter"></span></p>
               <p style="margin-top:8px;"><strong>Capture type:</strong> <span id="reviewType"></span></p>
-              <p style="margin-top:8px;"><strong>Recorder:</strong> <span id="reviewRecorder">—</span></p>
             </div>
             <div class="detail-block glass" id="reviewExportBlock">
               <h3>Save workflow</h3>
@@ -1606,7 +1605,6 @@
         reviewPrompt: $('reviewPrompt'),
         reviewFilter: $('reviewFilter'),
         reviewType: $('reviewType'),
-        reviewRecorder: $('reviewRecorder'),
         reviewExportBlock: $('reviewExportBlock'),
         reviewExportCopy: $('reviewExportCopy'),
         reviewExportStatus: $('reviewExportStatus'),
@@ -1865,36 +1863,11 @@
 
       function updateReviewExportUI() {
         if (!els.reviewExportBlock) return;
-        const capture = state.currentCapture;
-        const needsBackup = !!(capture && capture.type === 'video');
-        els.reviewExportBlock.style.display = capture ? '' : 'none';
-        if (!capture) {
-          els.reviewExportStatus.textContent = 'Not exported yet.';
-          els.reviewExportCopy.textContent = 'Export this approved capture before moving on.';
-          els.keepBtn.textContent = 'Approve + Continue';
-          els.backupConfirmed.checked = false;
-          els.backupConfirmed.disabled = true;
-          return;
-        }
-        els.backupConfirmed.disabled = !needsBackup;
-        if (!needsBackup) {
-          els.backupConfirmed.checked = false;
-          els.reviewExportCopy.textContent = capture.burst ? 'Export the burst set before moving on if you want every image saved.' : 'Export this approved capture before moving on.';
-          els.reviewExportStatus.textContent = capture.exportedAt ? 'Export completed for this capture.' : 'Export optional for photos, but recommended.';
-          els.keepBtn.textContent = 'Approve + Continue';
-          return;
-        }
-        els.reviewExportCopy.textContent = 'For video-first events, export this approved clip and confirm backup before continuing.';
-        if (!capture.exportedAt) {
-          els.reviewExportStatus.textContent = 'Video not exported yet.';
-          els.keepBtn.textContent = 'Approve After Export';
-        } else if (!els.backupConfirmed.checked) {
-          els.reviewExportStatus.textContent = 'Exported. Confirm backup or file presence before continuing.';
-          els.keepBtn.textContent = 'Approve + Finish Save Check';
-        } else {
-          els.reviewExportStatus.textContent = 'Export and backup confirmed.';
-          els.keepBtn.textContent = 'Approve + Continue';
-        }
+        els.reviewExportBlock.style.display = 'none';
+        els.downloadCurrentBtn.style.display = 'none';
+        els.keepBtn.textContent = 'Approve + Continue';
+        els.backupConfirmed.checked = false;
+        els.backupConfirmed.disabled = true;
       }
 
       function updateVideoApprovalUI() {
@@ -2386,11 +2359,7 @@
         els.reviewType.textContent = state.currentCapture?.type === 'video'
           ? 'Video'
           : (state.currentCapture?.burst ? 'Photo burst' : 'Photo');
-        els.reviewRecorder.textContent = state.currentCapture?.type === 'video'
-          ? (state.currentCapture?.recorderMimeType || 'browser default')
-          : '—';
         els.backupConfirmed.checked = false;
-        state.pendingKeepAfterExport = false;
         updateReviewExportUI();
 
         if (state.currentCapture?.type === 'video') {
@@ -2402,7 +2371,7 @@
           video.preload = 'metadata';
           els.reviewMediaFrame.appendChild(video);
           els.reviewTitle.textContent = 'Review your video';
-          els.reviewCopy.textContent = 'Play it back and keep it only if it feels right.';
+          els.reviewCopy.textContent = 'Play it back, then keep it or retake it.';
         } else {
           const img = document.createElement('img');
           img.src = state.currentCapture.url;
@@ -2424,27 +2393,10 @@
 
       function handleKeepCapture() {
         if (!state.currentCapture) return;
-
-        if (state.currentCapture.type === 'video') {
-          if (!state.currentCapture.exportedAt) {
-            state.pendingKeepAfterExport = true;
-            updateReviewExportUI();
-            alert('Export this approved video first, then confirm backup or file presence before continuing.');
-            return;
-          }
-          if (!els.backupConfirmed.checked) {
-            state.pendingKeepAfterExport = true;
-            updateReviewExportUI();
-            alert('Please confirm backup or that the saved file exists before moving on.');
-            return;
-          }
-        }
-
         finalizeApprovedCapture();
       }
 
       function finalizeApprovedCapture() {
-        state.pendingKeepAfterExport = false;
         state.settings.sessionCount += 1;
         saveSettings();
         updateSessionDisplays();
